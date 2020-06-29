@@ -1,7 +1,5 @@
 # sc-autoencoding
 student internship of Simon Streib to reduce single cell data
-The goal of the project is to develop a neural network capable of reducing single cell data
-
 
 
 
