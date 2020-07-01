@@ -18,6 +18,16 @@ The program is buildt on: argparse, scipy, glob, tarfile, pandas, os, csv and sy
 
 
 
+sca_PCA.py: A program which was supposed to use the combined input data, and then do PCA with it, by first converting it into a dense matrix. The PCA action fails unfortunately. (some kind of memory issue)
+
+
+sca_PCA_local.py: A "downsampled" version, which takes the data, but only a chunk of it, meaning even my local computer can run it.
+
+
+
+
+
+
 
 
 
