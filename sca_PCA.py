@@ -31,13 +31,12 @@ coomatrix = np.transpose(coomatrix) # samples must be rows, variables = columns
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
-data = coomatrix.toarray()
+#data = coomatrix.toarray()
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
 ### Get Labels
 lbl_file = "./input/filtered_matrices_mex/hg19/celltype_labels.tsv"
-
 file = open(lbl_file, "r")
 labels = file.read().split("\n")
 file.close()
@@ -45,31 +44,37 @@ labels.remove("") #last, empty line is also removed
 
 
 
-
-# %% Cut back data for handlability lmao
-
-# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-# genes_uplimit = 25000
-# genes_downlimit = 30000
-# cells_uplimit = 10000
-# cells_downlimit = 25000
-
-# # prev_element = "gulligulli"
-# # for index in range(len(labels)):
-# #     if labels[index] != prev_element:
-# #         print(index)
-# #     prev_element = labels[index]
-
-# labels = labels[cells_uplimit:cells_downlimit]
-
-# print(coomatrix.shape)
-# reduced = coomatrix.tocsr()
-
-# data = reduced[cells_uplimit:cells_downlimit, genes_uplimit:genes_downlimit]
-# data = data.toarray()
-# print(data.shape)
+# load genes (for last task, finding most important genes)
+file = open("./input/filtered_matrices_mex/hg19/genes.tsv", "r")
+genes = file.read().split("\n")
+file.close()
 
 
+# %%  Cut back data for handlability lmao
+
+print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+genes_uplimit = 30000
+genes_downlimit = 25000
+cells_uplimit = 25000
+cells_downlimit = 10000
+
+# prev_element = "gulligulli"
+# for index in range(len(labels)):
+#     if labels[index] != prev_element:
+#         print(index)
+#     prev_element = labels[index]
+
+labels = labels[cells_downlimit:cells_uplimit]
+
+print(coomatrix.shape)
+reduced = coomatrix.tocsr()
+
+data = reduced[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+data = data.toarray()
+print(data.shape)
+
+
+genes = genes[genes_downlimit:genes_uplimit]
 
 # %% do PCA
 
@@ -135,15 +140,49 @@ file.close()
     
     
     
+    
+    
+### Scree Plots
+perc_var = (explained_variance * 100)
+perc_var = perc_var[0:50]
+
+labelz = [str(x) for x in range(1, len(perc_var)+1)]
+
+plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
+plt.ylabel('Percentage of explained variance')
+plt.xlabel('Principal component')
+plt.title('Scree plot')
+plt.show()    
+plt.savefig("./scaPCA_output/PCA_scree_plot.png")
+    
+    
+    
+    
+    
+    
+    
+#%% Loading scores for PC1
+
+
+
+
+
+loading_scores = pd.Series(myPCA.components_[0], index = genes)
+
+sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
+
+
+top_10_genes = sorted_loading_scores[0:10].index.values
+    
+print(loading_scores[top_10_genes])
+
+    
+    
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 
 # %% Diagnostics
-
-
-
-
 
 
 
