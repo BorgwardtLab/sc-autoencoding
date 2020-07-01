@@ -31,7 +31,7 @@ coomatrix = np.transpose(coomatrix) # samples must be rows, variables = columns
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
-#data = coomatrix.toarray()
+data = coomatrix.toarray()
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
@@ -52,29 +52,29 @@ file.close()
 
 # %%  Cut back data for handlability lmao
 
-print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-genes_uplimit = 30000
-genes_downlimit = 25000
-cells_uplimit = 25000
-cells_downlimit = 10000
+# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+# genes_uplimit = 30000
+# genes_downlimit = 25000
+# cells_uplimit = 25000
+# cells_downlimit = 10000
 
-# prev_element = "gulligulli"
-# for index in range(len(labels)):
-#     if labels[index] != prev_element:
-#         print(index)
-#     prev_element = labels[index]
+# # prev_element = "gulligulli"
+# # for index in range(len(labels)):
+# #     if labels[index] != prev_element:
+# #         print(index)
+# #     prev_element = labels[index]
 
-labels = labels[cells_downlimit:cells_uplimit]
-
-print(coomatrix.shape)
-reduced = coomatrix.tocsr()
-
-data = reduced[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-data = data.toarray()
-print(data.shape)
+# labels = labels[cells_downlimit:cells_uplimit]
 
 
-genes = genes[genes_downlimit:genes_uplimit]
+# reduced = coomatrix.tocsr()
+
+# data = reduced[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+# data = data.toarray()
+
+
+
+# genes = genes[genes_downlimit:genes_uplimit]
 
 # %% do PCA
 
@@ -143,42 +143,60 @@ file.close()
     
     
 ### Scree Plots
+how_many = -1;
+
 perc_var = (explained_variance * 100)
-perc_var = perc_var[0:50]
+perc_var = perc_var[0:how_many]
 
 labelz = [str(x) for x in range(1, len(perc_var)+1)]
 
+
+plt.figure(figsize=[16,8])
 plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
 plt.ylabel('Percentage of explained variance')
 plt.xlabel('Principal component')
 plt.title('Scree plot')
 plt.show()    
-plt.savefig("./scaPCA_output/PCA_scree_plot.png")
+plt.savefig("./scaPCA_output/PCA_scree_plot_all.png")
     
     
     
     
-    
-    
-    
-#%% Loading scores for PC1
+how_many = 50;
+
+perc_var = (explained_variance * 100)
+perc_var = perc_var[0:how_many]
+
+labelz = [str(x) for x in range(1, len(perc_var)+1)]
 
 
+plt.figure(figsize=[16,8])
+plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
+plt.ylabel('Percentage of explained variance')
+plt.xlabel('Principal component')
+plt.title('Scree plot')
+plt.show()    
+plt.savefig("./scaPCA_output/PCA_scree_plot_top50.png")    
+    
+    
+    
+    
+    
+# Loading scores for PC1
 
 
+how_many = 10
 
 loading_scores = pd.Series(myPCA.components_[0], index = genes)
-
 sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
-
-
-top_10_genes = sorted_loading_scores[0:10].index.values
-    
-print(loading_scores[top_10_genes])
-
-    
+top_genes = sorted_loading_scores[0:how_many].index.values
     
 
+file = open('./scaPCA_output/most_important_genes.log', 'w')
+for i in range(how_many):
+    text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
+    file.write(text)
+file.close()
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 

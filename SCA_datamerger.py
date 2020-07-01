@@ -12,6 +12,7 @@ import pandas as pd
 import os
 import csv
 import sys
+from datetime import datetime
 
 
 ### General Setup / input
@@ -40,7 +41,7 @@ if not os.path.exists(args.input_dir):
     
 # Create output directories if they don't exist
 if not os.path.exists(args.output_dir):
-    print("created output directory called " + args.output_dir)
+    print(datetime.now().strftime("%H:%M:%S>"), "created output directory called " + args.output_dir)
     os.makedirs(args.output_dir)
     
 
@@ -54,7 +55,7 @@ celltype_label = []
 
 
 for filepath in glob.iglob(args.input_dir + "/*.tar.gz"):
-    print("unpacking " + filepath[13:] + "...")
+    print(datetime.now().strftime("%H:%M:%S>"), "unpacking " + filepath[13:] + "...")
     tarfile = tarfile.open(filepath, "r:gz")
     mtx_file = tarfile.extractfile("filtered_matrices_mex/hg19/matrix.mtx")
     
@@ -94,7 +95,7 @@ for filepath in glob.iglob(args.input_dir + "/*.tar.gz"):
 
 
 # check if directory exists
-print("creating output...")
+print(datetime.now().strftime("%H:%M:%S>"), "creating output...")
 
 output_dir = args.output_dir + "/filtered_matrices_mex/hg19"
 
@@ -120,11 +121,11 @@ scipy.io.mmwrite(output_dir + "/matrix.mtx", combined_matrix)
 # %% formalize for tar archive
 
 if args.mode == "decompressed":
-    print("script has terminated successfully")
-    print("data is found in " + output_dir)
+    print(datetime.now().strftime("%H:%M:%S>"), "script has terminated successfully")
+    print(datetime.now().strftime("%H:%M:%S>"), "data is found in " + output_dir)
    
 else:
-    print("building archive...")
+    print(datetime.now().strftime("%H:%M:%S>"), "building archive...")
     with tarfile.open(args.output_dir + "/combined_cells_matrices.tar.gz", "w:gz") as tar:
         tar.add(output_dir + "/genes.tsv", arcname = "/filtered_matrices_mex/hg19/genes.tsv")    
         tar.add(output_dir + "/barcodes.tsv", arcname = "/filtered_matrices_mex/hg19/barcodes.tsv") 
@@ -132,10 +133,10 @@ else:
         tar.add(output_dir + "/matrix.mtx", arcname = "/filtered_matrices_mex/hg19/matrix.mtx")   
         tar.close()
         
-    print("archive has been successfully buildt")
+    print(datetime.now().strftime("%H:%M:%S>"), "archive has been successfully buildt")
     
     if args.mode == "compressed":
-        print("removing decompressed files")
+        print(datetime.now().strftime("%H:%M:%S>"), "removing decompressed files")
         os.remove(output_dir + "/genes.tsv")
         os.remove(output_dir + "/barcodes.tsv")
         os.remove(output_dir + "/matrix.mtx")
@@ -145,7 +146,7 @@ else:
             os.rmdir(args.output_dir + "/filtered_matrices_mex/hg19")
             os.rmdir(args.output_dir + "/filtered_matrices_mex")
         except:
-            print("couldn't delete directory: directory not empty?")
+            print(datetime.now().strftime("%H:%M:%S>"), "couldn't delete directory: directory not empty?")
              
         
         
