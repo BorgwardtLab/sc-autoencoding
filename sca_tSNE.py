@@ -99,7 +99,7 @@ df['celltlype'] = labels
 
 
 if not os.path.exists(output_dir):
-    print("Creating Output Directory...")
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
     os.makedirs(output_dir)
     
 

@@ -2,3 +2,4 @@ input/
 scaPCA_output/
 scaLSA_output/
 scaTSNE_output/
+scaIsomap_output/
