@@ -18,7 +18,7 @@ from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 
 
-
+os.chdir("../")
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
