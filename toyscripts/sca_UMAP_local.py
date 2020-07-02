@@ -19,6 +19,7 @@ from sklearn.manifold import Isomap
 import umap
 
 
+os.chdir("../")
 
 
 ### Get Matrix
@@ -44,25 +45,46 @@ file.close()
 genes.remove("") 
 
 
-# # %%  for local execution (remove for full picture)
-# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-# genes_uplimit = 30000
-# genes_downlimit = 25000
-# cells_uplimit = 25000
-# cells_downlimit = 10000
+# %%  for local execution (remove for full picture)
+print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+genes_uplimit = 30000
+genes_downlimit = 25000
+cells_uplimit = 25000
+cells_downlimit = 10000
 
-# # prev_element = "gulligulli"
-# # for index in range(len(labels)):
-# #     if labels[index] != prev_element:
-# #         print(index)
-# #     prev_element = labels[index]
-# labels = labels[cells_downlimit:cells_uplimit]
+# prev_element = "gulligulli"
+# for index in range(len(labels)):
+#     if labels[index] != prev_element:
+#         print(index)
+#     prev_element = labels[index]
+labels = labels[cells_downlimit:cells_uplimit]
 
-# csrdata = data.tocsr()
-# data = csrdata[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-# data = data.tocoo()
+csrdata = data.tocsr()
+data = csrdata[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+data = data.tocoo()
 
-# genes = genes[genes_downlimit:genes_uplimit]
+genes = genes[genes_downlimit:genes_uplimit]
+
+
+
+# # %%
+# import seaborn as sns
+
+# print(data.shape)
+
+
+
+# component_name = "Isomap"
+# df = pd.DataFrame(data = data[:,[0,1]], columns = ["pc1", "pc2"])
+# df['celltype'] = labels
+
+# sns.pairplot(df, hue = "celltype")
+
+
+
+
+# %%
+
 
 
 
@@ -80,6 +102,10 @@ reducer = umap.UMAP(verbose = 1)
 newdata = reducer.fit_transform(data)
 
 
+
+
+
+# %%
 
 
 
@@ -129,10 +155,15 @@ plt.savefig(output_dir + "/UMAP_result.png")
 
 
 
+# %% Diagnostics
 
+
+# so for the colours this might be a bit weird, but i'm just adapting to what they gave me in this other tutorial. the first plot is better anyways
+targetlist = list(targets)
+colourindexes = range(len(targets))
+colourdictionary = dict(zip(targetlist, colourindexes))
 
 import seaborn as sns
-colourdictionary = dict(zip(list(targets), range(len(targets))))
 
 plt.scatter(
     newdata[:, 0],
@@ -148,7 +179,6 @@ plt.savefig(output_dir + "/UMAP_plot_scatter.png")
 
 
 
-# %% Diagnostics
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
