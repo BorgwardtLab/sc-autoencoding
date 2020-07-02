@@ -89,7 +89,7 @@ PCs = myPCA.fit_transform(data)
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = PCs[:,[0,1]], columns = ['principal component 1', 'principal component 2'])
-df['celltlype'] = labels
+df['celltype'] = labels
 
 
 

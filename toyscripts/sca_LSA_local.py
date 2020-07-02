@@ -75,7 +75,7 @@ lsa = svd.transform(data)
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = lsa[:,[0,1]], columns = ['LS 1', 'LS 2'])
-df['celltlype'] = labels
+df['celltype'] = labels
 
 df2 = df
 

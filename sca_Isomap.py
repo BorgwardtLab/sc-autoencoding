@@ -75,7 +75,7 @@ component_name = "Isomap"
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = reduced[:,[0,1]], columns = [ component_name + ' 1', component_name + ' 2'])
-df['celltlype'] = labels
+df['celltype'] = labels
 
 
 

@@ -110,7 +110,7 @@ component_name = "Isomap"
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = reduced[:,[0,1]], columns = [ component_name + ' 1', component_name + ' 2'])
-df['celltlype'] = labels
+df['celltype'] = labels
 
 
 
@@ -219,11 +219,11 @@ plt.savefig(output_dir + "/Isomap_plot.png")
 #     file.write(text)
 # file.close()
 
-# print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
+
 
 # %% Diagnostics
 
 
-
+print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 
 

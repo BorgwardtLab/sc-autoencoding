@@ -94,7 +94,7 @@ component_name = "t-SNE"
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = tsnedata[:,[0,1]], columns = [ component_name + ' 1', component_name + ' 2'])
-df['celltlype'] = labels
+df['celltype'] = labels
 
 
 
@@ -131,6 +131,8 @@ plt.savefig(output_dir + "/tSNE_Plot.png")
 
 # %% Diagnostics
 
+
+print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 
 
 
