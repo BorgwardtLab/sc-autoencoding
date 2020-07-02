@@ -47,7 +47,7 @@ num_lsa = data.shape[1]-1
 
 # %%  for local execution (remove for full picture)
 
-num_lsa = 100
+# num_lsa = 100
 
 
 
@@ -61,7 +61,7 @@ data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the 
 
 
 
-
+print(datetime.now().strftime("%H:%M:%S>"), "Calculating LSA...")
 svd = TruncatedSVD(n_components = num_lsa)
 svd.fit(data)
 
@@ -196,46 +196,6 @@ file.close()
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 
 # %% Diagnostics
-
-
-
-
-
-
-
-
-colors = ['r', 'g', 'b', '2', '4']
-for target, color in zip(targets,colors):
-    print(target)
-    print(color)
-
-
-
-
-
-
-
-
-
-basd = 40
-
-
-
-
-
-
-
-print(colors)
-
-
-colora=color.reshape(1,-1)
-
-
-
-
-
-
-
 
 
 

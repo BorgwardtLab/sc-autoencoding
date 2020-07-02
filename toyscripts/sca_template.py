@@ -43,6 +43,25 @@ genes.remove("")
 
 
 # %%  for local execution (remove for full picture)
+print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+genes_uplimit = 30000
+genes_downlimit = 25000
+cells_uplimit = 25000
+cells_downlimit = 10000
+
+# prev_element = "gulligulli"
+# for index in range(len(labels)):
+#     if labels[index] != prev_element:
+#         print(index)
+#     prev_element = labels[index]
+coomatrix = data #so that it is transposed, sorry for uglyness, this shouldn't be visible to outside. 
+labels = labels[cells_downlimit:cells_uplimit]
+
+reduced = coomatrix.tocsr()
+data = reduced[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+
+
+genes = genes[genes_downlimit:genes_uplimit]
 
 
 
@@ -92,8 +111,8 @@ targets = set(labels) # what it will draw in plot, previously it was targets = [
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel(component_name + ' 1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_ylabel(component_name + ' 2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_xlabel(component_name + " 1 (" + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_ylabel(component_name + " 2 (" + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_title('Most Powerful '+ component_name +'s', fontsize = 20)
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
