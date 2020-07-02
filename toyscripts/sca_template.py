@@ -10,13 +10,12 @@ Created on Wed Jul  1 23:52:35 2020
 import scipy.io
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import TruncatedSVD
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 import matplotlib.cm as cm # colourpalette
-
+from sklearn.manifold import Isomap
 
 
 
@@ -42,18 +41,12 @@ genes = file.read().split("\n")
 file.close()
 genes.remove("") 
 
-num_lsa = data.shape[1]-1
-
 
 # %%  for local execution (remove for full picture)
-
-num_lsa = 100
-
 
 
 
 # %%
-
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
@@ -61,35 +54,36 @@ data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the 
 
 
 
-
-svd = TruncatedSVD(n_components = num_lsa)
-svd.fit(data)
-
-#lsa = latent semantic analysis
-lsa = svd.transform(data)
+embedding = Isomap(n_components = 2)
+reduced = embedding.fit_transform(data)
 
 
-# %%
+explained_variance = embedding.explained_variance_ratio_
+
+
+
+
+#%% Outputs
+
+output_dir = "./scaIsomap_output"
+component_name = "Isomap"
+
 
 
 
 # construct dataframe for 2d plot
-df = pd.DataFrame(data = lsa[:,[0,1]], columns = ['LS 1', 'LS 2'])
+df = pd.DataFrame(data = reduced[:,[0,1]], columns = [ component_name + ' 1', component_name + ' 2'])
 df['celltlype'] = labels
 
-df2 = df
 
 
-explained_variance = svd.explained_variance_ratio_
 
 
-#%% Outputs
-if not os.path.exists("./scaLSA_output"):
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-    os.makedirs("./scaLSA_output")
+
+if not os.path.exists(output_dir):
+    print("Creating Output Directory...")
+    os.makedirs(output_dir)
     
-
-
 
 
 ### Create Plot
@@ -98,20 +92,19 @@ targets = set(labels) # what it will draw in plot, previously it was targets = [
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel('LS1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_ylabel('LS2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_title('Most Powerful LSAs', fontsize = 20)
-
+ax.set_xlabel(component_name + ' 1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_ylabel(component_name + ' 2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_title('Most Powerful '+ component_name +'s', fontsize = 20)
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
     indicesToKeep = df['celltlype'] == target
-    ax.scatter(df.loc[indicesToKeep, 'LS 1']
-               , df.loc[indicesToKeep, 'LS 2']
+    ax.scatter(df.loc[indicesToKeep, component_name + ' 1']
+               , df.loc[indicesToKeep, component_name + ' 2']
                , c = color.reshape(1,-1)
-               , s = 1)
+               , s = 5)
 ax.legend(targets)
 ax.grid()
-plt.savefig("./scaLSA_output/LSA_result.png")
+plt.savefig(output_dir + "/PCA_result.png")
 
 
 
@@ -121,7 +114,7 @@ plt.savefig("./scaLSA_output/LSA_result.png")
 print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
 explained_sum = np.cumsum(explained_variance)
 
-file = open('./scaLSA_output/explained_variances.log', 'w')
+file = open(output_dir + '/explained_variances.log', 'w')
 for i in range(len(explained_variance)):
     text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
     file.write(text)
@@ -146,7 +139,7 @@ plt.ylabel('Percentage of explained variance')
 plt.xlabel('Principal component')
 plt.title('Scree plot')
 plt.show()    
-plt.savefig("./scaLSA_output/LSA_scree_plot_all.png")
+plt.savefig(output_dir + "/PCA_scree_plot_all.png")
     
     
     
@@ -165,29 +158,23 @@ plt.ylabel('Percentage of explained variance')
 plt.xlabel('Principal component')
 plt.title('Scree plot')
 plt.show()    
-plt.savefig("./scaLSA_output/LSA_scree_plot_top50.png")    
+plt.savefig(output_dir + "/PCA_scree_plot_top50.png")    
     
     
     
-    
-    
-    
-# %%
     
     
 # Loading scores for PC1
 
+
 how_many = 10
 
-loading_scores = pd.Series(svd.components_[0], index = genes)
-
-
-
+loading_scores = pd.Series(myPCA.components_[0], index = genes)
 sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
 
-file = open('./scaLSA_output/most_important_genes.log', 'w')
+file = open(output_dir + '/most_important_genes.log', 'w')
 for i in range(how_many):
     text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
     file.write(text)
@@ -196,53 +183,6 @@ file.close()
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
 
 # %% Diagnostics
-
-
-
-
-
-
-
-
-colors = ['r', 'g', 'b', '2', '4']
-for target, color in zip(targets,colors):
-    print(target)
-    print(color)
-
-
-
-
-
-
-
-
-
-basd = 40
-
-
-
-
-
-
-
-print(colors)
-
-
-colora=color.reshape(1,-1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
