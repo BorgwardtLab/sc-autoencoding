@@ -15,7 +15,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
-
+import matplotlib.cm as cm # colourpalette
 
 
 
@@ -113,12 +113,12 @@ ax = fig.add_subplot(1,1,1)
 ax.set_xlabel('PC1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_ylabel('PC2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_title('Most Powerful PCAs', fontsize = 20)
-colors = ['r', 'g', 'b']
+colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
     indicesToKeep = df['celltlype'] == target
     ax.scatter(df.loc[indicesToKeep, 'principal component 1']
                , df.loc[indicesToKeep, 'principal component 2']
-               , c = color
+               , c = color.reshape(1,-1)
                , s = 5)
 ax.legend(targets)
 ax.grid()
