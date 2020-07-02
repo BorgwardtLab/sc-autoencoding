@@ -48,6 +48,7 @@ labels.remove("") #last, empty line is also removed
 file = open("./input/filtered_matrices_mex/hg19/genes.tsv", "r")
 genes = file.read().split("\n")
 file.close()
+genes.remove("") 
 
 
 # %%  Cut back data for handlability lmao
@@ -83,7 +84,7 @@ data = StandardScaler().fit_transform(data) # Standardizing the features
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating principal components...")
-myPCA = PCA()
+myPCA = PCA(n_components=100)
 PCs = myPCA.fit_transform(data)
 
 
