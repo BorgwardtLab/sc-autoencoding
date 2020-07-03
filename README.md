@@ -22,12 +22,7 @@ Inputs (= the output of SCA_datamerger.py) are sparse matrices of nxm, with n = 
 sca_PCA.py: 
 
 
-
-
-
-
-sca_PCA_local.py: A "downsampled" version, which takes the data, but only a chunk of it, meaning even my local computer can run it.
-
+toyscripts
 
 
 
