@@ -15,6 +15,11 @@ import sys
 from datetime import datetime
 
 
+
+os.chdir(sys.path[0])
+
+
+
 ### General Setup / input
 parser = argparse.ArgumentParser(description = "this program unpacks the tar \
 files, extracts the infos and \

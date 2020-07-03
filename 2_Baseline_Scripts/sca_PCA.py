@@ -17,9 +17,10 @@ import os
 from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 import argparse
+import sys
 
 
-
+os.chdir(sys.path[0])
 
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
@@ -116,7 +117,7 @@ component_name = "PC"
 
 
 if not os.path.exists(output_dir):
-    print("Creating Output Directory...")
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
     os.makedirs(output_dir)
     
 
@@ -164,7 +165,7 @@ file.close()
     
     
 ### Scree Plots
-perc_var = (explained_variance * num_components)
+perc_var = (explained_variance * 100)
 perc_var = perc_var[0:num_components]
 
 labelz = [str(x) for x in range(1, len(perc_var)+1)]
@@ -183,7 +184,7 @@ plt.savefig(output_dir + "PCA_scree_plot_all.png")
     
 if num_components > 50:
     how_many = 50;
-    perc_var = (explained_variance * num_components)
+    perc_var = (explained_variance * 100)
     perc_var = perc_var[0:how_many]
 
     labelz = [str(x) for x in range(1, len(perc_var)+1)]

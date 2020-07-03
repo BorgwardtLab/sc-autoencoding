@@ -116,21 +116,23 @@ lsa = svd.transform(data)
 
 
 
-# construct dataframe for 2d plot
-df = pd.DataFrame(data = lsa[:,[0,1]], columns = ['LS 1', 'LS 2'])
-df['celltype'] = labels
 
-df2 = df
 
 
 explained_variance = svd.explained_variance_ratio_
 
 
 #%% Outputs
-if not os.path.exists("./scaLSA_output"):
+
+output_dir = "../outputs/scaPCA_output/"
+component_name = "PC"
+
+
+if not os.path.exists(output_dir):
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-    os.makedirs("./scaLSA_output")
+    os.makedirs(output_dir)
     
+
 
 
 
@@ -138,6 +140,12 @@ if not os.path.exists("./scaLSA_output"):
 ### Create Plot
 print(datetime.now().strftime("%H:%M:%S>"), "drawing plots...")
 targets = set(labels) # what it will draw in plot, previously it was targets = ['b_cells' ... 'cytotoxic_t'], now its dynamic :*
+
+
+
+# construct dataframe for 2d plot
+df = pd.DataFrame(data = lsa[:,[0,1]], columns = ['LS 1', 'LS 2'])
+df['celltype'] = labels
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
@@ -154,7 +162,7 @@ for target, color in zip(targets,colors):
                , s = 1)
 ax.legend(targets)
 ax.grid()
-plt.savefig("./scaLSA_output/LSA_result.png")
+plt.savefig(output_dir + "LSA_result.png")
 
 
 
@@ -164,7 +172,7 @@ plt.savefig("./scaLSA_output/LSA_result.png")
 print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
 explained_sum = np.cumsum(explained_variance)
 
-file = open('./scaLSA_output/explained_variances.log', 'w')
+file = open(output_dir + 'explained_variances.log', 'w')
 for i in range(len(explained_variance)):
     text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
     file.write(text)
@@ -175,10 +183,8 @@ file.close()
     
     
 ### Scree Plots
-how_many = -1;
 
 perc_var = (explained_variance * 100)
-perc_var = perc_var[0:how_many]
 
 labelz = [str(x) for x in range(1, len(perc_var)+1)]
 
@@ -189,27 +195,26 @@ plt.ylabel('Percentage of explained variance')
 plt.xlabel('Principal component')
 plt.title('Scree plot')
 plt.show()    
-plt.savefig("./scaLSA_output/LSA_scree_plot_all.png")
+plt.savefig(output_dir + "LSA_scree_plot_all.png")
     
     
     
     
-how_many = 50;
+    
+if num_lsa > 50:
+    how_many = 50;
+    perc_var = (explained_variance * num_lsa)
+    perc_var = perc_var[0:how_many]
 
-perc_var = (explained_variance * 100)
-perc_var = perc_var[0:how_many]
-
-labelz = [str(x) for x in range(1, len(perc_var)+1)]
-
-
-plt.figure(figsize=[16,8])
-plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
-plt.ylabel('Percentage of explained variance')
-plt.xlabel('Principal component')
-plt.title('Scree plot')
-plt.show()    
-plt.savefig("./scaLSA_output/LSA_scree_plot_top50.png")    
+    labelz = [str(x) for x in range(1, len(perc_var)+1)]
     
+    plt.figure(figsize=[16,8])
+    plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
+    plt.ylabel('Percentage of explained variance')
+    plt.xlabel('Principal component')
+    plt.title('Scree plot')
+    plt.show()    
+    plt.savefig(output_dir + "PCA_scree_plot_top50.png")    
     
     
     
