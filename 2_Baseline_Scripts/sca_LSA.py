@@ -19,7 +19,11 @@ import argparse
 import sys
 from sklearn.decomposition import TruncatedSVD
 
-os.chdir(os.path.dirname(sys.argv[0]))
+
+
+os.chdir(sys.path[0])
+
+#os.chdir(os.path.dirname(sys.argv[0]))
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
