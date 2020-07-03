@@ -71,19 +71,19 @@ barcodes.remove("")
 
 # %%  Cut back data for handlability lmao
 
-print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-genes_uplimit = 30000
-genes_downlimit = 25000
-cells_uplimit = 15000
-cells_downlimit = 10000
+# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+# genes_uplimit = 30000
+# genes_downlimit = 25000
+# cells_uplimit = 15000
+# cells_downlimit = 10000
 
 
-labels = labels[cells_downlimit:cells_uplimit]
+# labels = labels[cells_downlimit:cells_uplimit]
 
-genes = genes[genes_downlimit:genes_uplimit]
+# genes = genes[genes_downlimit:genes_uplimit]
 
-csrmatrix = coomatrix_t.tocsr()
-coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+# csrmatrix = coomatrix_t.tocsr()
+# coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
 
 # %% Convert to dense
