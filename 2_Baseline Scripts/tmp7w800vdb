@@ -30,14 +30,13 @@ parser.add_argument("-n","--num_components", help="the number of LSA components 
 args = parser.parse_args() #required
 
 
-if args.num_components == None:
-    num_lsa = 2222
-else:
-    num_lsa = args.num_components
+if args.num_components = None:
+    num_lsa = data.shape[1]-1
     
-print(num_components)
 
-data.shape[1]-1
+ = args.num_components
+
+
 fasdfasdfasdf
 
 # %% Read Input data

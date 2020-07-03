@@ -26,18 +26,15 @@ num_components = 10
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int)
+parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", default = 2, type = int)
 args = parser.parse_args() #required
 
 
-if args.num_components == None:
-    num_lsa = 2222
-else:
-    num_lsa = args.num_components
-    
-print(num_components)
+if args.num_components
 
-data.shape[1]-1
+num_lsa = data.shape[1]-1 = args.num_components
+
+
 fasdfasdfasdf
 
 # %% Read Input data
