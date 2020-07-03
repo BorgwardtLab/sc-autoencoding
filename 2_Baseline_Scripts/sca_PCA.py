@@ -22,7 +22,6 @@ import argparse
 
 
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
-num_components = 10
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
