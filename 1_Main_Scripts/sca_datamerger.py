@@ -16,7 +16,7 @@ from datetime import datetime
 
 
 
-os.chdir(sys.path[0])
+os.chdir(os.path.dirname(sys.argv[0]))
 
 
 

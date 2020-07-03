@@ -20,7 +20,8 @@ import argparse
 import sys
 
 
-os.chdir(sys.path[0])
+os.chdir(os.path.dirname(sys.argv[0]))
+
 
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
@@ -70,19 +71,19 @@ barcodes.remove("")
 
 # %%  Cut back data for handlability lmao
 
-# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-# genes_uplimit = 30000
-# genes_downlimit = 25000
-# cells_uplimit = 15000
-# cells_downlimit = 10000
+print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+genes_uplimit = 30000
+genes_downlimit = 25000
+cells_uplimit = 15000
+cells_downlimit = 10000
 
 
-# labels = labels[cells_downlimit:cells_uplimit]
+labels = labels[cells_downlimit:cells_uplimit]
 
-# genes = genes[genes_downlimit:genes_uplimit]
+genes = genes[genes_downlimit:genes_uplimit]
 
-# csrmatrix = coomatrix_t.tocsr()
-# coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+csrmatrix = coomatrix_t.tocsr()
+coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
 
 # %% Convert to dense
@@ -127,19 +128,19 @@ print(datetime.now().strftime("%H:%M:%S>"), "drawing plots...")
 targets = set(labels) # what it will draw in plot, previously it was targets = ['b_cells' ... 'cytotoxic_t'], now its dynamic :*
 
 # construct dataframe for 2d plot
-df = pd.DataFrame(data = PCs[:,[0,1]], columns = ['principal component 1', 'principal component 2'])
+df = pd.DataFrame(data = PCs[:,[0,1]], columns = [component_name + '_1', component_name + '_2'])
 df['celltype'] = labels
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel('PC1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_ylabel('PC2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_ylabel(component_name + '_1 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_title('Most Powerful PCAs', fontsize = 20)
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
     indicesToKeep = df['celltype'] == target
-    ax.scatter(df.loc[indicesToKeep, 'principal component 1']
-               , df.loc[indicesToKeep, 'principal component 2']
+    ax.scatter(df.loc[indicesToKeep, component_name + '_1']
+               , df.loc[indicesToKeep, component_name + '_2']
                , c = color.reshape(1,-1)
                , s = 5)
 ax.legend(targets)
@@ -215,8 +216,6 @@ for i in range(how_many):
     file.write(text)
 file.close()
 
-print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
-
 
 
 # %% Saving the data
@@ -235,4 +234,9 @@ with open(output_dir + "result_barcodes.tsv", "w") as outfile:
 
 with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
     outfile.write("\n".join(labels))
+
+
+
+print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
+
 

@@ -10,17 +10,16 @@ Created on Wed Jul  1 23:52:35 2020
 import scipy.io
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 import argparse
+import sys
+from sklearn.decomposition import TruncatedSVD
 
-
-
-
+os.chdir(sys.path[0])
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
@@ -103,7 +102,6 @@ print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
 data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the features
 
 
-
 print(datetime.now().strftime("%H:%M:%S>"), "Calculating LSA...")
 svd = TruncatedSVD(n_components = num_lsa)
 svd.fit(data)
@@ -112,20 +110,13 @@ svd.fit(data)
 lsa = svd.transform(data)
 
 
-# %%
-
-
-
-
-
-
-explained_variance = svd.explained_variance_ratio_
-
 
 #%% Outputs
 
-output_dir = "../outputs/scaPCA_output/"
-component_name = "PC"
+output_dir = "../outputs/scaLSA_output/"
+component_name = "LS"
+
+explained_variance = svd.explained_variance_ratio_
 
 
 if not os.path.exists(output_dir):
@@ -139,18 +130,17 @@ if not os.path.exists(output_dir):
 
 ### Create Plot
 print(datetime.now().strftime("%H:%M:%S>"), "drawing plots...")
-targets = set(labels) # what it will draw in plot, previously it was targets = ['b_cells' ... 'cytotoxic_t'], now its dynamic :*
-
+targets = set(labels) # 
 
 
 # construct dataframe for 2d plot
-df = pd.DataFrame(data = lsa[:,[0,1]], columns = ['LS 1', 'LS 2'])
+df = pd.DataFrame(data = lsa[:,[0,1]], columns = [component_name + '_1', component_name + '_1'])
 df['celltype'] = labels
 
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel('LS1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_ylabel('LS2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_xlabel(component_name + '1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_ylabel(component_name + '2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_title('Most Powerful LSAs', fontsize = 20)
 
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
@@ -177,8 +167,6 @@ for i in range(len(explained_variance)):
     text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
     file.write(text)
 file.close()
-    
-    
     
     
     
@@ -214,14 +202,11 @@ if num_lsa > 50:
     plt.xlabel('Principal component')
     plt.title('Scree plot')
     plt.show()    
-    plt.savefig(output_dir + "PCA_scree_plot_top50.png")    
+    plt.savefig(output_dir + "LSA_scree_plot_top50.png")    
     
     
     
-    
-    
-# %%
-    
+ 
     
 # Loading scores for PC1
 
@@ -235,16 +220,31 @@ sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
 
-file = open('./scaLSA_output/most_important_genes.log', 'w')
+file = open(output_dir + 'most_important_genes.log', 'w')
 for i in range(how_many):
     text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
     file.write(text)
 file.close()
 
+
+# %% saving data
+
+np.savetxt(output_dir + "result_PCA.tsv", PCs, delimiter = "\t")
+
+with open(output_dir + "result_genes.tsv", "w") as outfile:
+    outfile.write("\n".join(genes))
+
+with open(output_dir + "result_genes.tsv", "w") as outfile:
+    outfile.write("\n".join(genes))
+
+with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+    outfile.write("\n".join(barcodes))
+
+with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+    outfile.write("\n".join(labels))
+
+
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
-
-# %% Diagnostics
-
 
 
 
