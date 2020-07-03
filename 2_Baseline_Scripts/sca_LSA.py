@@ -19,7 +19,7 @@ import argparse
 import sys
 from sklearn.decomposition import TruncatedSVD
 
-os.chdir(sys.path[0])
+os.chdir(os.path.dirname(sys.argv[0]))
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
@@ -67,19 +67,19 @@ barcodes.remove("")
 
 # %%  Cut back data for handlability lmao
 
-print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-genes_uplimit = 30000
-genes_downlimit = 25000
-cells_uplimit = 15000
-cells_downlimit = 10000
+# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+# genes_uplimit = 30000
+# genes_downlimit = 25000
+# cells_uplimit = 15000
+# cells_downlimit = 10000
 
 
-labels = labels[cells_downlimit:cells_uplimit]
+# labels = labels[cells_downlimit:cells_uplimit]
 
-genes = genes[genes_downlimit:genes_uplimit]
+# genes = genes[genes_downlimit:genes_uplimit]
 
-csrmatrix = data.tocsr()
-data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+# csrmatrix = data.tocsr()
+# data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
 
 
@@ -94,9 +94,7 @@ else:
 
 
 
-# %%
-
-
+# %% doing LSA
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
 data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the features
@@ -134,7 +132,7 @@ targets = set(labels) #
 
 
 # construct dataframe for 2d plot
-df = pd.DataFrame(data = lsa[:,[0,1]], columns = [component_name + '_1', component_name + '_1'])
+df = pd.DataFrame(data = lsa[:,[0,1]], columns = [component_name + '_1', component_name + '_2'])
 df['celltype'] = labels
 
 fig = plt.figure(figsize = (8,8))
@@ -145,9 +143,9 @@ ax.set_title('Most Powerful LSAs', fontsize = 20)
 
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
-    indicesToKeep = df['celltlype'] == target
-    ax.scatter(df.loc[indicesToKeep, 'LS 1']
-               , df.loc[indicesToKeep, 'LS 2']
+    indicesToKeep = df['celltype'] == target
+    ax.scatter(df.loc[indicesToKeep, component_name + '_1']
+               , df.loc[indicesToKeep, component_name + '_2']
                , c = color.reshape(1,-1)
                , s = 1)
 ax.legend(targets)
@@ -227,9 +225,13 @@ for i in range(how_many):
 file.close()
 
 
-# %% saving data
 
-np.savetxt(output_dir + "result_PCA.tsv", PCs, delimiter = "\t")
+
+# %% saving data
+print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+
+np.savetxt(output_dir + "result_PCA.tsv", lsa, delimiter = "\t")
+
 
 with open(output_dir + "result_genes.tsv", "w") as outfile:
     outfile.write("\n".join(genes))

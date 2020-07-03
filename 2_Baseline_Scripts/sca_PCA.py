@@ -220,6 +220,7 @@ file.close()
 
 # %% Saving the data
 
+print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
 
 np.savetxt(output_dir + "result_PCA.tsv", PCs, delimiter = "\t")
 
