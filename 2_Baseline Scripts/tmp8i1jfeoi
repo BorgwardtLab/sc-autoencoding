@@ -26,19 +26,14 @@ num_components = 10
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int)
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", default = 100, type = int)
 args = parser.parse_args() #required
 
 
-if args.num_components == None:
-    num_lsa = 2222
-else:
-    num_lsa = args.num_components
-    
-print(num_components)
+num_components = args.num_components
 
-data.shape[1]-1
-fasdfasdfasdf
+
+
 
 # %% Read Input data
 
@@ -95,7 +90,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense..
 data = coomatrix_t.toarray()
 
 
-
+num_lsa = data.shape[1]-1
 
 
 # %%  for local execution (remove for full picture)
