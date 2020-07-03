@@ -22,7 +22,7 @@ import argparse
 
 
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
-num_components = 10
+
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
@@ -30,15 +30,8 @@ parser.add_argument("-n","--num_components", help="the number of LSA components 
 args = parser.parse_args() #required
 
 
-if args.num_components == None:
-    num_lsa = 2222
-else:
-    num_lsa = args.num_components
-    
-print(num_components)
 
-data.shape[1]-1
-fasdfasdfasdf
+
 
 # %% Read Input data
 
@@ -46,7 +39,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
 ### Get Matrix
 mtx_file = input_path + "matrix.mtx"
 coomatrix = scipy.io.mmread(mtx_file)
-coomatrix_t = np.transpose(coomatrix)
+data = np.transpose(coomatrix)
 
 
 ### Get Labels
@@ -86,22 +79,19 @@ labels = labels[cells_downlimit:cells_uplimit]
 
 genes = genes[genes_downlimit:genes_uplimit]
 
-csrmatrix = coomatrix_t.tocsr()
-coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-
-
-# %% Convert to dense
-print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
-data = coomatrix_t.toarray()
-
+csrmatrix = data.tocsr()
+data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
 
 
 
 # %%  for local execution (remove for full picture)
 
-# num_lsa = 100
-
+if args.num_components == None:
+    num_lsa = data.shape[1]-1
+else:
+    num_lsa = args.num_components
+    
 
 
 
