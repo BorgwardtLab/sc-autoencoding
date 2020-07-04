@@ -33,7 +33,8 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int)
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
+parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 args = parser.parse_args() #required
 
 
@@ -96,14 +97,17 @@ data = coomatrix_t.toarray()
 
 
 
-# %% do PCA
+# %% 
 
-if args.num_components == None:
-    num_components = data.shape[1]
-else:
-    num_components = args.num_components
+# if args.num_components == None:
+#     num_components = data.shape[1]
+# else:
+#     num_components = args.num_components
     
+num_components = args.num_components
 
+
+# %% do PCA
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
 data = StandardScaler().fit_transform(data) # Standardizing the features
@@ -230,21 +234,21 @@ file.close()
 
 # %% Saving the data
 
-print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+if args.nosave == False:
 
-np.savetxt(output_dir + "result_PCA.tsv", PCs, delimiter = "\t")
-
-with open(output_dir + "result_genes.tsv", "w") as outfile:
-    outfile.write("\n".join(genes))
-
-with open(output_dir + "result_genes.tsv", "w") as outfile:
-    outfile.write("\n".join(genes))
-
-with open(output_dir + "result_barcodes.tsv", "w") as outfile:
-    outfile.write("\n".join(barcodes))
-
-with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
-    outfile.write("\n".join(labels))
+    print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+    
+    np.savetxt(output_dir + "result_PCA.tsv", PCs, delimiter = "\t")
+    
+    
+    with open(output_dir + "result_genes.tsv", "w") as outfile:
+        outfile.write("\n".join(genes))
+    
+    with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+        outfile.write("\n".join(barcodes))
+    
+    with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+        outfile.write("\n".join(labels))
 
 
 

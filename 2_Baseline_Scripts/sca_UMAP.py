@@ -33,7 +33,8 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #required
-parser.add_argument("-n","--num_components", help="the number of coordinates to calculate (default = 2)", type = int)
+parser.add_argument("-n","--num_components", help="the number of coordinates to calculate", type = int, default = 2)
+parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 args = parser.parse_args() #required
 
 
@@ -91,6 +92,15 @@ barcodes.remove("")
 
 
 
+
+# %% 
+# if args.num_components == None:
+#     num_components = 2
+# else:
+#     num_components = args.num_components
+    
+num_components = args.num_components
+
 # %%
 
 
@@ -99,7 +109,7 @@ data = StandardScaler(with_mean=False).fit_transform(data) # Standardizing the f
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating UMAP...")
-reducer = umap.UMAP(verbose = 1)
+reducer = umap.UMAP(verbose = 1, n_components = num_components)
 newdata = reducer.fit_transform(data)
 
 
@@ -171,19 +181,23 @@ plt.savefig(output_dir + "/UMAP_plot_scatter.png")
 
 
 # %% Diagnostics
-print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
 
-np.savetxt(output_dir + "result_UMAP_coordinates.tsv", newdata, delimiter = "\t")
+if args.nosave == False:
 
+    print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+    
+    np.savetxt(output_dir + "result_UMAP_coordinates.tsv", newdata, delimiter = "\t")
+    
+    
+    with open(output_dir + "result_genes.tsv", "w") as outfile:
+        outfile.write("\n".join(genes))
+    
+    with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+        outfile.write("\n".join(barcodes))
+    
+    with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+        outfile.write("\n".join(labels))
 
-with open(output_dir + "result_genes.tsv", "w") as outfile:
-    outfile.write("\n".join(genes))
-
-with open(output_dir + "result_barcodes.tsv", "w") as outfile:
-    outfile.write("\n".join(barcodes))
-
-with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
-    outfile.write("\n".join(labels))
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")

@@ -34,7 +34,8 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 parser = argparse.ArgumentParser(description = "Do Latent Semantic Analysis")  #required
-parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int)
+parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int, default = 100)
+parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 args = parser.parse_args() #required
 
 
@@ -95,12 +96,12 @@ barcodes.remove("")
 
 # %%  
 
-if args.num_components == None:
-    num_lsa = data.shape[1]-1
-else:
-    num_lsa = args.num_components
+# if args.num_components == None:
+#     num_lsa = data.shape[1]-1
+# else:
+#     num_lsa = args.num_components
     
-
+num_lsa = args.num_components
 
 
 # %% doing LSA
@@ -237,22 +238,22 @@ file.close()
 
 
 # %% saving data
-print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
 
-np.savetxt(output_dir + "result_LSA_coordinates.tsv", lsa, delimiter = "\t")
+if args.nosave == False:
 
-
-with open(output_dir + "result_genes.tsv", "w") as outfile:
-    outfile.write("\n".join(genes))
-
-with open(output_dir + "result_genes.tsv", "w") as outfile:
-    outfile.write("\n".join(genes))
-
-with open(output_dir + "result_barcodes.tsv", "w") as outfile:
-    outfile.write("\n".join(barcodes))
-
-with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
-    outfile.write("\n".join(labels))
+    print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+    
+    np.savetxt(output_dir + "result_LSA_coordinates.tsv", lsa, delimiter = "\t")
+    
+    
+    with open(output_dir + "result_genes.tsv", "w") as outfile:
+        outfile.write("\n".join(genes))
+    
+    with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+        outfile.write("\n".join(barcodes))
+    
+    with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+        outfile.write("\n".join(labels))
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
