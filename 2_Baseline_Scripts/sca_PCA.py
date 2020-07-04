@@ -33,11 +33,8 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", default = 100, type = int)
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int)
 args = parser.parse_args() #required
-
-
-num_components = args.num_components
 
 
 
@@ -100,6 +97,13 @@ data = coomatrix_t.toarray()
 
 
 # %% do PCA
+
+if args.num_components == None:
+    num_components = data.shape[1]
+else:
+    num_components = args.num_components
+    
+
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
 data = StandardScaler().fit_transform(data) # Standardizing the features

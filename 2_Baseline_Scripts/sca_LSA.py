@@ -29,12 +29,11 @@ except:
 
 
 
-#os.chdir(os.path.dirname(sys.argv[0]))
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 
-parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
+parser = argparse.ArgumentParser(description = "Do Latent Semantic Analysis")  #required
 parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int)
 args = parser.parse_args() #required
 
@@ -94,7 +93,7 @@ barcodes.remove("")
 
 
 
-# %%  for local execution (remove for full picture)
+# %%  
 
 if args.num_components == None:
     num_lsa = data.shape[1]-1

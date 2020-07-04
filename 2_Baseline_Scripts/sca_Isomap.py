@@ -16,18 +16,41 @@ from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 from sklearn.manifold import Isomap
 from sklearn.preprocessing import StandardScaler
+import sys
+import argparse
 
 
-### Get Matrix
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+
+
+
+#os.chdir(os.path.dirname(sys.argv[0]))
+input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
+
+
+
+parser = argparse.ArgumentParser(description = "calculates an isomap")  #required
+parser.add_argument("-n","--num_components", help="the number of Isomap coordinates components to calculate", type = int)
+args = parser.parse_args() #required
+
+
+
+
+# %% Read Input data
+
 print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
-mtx_file = "./input/filtered_matrices_mex/hg19/matrix.mtx"
+### Get Matrix
+mtx_file = input_path + "matrix.mtx"
 coomatrix = scipy.io.mmread(mtx_file)
-data = np.transpose(coomatrix) # samples must be rows, variables = columns
+data = np.transpose(coomatrix)
 
 
 ### Get Labels
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-lbl_file = "./input/filtered_matrices_mex/hg19/celltype_labels.tsv"
+lbl_file = input_path + "celltype_labels.tsv"
 file = open(lbl_file, "r")
 labels = file.read().split("\n")
 file.close()
@@ -35,11 +58,49 @@ labels.remove("") #last, empty line is also removed
 
 
 # load genes (for last task, finding most important genes)
-file = open("./input/filtered_matrices_mex/hg19/genes.tsv", "r")
+file = open(input_path + "genes.tsv", "r")
 genes = file.read().split("\n")
 file.close()
 genes.remove("") 
 
+
+# load barcodes
+file = open(input_path + "barcodes.tsv", "r")
+barcodes = file.read().split("\n")
+file.close()
+barcodes.remove("") 
+
+
+
+# %%  Cut back data for handlability lmao
+
+print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
+genes_uplimit = 30000
+genes_downlimit = 25000
+cells_uplimit = 15000
+cells_downlimit = 10000
+
+
+labels = labels[cells_downlimit:cells_uplimit]
+
+genes = genes[genes_downlimit:genes_uplimit]
+
+csrmatrix = data.tocsr()
+data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+
+
+
+
+# %%  
+
+
+num_components = 2
+
+# if args.num_components == None:
+#     num_lsa = data.shape[1]-1
+# else:
+#     num_lsa = args.num_components
+    
 
 
 
@@ -52,7 +113,7 @@ data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the 
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating Isomap...")
-embedding = Isomap(n_components = 2)
+embedding = Isomap(n_components = num_components)
 reduced = embedding.fit_transform(data)
 
 
