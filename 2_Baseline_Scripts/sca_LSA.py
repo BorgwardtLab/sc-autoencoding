@@ -239,7 +239,7 @@ file.close()
 # %% saving data
 print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
 
-np.savetxt(output_dir + "result_PCA.tsv", lsa, delimiter = "\t")
+np.savetxt(output_dir + "result_LSA_coordinates.tsv", lsa, delimiter = "\t")
 
 
 with open(output_dir + "result_genes.tsv", "w") as outfile:
