@@ -15,55 +15,78 @@ import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 import matplotlib.cm as cm # colourpalette
-from sklearn.manifold import Isomap
 import umap
+import sys
+import argparse
+
+
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+
+
+
+#os.chdir(os.path.dirname(sys.argv[0]))
+input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
+
+
+
+parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #required
+parser.add_argument("-n","--num_components", help="the number of coordinates to calculate (default = 2)", type = int)
+args = parser.parse_args() #required
 
 
 
 
-### Get Matrix
+# %% Read Input data
+
 print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
-mtx_file = "./input/filtered_matrices_mex/hg19/matrix.mtx"
+### Get Matrix
+mtx_file = input_path + "matrix.mtx"
 coomatrix = scipy.io.mmread(mtx_file)
-data = np.transpose(coomatrix) # samples must be rows, variables = columns
-
+data = np.transpose(coomatrix)
+print(coomatrix.shape)
 
 ### Get Labels
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-lbl_file = "./input/filtered_matrices_mex/hg19/celltype_labels.tsv"
+lbl_file = input_path + "celltype_labels.tsv"
 file = open(lbl_file, "r")
 labels = file.read().split("\n")
 file.close()
-labels.remove("") 
+labels.remove("") #last, empty line is also removed
 
 
 # load genes (for last task, finding most important genes)
-file = open("./input/filtered_matrices_mex/hg19/genes.tsv", "r")
+file = open(input_path + "genes.tsv", "r")
 genes = file.read().split("\n")
 file.close()
 genes.remove("") 
 
 
-# # %%  for local execution (remove for full picture)
+# load barcodes
+file = open(input_path + "barcodes.tsv", "r")
+barcodes = file.read().split("\n")
+file.close()
+barcodes.remove("") 
+
+
+
+# %%  Cut back data for handlability lmao
+
 # print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
 # genes_uplimit = 30000
 # genes_downlimit = 25000
-# cells_uplimit = 25000
+# cells_uplimit = 15000
 # cells_downlimit = 10000
 
-# # prev_element = "gulligulli"
-# # for index in range(len(labels)):
-# #     if labels[index] != prev_element:
-# #         print(index)
-# #     prev_element = labels[index]
-# labels = labels[cells_downlimit:cells_uplimit]
 
-# csrdata = data.tocsr()
-# data = csrdata[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-# data = data.tocoo()
+# labels = labels[cells_downlimit:cells_uplimit]
 
 # genes = genes[genes_downlimit:genes_uplimit]
 
+# csrmatrix = data.tocsr()
+# data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
 
 
@@ -84,8 +107,7 @@ newdata = reducer.fit_transform(data)
 
 
 #%% Outputs
-
-output_dir = "./scaUMAP_output"
+output_dir = "../outputs/scaUMAP_output/"
 component_name = "UMAP"
 
 # construct dataframe for 2d plot
@@ -124,7 +146,7 @@ for target, color in zip(targets,colors):
                , s = 5)
 ax.legend(targets)
 ax.grid()
-plt.savefig(output_dir + "/UMAP_result.png")
+plt.savefig(output_dir + "/UMAP_plot.png")
 
 
 
@@ -149,9 +171,25 @@ plt.savefig(output_dir + "/UMAP_plot_scatter.png")
 
 
 # %% Diagnostics
+print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+
+np.savetxt(output_dir + "result_UMAP_coordinates.tsv", newdata, delimiter = "\t")
+
+
+with open(output_dir + "result_genes.tsv", "w") as outfile:
+    outfile.write("\n".join(genes))
+
+with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+    outfile.write("\n".join(barcodes))
+
+with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+    outfile.write("\n".join(labels))
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
+
+
+
 
 
 
