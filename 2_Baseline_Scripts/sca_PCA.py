@@ -20,7 +20,13 @@ import argparse
 import sys
 
 
-os.chdir(os.path.dirname(sys.argv[0]))
+
+
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+         
 
 
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"

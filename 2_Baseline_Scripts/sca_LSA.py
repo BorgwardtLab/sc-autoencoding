@@ -21,7 +21,13 @@ from sklearn.decomposition import TruncatedSVD
 
 
 
-os.chdir(sys.path[0])
+
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+
+
 
 #os.chdir(os.path.dirname(sys.argv[0]))
 input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
