@@ -47,7 +47,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
 mtx_file = input_path + "matrix.mtx"
 coomatrix = scipy.io.mmread(mtx_file)
 data = np.transpose(coomatrix)
-print(coomatrix.shape)
+
 
 ### Get Labels
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
