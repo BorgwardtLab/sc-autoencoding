@@ -29,14 +29,20 @@ except:
          
 
 
-input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
-
-
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/scaPCA_output/")
 args = parser.parse_args() #required
 
+
+
+input_path = args.input_dir
+output_dir = args.output_dir
+outputplot_dir = args.outputplot_dir
+component_name = "PC"
 
 
 
@@ -126,14 +132,10 @@ explained_variance = myPCA.explained_variance_ratio_
 #%% Outputs
 
 
-output_dir = "../outputs/scaPCA_output/"
-component_name = "PC"
 
-
-
-if not os.path.exists(output_dir):
+if not os.path.exists(outputplot_dir):
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-    os.makedirs(output_dir)
+    os.makedirs(outputplot_dir)
     
 
 
@@ -159,7 +161,7 @@ for target, color in zip(targets,colors):
                , s = 5)
 ax.legend(targets)
 ax.grid()
-plt.savefig(output_dir + "PCA_plot.png")
+plt.savefig(outputplot_dir + "PCA_plot.png")
 
 
 
@@ -169,7 +171,7 @@ plt.savefig(output_dir + "PCA_plot.png")
 print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
 explained_sum = np.cumsum(explained_variance)
 
-file = open(output_dir + 'explained_variances.log', 'w')
+file = open(outputplot_dir + 'explained_variances.log', 'w')
 for i in range(len(explained_variance)):
     text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
     file.write(text)
@@ -192,7 +194,7 @@ plt.ylabel('Percentage of explained variance')
 plt.xlabel('Principal component')
 plt.title('Scree plot')
 plt.show()    
-plt.savefig(output_dir + "PCA_scree_plot_all.png")
+plt.savefig(outputplot_dir + "PCA_scree_plot_all.png")
     
     
     
@@ -210,7 +212,7 @@ if num_components > 50:
     plt.xlabel('Principal component')
     plt.title('Scree plot')
     plt.show()    
-    plt.savefig(output_dir + "PCA_scree_plot_top50.png")    
+    plt.savefig(outputplot_dir + "PCA_scree_plot_top50.png")    
     
     
        
@@ -224,7 +226,7 @@ sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
 
-file = open(output_dir + 'most_important_genes.log', 'w')
+file = open(outputplot_dir + 'most_important_genes.log', 'w')
 for i in range(how_many):
     text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
     file.write(text)

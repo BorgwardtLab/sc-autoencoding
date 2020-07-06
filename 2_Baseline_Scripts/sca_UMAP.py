@@ -35,8 +35,17 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #required
 parser.add_argument("-n","--num_components", help="the number of coordinates to calculate", type = int, default = 2)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/scaUMAP_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/scaUMAP_output/")
 args = parser.parse_args() #required
 
+
+
+input_path = args.input_dir
+output_dir = args.output_dir
+outputplot_dir = args.outputplot_dir
+component_name = "UMAP"
 
 
 
@@ -117,8 +126,7 @@ newdata = reducer.fit_transform(data)
 
 
 #%% Outputs
-output_dir = "../outputs/scaUMAP_output/"
-component_name = "UMAP"
+
 
 # construct dataframe for 2d plot
 df = pd.DataFrame(data = newdata[:,[0,1]], columns = [ component_name + ' 1', component_name + ' 2'])
@@ -126,9 +134,9 @@ df['celltype'] = labels
 
 
 
-if not os.path.exists(output_dir):
+if not os.path.exists(outputplot_dir):
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-    os.makedirs(output_dir)
+    os.makedirs(outputplot_dir)
     
 
 
@@ -156,7 +164,7 @@ for target, color in zip(targets,colors):
                , s = 5)
 ax.legend(targets)
 ax.grid()
-plt.savefig(output_dir + "/UMAP_plot.png")
+plt.savefig(outputplot_dir + "/UMAP_plot.png")
 
 
 
@@ -175,12 +183,13 @@ plt.scatter(
     c=[sns.color_palette()[x] for x in df.celltype.map(colourdictionary)])
 plt.gca().set_aspect('equal', 'datalim')
 plt.title('UMAP projection of the single cells', fontsize=24)
-plt.savefig(output_dir + "/UMAP_plot_scatter.png")   
+plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")   
 
 
 
 
 # %% Diagnostics
+
 
 if args.nosave == False:
 
@@ -201,7 +210,6 @@ if args.nosave == False:
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
-
 
 
 
