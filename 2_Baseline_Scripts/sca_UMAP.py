@@ -19,6 +19,8 @@ import umap
 import sys
 import argparse
 
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_UMAP.py")
+
 
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
@@ -209,7 +211,7 @@ if args.nosave == False:
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_UMAP terminated successfully")
 
 
 

@@ -21,6 +21,9 @@ from sklearn.decomposition import TruncatedSVD
 
 
 
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_LSA.py")
+
+
 
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
@@ -263,7 +266,7 @@ if args.nosave == False:
         outfile.write("\n".join(labels))
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Script terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_LSA.py terminated successfully")
 
 
 

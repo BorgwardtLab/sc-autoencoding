@@ -1,0 +1,196 @@
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+library(Seurat)
+args = commandArgs(trailingOnly=TRUE)
+
+
+input_dir = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
+output_dir = "output/"
+outputplot_dir = "output/"
+
+min_nfeature = 200
+max_nfeature = 1750
+max_percMT = 5
+
+num_features = 2000
+
+
+
+dir.create(path = output_dir, showWarnings = TRUE, recursive = TRUE)
+dir.create(path = outputplot_dir, showWarnings = TRUE, recursive = TRUE)
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#####################################################################
+### Read in Data
+
+format(Sys.time(), "%X> Reading in Data...")
+
+
+
+counts = Read10X(data.dir = input_dir)
+# large matrix with ROWS = GENES and columns = cells
+
+seurat = CreateSeuratObject(counts = counts, project = "scAutoencoder")
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################
+### Quality 
+
+tempstring = format(Sys.time(), "%X> Doing QC")
+print(paste(tempstring, " with ", 
+            as.integer(min_nfeature), " min / ", 
+            as.integer(max_nfeature), " max detected genes, ", 
+            as.integer(max_percMT), " percent MT genes max...", 
+            sep = ""))
+
+
+
+
+# drop cells with too few genes detected. (not sequenced deep enough)
+# drop cells with too many genes detected (multiplets)
+# drop cells with high mitochondrial transcript percentage
+
+# For mitochondrials
+seurat[["percent.mt"]] = PercentageFeatureSet(seurat, pattern = "^MT[-\\.]")
+# calculate the percentage of a subset, when the gene name is starting with (= "^") "MT-", "MT\" or "MT."
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# inspect distributions to find "normal" values
+
+filepath = paste(outputplot_dir, "pre_vulcano.png", sep = "")
+png(file= filepath)
+VlnPlot(seurat, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+dev.off()
+
+
+filepath = paste(outputplot_dir, "pre_vulcano2.png", sep = "")
+png(file= filepath)
+VlnPlot(seurat, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size=0)
+dev.off()
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+library(patchwork)
+plot1 <- FeatureScatter(seurat, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(seurat, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+
+
+filepath = paste(outputplot_dir, "pre_correlationPlots.png", sep = "")
+png(file= filepath, width = 980)
+plot1 + plot2
+dev.off()
+
+plot1 + plot2
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## CutOff at reasonable values (defined in argparse)
+
+
+seurat <- subset(seurat, subset = nFeature_RNA > min_nfeature & nFeature_RNA < max_nfeature & percent.mt < max_percMT)
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################
+### Normalization
+
+format(Sys.time(), "%X> Normalizing for captured RNA...")
+
+
+seurat <- NormalizeData(seurat)
+
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################
+### Normalization
+
+tempstring = format(Sys.time(), "%X> Doing feature selection...")
+print(paste(tempstring, " with ", as.integer(num_features), " features...", sep = ""))
+
+
+
+seurat <- FindVariableFeatures(seurat, nfeatures = num_features)
+
+
+top_features <- head(VariableFeatures(seurat), 20)
+plot1 <- VariableFeaturePlot(seurat)
+plot2 <- LabelPoints(plot = plot1, points = top_features, repel = TRUE)
+
+filepath = paste(outputplot_dir, "VariableFeatures.png", sep = "")
+png(file= filepath, width = 980)
+plot1 + plot2
+dev.off()
+
+plot1 + plot2
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################
+### Scaling / Centering Data
+
+format(Sys.time(), "%X> Scaling / Centering Data...")
+
+
+seurat <- ScaleData(seurat)
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#####################################################################
+### Generating Output
+
+format(Sys.time(), "%X> Generating Data...")
+
+
+count_matrix = seurat@raw.data
+
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+seurat[[]]
+seurat[[c("percent.mt", "nFeature_RNA")]]
+
+# $nCount_RNA # gives out endless stream lol
+
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+stuff = seurat@assays
+
+
+
+stuff
+
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+counts = GetAssayData(object = seurat, slot = "counts")
+data = GetAssayData(object = seurat, slot = "data")
+#scaledata = GetAssayData(object = seurat, slot = "scale.data")
+
+counts
+data
+#scaledata
+
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+format(Sys.time(), "%X> sca_preprocessing terminated successfully")
+
+
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+utils::methods(class = "Seurat")
+

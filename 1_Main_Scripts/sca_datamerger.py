@@ -15,6 +15,9 @@ import sys
 from datetime import datetime
 
 
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_datamerger.py")
+
+
 
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
@@ -158,7 +161,8 @@ else:
              
         
         
-    print("script has terminated successfully")
+        
+    print(datetime.now().strftime("%H:%M:%S>"), "sca_datamerger.py has terminated successfully")
     print("data is found in " + args.output_dir)
     
 
