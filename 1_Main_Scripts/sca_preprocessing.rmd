@@ -58,7 +58,12 @@ during scaling, both, data and counts stay unchanged.
 # Argparse
 
 ```{r}
+
 library(Seurat)
+library(Seurat, lib.loc = "~/rlibraries/escea")
+
+
+
 args = commandArgs(trailingOnly=TRUE)
 
 
