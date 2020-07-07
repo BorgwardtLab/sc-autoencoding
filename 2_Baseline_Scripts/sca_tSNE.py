@@ -35,7 +35,7 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
 parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/scaTSNE_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/scaTSNE_output/")
 args = parser.parse_args() #required
@@ -52,11 +52,9 @@ component_name = "t-SNE"
 
 # %% Read Input data
 
-print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
-### Get Matrix
-mtx_file = input_path + "matrix.mtx"
-coomatrix = scipy.io.mmread(mtx_file)
-data = np.transpose(coomatrix)
+matrix_file = input_path + "matrix.tsv"
+mat = np.loadtxt(open(matrix_file), delimiter="\t")
+data = np.transpose(mat)
 
 
 ### Get Labels
@@ -84,20 +82,26 @@ barcodes.remove("")
 
 
 # %%  Cut back data for handlability lmao
+# print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
+# ### Get Matrix
+# mtx_file = input_path + "matrix.mtx"
+# coomatrix = scipy.io.mmread(mtx_file)
+# coomatrix_t = np.transpose(coomatrix)
 
 # print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
 # genes_uplimit = 30000
 # genes_downlimit = 25000
 # cells_uplimit = 15000
 # cells_downlimit = 10000
-
-
 # labels = labels[cells_downlimit:cells_uplimit]
-
 # genes = genes[genes_downlimit:genes_uplimit]
+# csrmatrix = coomatrix_t.tocsr()
+# coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
 
-# csrmatrix = data.tocsr()
-# data = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
+
+# Convert to dense
+# print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
+#data = coomatrix_t.toarray()
 
 
 
@@ -110,13 +114,6 @@ else:
     mymethod = "barnes_hut"
 
 
-
-    
-# if args.num_components == None:
-#     #num_components = data.shape[1]
-#     num_components = 2
-# else:
-#     num_components = args.num_components
     
 num_components = args.num_components
 

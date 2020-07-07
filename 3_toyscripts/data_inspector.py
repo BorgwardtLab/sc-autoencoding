@@ -33,6 +33,7 @@ outputplot_dir = args.outputplot_dir
 
 
 
+
 # %% Read Input data
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
@@ -79,7 +80,6 @@ if not os.path.exists(outputplot_dir):
 bin1 = data.getnnz(axis = None)
 bin_genes = data.getnnz(axis = 0) # stores the number of cells in which the gene was detected for each gene
 bin_cells = data.getnnz(axis = 1) # stores the number of genes detected in each cell
-
 
 
 
