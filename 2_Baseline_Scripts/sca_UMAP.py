@@ -38,8 +38,8 @@ parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #
 parser.add_argument("-n","--num_components", help="the number of coordinates to calculate", type = int, default = 2)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/scaUMAP_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/scaUMAP_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/scaUMAP_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/scaUMAP_output/")
 args = parser.parse_args() #required
 
 
@@ -191,20 +191,25 @@ plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")
 
 
 if args.nosave == False:
+    
+    if not os.path.exists(output_dir):
+        print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+        os.makedirs(output_dir)    
 
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
     
-    np.savetxt(output_dir + "result_UMAP_coordinates.tsv", newdata, delimiter = "\t")
+    np.savetxt(output_dir + "coordinates.tsv", newdata, delimiter = "\t")
     
     
-    with open(output_dir + "result_genes.tsv", "w") as outfile:
+    with open(output_dir + "genes.tsv", "w") as outfile:
         outfile.write("\n".join(genes))
     
-    with open(output_dir + "result_barcodes.tsv", "w") as outfile:
+    with open(output_dir + "barcodes.tsv", "w") as outfile:
         outfile.write("\n".join(barcodes))
     
-    with open(output_dir + "result_celltype_labels.tsv", "w") as outfile:
+    with open(output_dir + "celltype_labels.tsv", "w") as outfile:
         outfile.write("\n".join(labels))
+
 
 
 

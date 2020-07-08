@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 30 01:25:34 2020
+Created on Wed Jul  8 01:02:09 2020
 
-@author: Simon Streib
+@author: Mike Toreno II
 """
 
 
+
 # %% Load Data
+import scipy.io
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,9 +18,11 @@ from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 import argparse
 import sys
+from pydiffmap import diffusion_map as dm
+from sklearn.preprocessing import StandardScaler
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py")
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_DiffusionMap.py")
 
 
 try:
@@ -33,8 +36,8 @@ parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/scaPCA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/scaPCA_output/")
 args = parser.parse_args() #required
 
 
@@ -56,7 +59,8 @@ data = np.transpose(mat)
 
 ### Get Labels
 print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-file = open(input_path + "celltype_labels.tsv", "r")
+lbl_file = input_path + "celltype_labels.tsv"
+file = open(lbl_file, "r")
 labels = file.read().split("\n")
 file.close()
 labels.remove("") #last, empty line is also removed
@@ -113,13 +117,13 @@ print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
 data = StandardScaler().fit_transform(data) # Standardizing the features
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "calculating principal components...")
-myPCA = PCA(n_components=num_components)
-PCs = myPCA.fit_transform(data)
+print(datetime.now().strftime("%H:%M:%S>"), "calculating diffusion map...")
+mydmap = dm.DiffusionMap.from_sklearn(n_evecs=2, k=200, epsilon='bgh', alpha=1.0)
 
 
+diffmap = mydmap.fit_transform(data)
 
-explained_variance = myPCA.explained_variance_ratio_
+
 
 
 
@@ -127,8 +131,13 @@ explained_variance = myPCA.explained_variance_ratio_
 
 
 
+
+# %%
+
+
+
 if not os.path.exists(outputplot_dir):
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
     os.makedirs(outputplot_dir)
     
 
@@ -150,7 +159,7 @@ fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1) 
 ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
 ax.set_ylabel(component_name + '_2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
-ax.set_title('Most Powerful PCAs', fontsize = 20)
+ax.set_title('Most Powerful Components', fontsize = 20)
 colors = cm.rainbow(np.linspace(0, 1, len(targets)))
 for target, color in zip(targets,colors):
     indicesToKeep = df['celltype'] == target
@@ -166,86 +175,30 @@ plt.savefig(outputplot_dir + "PCA_plot.png")
 
 
 
-### Save Variances
-print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
-explained_sum = np.cumsum(explained_variance)
-
-file = open(outputplot_dir + 'explained_variances.log', 'w')
-for i in range(len(explained_variance)):
-    text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
-    file.write(text)
-file.close()
-    
-    
-    
-    
-    
-### Scree Plots
-perc_var = (explained_variance * 100)
-perc_var = perc_var[0:num_components]
-
-labelz = [str(x) for x in range(1, len(perc_var)+1)]
-
-
-plt.figure(figsize=[16,8])
-plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
-plt.ylabel('Percentage of explained variance')
-plt.xlabel('Principal component')
-plt.title('Scree plot')
-plt.show()    
-plt.savefig(outputplot_dir + "PCA_scree_plot_all.png")
-    
-    
-    
-    
-if num_components > 50:
-    how_many = 50;
-    perc_var = (explained_variance * 100)
-    perc_var = perc_var[0:how_many]
-
-    labelz = [str(x) for x in range(1, len(perc_var)+1)]
-    
-    plt.figure(figsize=[16,8])
-    plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
-    plt.ylabel('Percentage of explained variance')
-    plt.xlabel('Principal component')
-    plt.title('Scree plot')
-    plt.show()    
-    plt.savefig(outputplot_dir + "PCA_scree_plot_top50.png")    
-    
-    
-       
-    
-# Loading scores for PC1
-
-how_many = 10
-
-loading_scores = pd.Series(myPCA.components_[0], index = genes)
-sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
-top_genes = sorted_loading_scores[0:how_many].index.values
-    
-
-file = open(outputplot_dir + 'most_important_genes.log', 'w')
-for i in range(how_many):
-    text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
-    file.write(text)
-file.close()
-
-
 
 # %% Saving the data
 
-if args.nosave == False:
 
+
+
+
+
+
+if args.nosave == False:
+    
+    
     if not os.path.exists(output_dir):
         print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-        os.makedirs(output_dir)    
+        os.makedirs(output_dir)
+    
+    
+    
 
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
-  
+    
     np.savetxt(output_dir + "coordinates.tsv", PCs, delimiter = "\t")
     
-    
+
     with open(output_dir + "genes.tsv", "w") as outfile:
         outfile.write("\n".join(genes))
     
