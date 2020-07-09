@@ -4,13 +4,18 @@ Created on Wed Jul  8 15:11:23 2020
 
 @author: Mike Toreno II
 """
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-from datetime import datetime
-import argparse
+
+
 import sys
+import os
+import argparse
+from datetime import datetime
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+
+
 
 
 
@@ -25,9 +30,9 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
-parser.add_argument("-k","--k", help="the number of clusters to find", type = int, default = 5)
+parser.add_argument("-k","--k", help="the number of clusters to find", type = int, default = 3)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/scaPCA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
 args = parser.parse_args() #required
@@ -47,17 +52,7 @@ k = args.k
 
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "reading data...")
-matrix_file = input_path + "coordinates.tsv"
-data = np.loadtxt(open(matrix_file), delimiter="\t")
-
-
-### Get Labels
-print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-lbl_file = input_path + "celltype_labels.tsv"
-file = open(lbl_file, "r")
-labels = file.read().split("\n")
-file.close()
-#labels.remove("") #last, empty line is also removed
+data = np.loadtxt(open(input_path + "coordinates.tsv"), delimiter="\t")
 
 
 # load genes (for last task, finding most important genes)
@@ -68,12 +63,10 @@ file.close()
 
 
 # load barcodes
-file = open(input_path + "barcodes.tsv", "r")
-barcodes = file.read().split("\n")
-file.close()
-#barcodes.remove("") 
+barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
 
 
+asfasdf
 # %% Clustering
 
 if args.dimensions == 0:

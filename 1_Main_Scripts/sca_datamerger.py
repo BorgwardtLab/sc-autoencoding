@@ -57,7 +57,7 @@ if not os.path.exists(args.output_dir):
     os.makedirs(args.output_dir)
     
 
-
+output_dir = args.output_dir + "/filtered_matrices_mex/hg19"
 
 
 # %% Combine Inputs
@@ -96,9 +96,7 @@ for filepath in glob.iglob(args.input_dir + "/*.tar.gz"):
 
 # %% 
 
-
-
-
+combined_barcodes["celltype_label"] = celltype_label
 
     
 # %% Create output
@@ -117,22 +115,26 @@ for filepath in glob.iglob(args.input_dir + "/*.tar.gz"):
 # check if directory exists
 print(datetime.now().strftime("%H:%M:%S>"), "creating output...")
 
-output_dir = args.output_dir + "/filtered_matrices_mex/hg19"
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     
     
+    
+    
+
         
 # write the two panda dataframes 
 genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
 combined_barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
+
+
 # write the array
-handle = (open (output_dir + '/celltype_labels.tsv', 'w'))
-wtr = csv.writer(handle, delimiter=';', lineterminator='\n')
-for line in celltype_label: wtr.writerow ([line])
-handle.close()
+# handle = (open (output_dir + '/celltype_labels.tsv', 'w'))
+# wtr = csv.writer(handle, delimiter=';', lineterminator='\n')
+# for line in celltype_label: wtr.writerow ([line])
+# handle.close()
 
 # write the .mtx
 scipy.io.mmwrite(output_dir + "/matrix.mtx", combined_matrix)
@@ -149,7 +151,7 @@ else:
     with tarfile.open(args.output_dir + "/combined_cells_matrices.tar.gz", "w:gz") as tar:
         tar.add(output_dir + "/genes.tsv", arcname = "/filtered_matrices_mex/hg19/genes.tsv")    
         tar.add(output_dir + "/barcodes.tsv", arcname = "/filtered_matrices_mex/hg19/barcodes.tsv") 
-        tar.add(output_dir + "/celltype_labels.tsv", arcname = "/filtered_matrices_mex/hg19/celltype_labels.tsv") 
+        #tar.add(output_dir + "/celltype_labels.tsv", arcname = "/filtered_matrices_mex/hg19/celltype_labels.tsv") 
         tar.add(output_dir + "/matrix.mtx", arcname = "/filtered_matrices_mex/hg19/matrix.mtx")   
         tar.close()
         
@@ -160,7 +162,7 @@ else:
         os.remove(output_dir + "/genes.tsv")
         os.remove(output_dir + "/barcodes.tsv")
         os.remove(output_dir + "/matrix.mtx")
-        os.remove(output_dir + '/celltype_labels.tsv')
+        #os.remove(output_dir + '/celltype_labels.tsv')
         
         try:
             os.rmdir(args.output_dir + "/filtered_matrices_mex/hg19")

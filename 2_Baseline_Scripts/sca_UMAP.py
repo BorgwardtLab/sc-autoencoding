@@ -38,8 +38,8 @@ parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #
 parser.add_argument("-n","--num_components", help="the number of coordinates to calculate", type = int, default = 2)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/scaUMAP_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/scaUMAP_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaUMAP_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaUMAP_output/")
 args = parser.parse_args() #required
 
 
@@ -52,19 +52,11 @@ component_name = "UMAP"
 
 
 # %% Read Input data
+print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
 matrix_file = input_path + "matrix.tsv"
 mat = np.loadtxt(open(matrix_file), delimiter="\t")
 data = np.transpose(mat)
-
-
-### Get Labels
-print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-lbl_file = input_path + "celltype_labels.tsv"
-file = open(lbl_file, "r")
-labels = file.read().split("\n")
-file.close()
-labels.remove("") #last, empty line is also removed
 
 
 # load genes (for last task, finding most important genes)
@@ -74,35 +66,10 @@ file.close()
 genes.remove("") 
 
 
-# load barcodes
-file = open(input_path + "barcodes.tsv", "r")
-barcodes = file.read().split("\n")
-file.close()
-barcodes.remove("") 
+barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+labels = barcodes.iloc[:,1]
 
 
-
-# %%  Cut back data for handlability lmao
-# print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
-# ### Get Matrix
-# mtx_file = input_path + "matrix.mtx"
-# coomatrix = scipy.io.mmread(mtx_file)
-# coomatrix_t = np.transpose(coomatrix)
-
-# print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-# genes_uplimit = 30000
-# genes_downlimit = 25000
-# cells_uplimit = 15000
-# cells_downlimit = 10000
-# labels = labels[cells_downlimit:cells_uplimit]
-# genes = genes[genes_downlimit:genes_uplimit]
-# csrmatrix = coomatrix_t.tocsr()
-# coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-
-
-# Convert to dense
-# print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
-#data = coomatrix_t.toarray()
 
 
 # %%
@@ -204,12 +171,7 @@ if args.nosave == False:
     with open(output_dir + "genes.tsv", "w") as outfile:
         outfile.write("\n".join(genes))
     
-    with open(output_dir + "barcodes.tsv", "w") as outfile:
-        outfile.write("\n".join(barcodes))
-    
-    with open(output_dir + "celltype_labels.tsv", "w") as outfile:
-        outfile.write("\n".join(labels))
-
+    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
 
 

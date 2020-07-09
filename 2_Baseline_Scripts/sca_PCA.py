@@ -33,8 +33,8 @@ parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/scaPCA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaPCA_output/")
 args = parser.parse_args() #required
 
 
@@ -48,32 +48,30 @@ component_name = "PC"
 
 
 # %% Read Input data
+print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
-matrix_file = input_path + "matrix.tsv"
-mat = np.loadtxt(open(matrix_file), delimiter="\t")
+mat = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 data = np.transpose(mat)
 
-
-### Get Labels
-print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-file = open(input_path + "celltype_labels.tsv", "r")
-labels = file.read().split("\n")
-file.close()
-labels.remove("") #last, empty line is also removed
+genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 
 
-# load genes (for last task, finding most important genes)
-file = open(input_path + "genes.tsv", "r")
-genes = file.read().split("\n")
-file.close()
-genes.remove("") 
+barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+labels = barcodes.iloc[:,1]
 
 
-# load barcodes
-file = open(input_path + "barcodes.tsv", "r")
-barcodes = file.read().split("\n")
-file.close()
-barcodes.remove("") 
+
+### Get Labels 
+# print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
+# file = open(input_path + "celltype_labels.tsv", "r")
+# labels = file.read().split("\n")
+# file.close()
+# labels.remove("") #last, empty line is also removed
+### load barcodes
+# file = open(input_path + "barcodes.tsv", "r")
+# barcodes = file.read().split("\n")
+# file.close()
+# barcodes.remove("") 
 
 
 
@@ -220,7 +218,7 @@ if num_components > 50:
 
 how_many = 10
 
-loading_scores = pd.Series(myPCA.components_[0], index = genes)
+loading_scores = pd.Series(myPCA.components_[0], index = genes.iloc[:,1])
 sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
@@ -244,16 +242,19 @@ if args.nosave == False:
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
   
     np.savetxt(output_dir + "coordinates.tsv", PCs, delimiter = "\t")
+        
+    
+    genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
+    
+    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
     
     
-    with open(output_dir + "genes.tsv", "w") as outfile:
-        outfile.write("\n".join(genes))
     
-    with open(output_dir + "barcodes.tsv", "w") as outfile:
-        outfile.write("\n".join(barcodes))
+    # with open(output_dir + "barcodes.tsv", "w") as outfile:
+    #     outfile.write("\n".join(barcodes))
     
-    with open(output_dir + "celltype_labels.tsv", "w") as outfile:
-        outfile.write("\n".join(labels))
+    # with open(output_dir + "celltype_labels.tsv", "w") as outfile:
+    #     outfile.write("\n".join(labels))
 
 
 

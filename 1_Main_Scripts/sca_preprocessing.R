@@ -1,5 +1,10 @@
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
+
 library(Seurat)
+library(Seurat, lib.loc = "~/rlibraries/escea")
+
+
+
 args = commandArgs(trailingOnly=TRUE)
 
 
@@ -15,7 +20,7 @@ num_features = 2000
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 if (length(args)!=0 && length(args) != 7){
   
@@ -49,12 +54,12 @@ if (length(args)!=0 && length(args) != 7){
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 dir.create(path = output_dir, showWarnings = TRUE, recursive = TRUE)
 dir.create(path = outputplot_dir, showWarnings = TRUE, recursive = TRUE)
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 
 #####################################################################
 ### Read in Data
@@ -72,7 +77,7 @@ seurat = CreateSeuratObject(counts = counts, project = "scAutoencoder")
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #####################################################################
 ### Quality 
 
@@ -96,7 +101,7 @@ seurat[["percent.mt"]] = PercentageFeatureSet(seurat, pattern = "^MT[-\\.]")
 # gets added to the meta-data of the whole object [[ ]]
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # inspect distributions to find "normal" values
 
 filepath = paste(outputplot_dir, "pre_vulcano.png", sep = "")
@@ -123,14 +128,14 @@ dev.off()
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ## CutOff at reasonable values (defined in argparse)
 
 seurat <- subset(seurat, subset = nFeature_RNA > min_nfeature & nFeature_RNA < max_nfeature & percent.mt < max_percMT)
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #####################################################################
 ### Normalization
 
@@ -141,7 +146,7 @@ seurat <- NormalizeData(seurat)
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #####################################################################
 ### Feature Selection
 
@@ -172,7 +177,7 @@ if (num_features > 0) {
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #####################################################################
 ### Scaling / Centering Data
 
@@ -182,9 +187,10 @@ seurat <- ScaleData(seurat)
 
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 #####################################################################
 ### Generating Output
+
 
 format(Sys.time(), "%X> Generating Data...")
 
@@ -197,9 +203,10 @@ barcodes = colnames(finaldata)
 
 
 
-
-write.table(finaldata, file = paste0(output_dir, "matrix.tsv"), sep = "\t", row.names = FALSE, col.names = FALSE)
 write.table(barcodes, file = paste0(output_dir, "barcodes.tsv"), sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(finaldata, file = paste0(output_dir, "matrix.tsv"), sep = "\t", row.names = FALSE, col.names = FALSE)
+
+
 
 # writing genes would only return one column (here 1, ensemblID). This section ensures that the genes output is in the same format as the input
 genesdf = as.data.frame(genes)
@@ -210,19 +217,18 @@ write.table(completegenes, file = paste0(output_dir, "genes.tsv"), sep = "\t", r
 
 
 
-# copy the label file as well (remove the labels for cells that were cut)
-ori_barcodes = read.table(file = paste0(input_dir, "barcodes.tsv"), sep = '\t', header = FALSE)
-labels = read.table(file = paste0(input_dir, "celltype_labels.tsv"), sep = '\t', header = FALSE)
-dictionary = cbind(ori_barcodes, labels)
-colnames(dictionary) = c("barcodes", "celltype label")
+## copy the label file as well (remove the labels for cells that were cut). NOTE THIS DOESN'T HAVE TO BE DONE ANYMORE, BARCODES INCLUDES BOTH
+#ori_barcodes = read.table(file = paste0(input_dir, "barcodes.tsv"), sep = '\t', header = FALSE)
+#labels = read.table(file = paste0(input_dir, "celltype_labels.tsv"), sep = '\t', header = FALSE)
+#dictionary = cbind(ori_barcodes, labels)
+#colnames(dictionary) = c("barcodes", "celltype label")
 
-barcodesdf = as.data.frame(barcodes)
-merged = merge(barcodesdf, dictionary, sort = FALSE)
-write.table(merged[,2], file = paste0(output_dir, "celltype_labels.tsv"), sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
-
-
+#barcodesdf = as.data.frame(barcodes)
+#merged = merge(barcodesdf, dictionary, sort = FALSE)
+#write.table(merged[,2], file = paste0(output_dir, "celltype_labels.tsv"), sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------------
+
+## -----------------------------------------------------------------------------
 format(Sys.time(), "%X> sca_preprocessing terminated successfully")
 
