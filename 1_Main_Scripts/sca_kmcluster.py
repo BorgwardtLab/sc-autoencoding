@@ -34,7 +34,7 @@ parser.add_argument("-k","--k", help="the number of clusters to find", type = in
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster_plots/")
 args = parser.parse_args() #required
 
 
@@ -51,22 +51,14 @@ k = args.k
 
 
 # %% Read Input data
-print(datetime.now().strftime("%H:%M:%S>"), "reading data...")
+print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
 data = np.loadtxt(open(input_path + "coordinates.tsv"), delimiter="\t")
-
-
-# load genes (for last task, finding most important genes)
-file = open(input_path + "genes.tsv", "r")
-genes = file.read().split("\n")
-file.close()
-#genes.remove("") 
 
 
 # load barcodes
 barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
 
 
-asfasdf
 # %% Clustering
 
 if args.dimensions == 0:
@@ -90,11 +82,19 @@ km = KMeans(
 cluster_labels = km.fit_predict(data)
 
 
-print(dims)
 
 
 
 # %% Plotting
+if not os.path.exists(outputplot_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
+    os.makedirs(outputplot_dir)
+    
+
+
+
+print(datetime.now().strftime("%H:%M:%S>"), "Plotting Results...")
+
 import random
 
 import matplotlib.cm as cm 
@@ -114,12 +114,11 @@ for i in range(k):
     label='cluster {0:d}'.format(i)
     )
     stuff = colors[i,].reshape(1,-1)
-    print(colors[i,])
 
 plt.legend(scatterpoints=1)
 plt.grid()
 plt.show()
-
+plt.savefig(outputplot_dir + "clusterplot.png")
 
 # %% Elbow
 
@@ -141,7 +140,7 @@ plt.plot(range(1, 11), distortions, marker='o')
 plt.xlabel('Number of clusters')
 plt.ylabel('Distortion')
 plt.show()
-
+plt.savefig(outputplot_dir + "Elbowplot.png")
 
 
 
