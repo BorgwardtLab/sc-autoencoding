@@ -3,6 +3,9 @@ rm run_all.log
 
 python 1_Main_Scripts/sca_datamerger.py --mode both --input_dir "../inputs/raw_input" --output_dir "../inputs/raw_input_combined" |& tee -a run_all.log
 
+
+python 1_Main_Scripts/sca_preprocessor.py --mingenes 200 --mincells 5 --maxfeatures 1500 --maxmito 5 --features 2000 --input_dir "../inputs/raw_input_combined/filtered_matrices_mex/hg19/" --output_dir "../inputs/preprocessed_data/" --outputplot_dir "../outputs/preprocessed_data/" --verbosity 0 |& tee -a run_all.log
+
 #Rscript 1_Main_Scripts/sca_preprocessing.R ../inputs/raw_input_combined/filtered_matrices_mex/hg19/ ../inputs/preprocessed_data/ ../outputs/preprocessed_data/ 200 1750 5 2000 |& tee -a run_all.log
 
 python 2_Baseline_Scripts/sca_PCA.py --num_components 100 --input_dir "../inputs/preprocessed_data/" --output_dir "../inputs/baseline_data/scaPCA_output/" --outputplot_dir "../outputs/baseline_data/scaPCA_output/" |& tee -a run_all.log

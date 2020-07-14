@@ -37,9 +37,9 @@ parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, 
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 
 parser.add_argument("--mingenes", help="minimal amount of genes per cell", default = 200, type = int)
-parser.add_argument("--mincells", help="minimal number of cells for a gene", default = 3, type = int)
+parser.add_argument("--mincells", help="minimal number of cells for a gene", default = 5, type = int)
 
-parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1750, type = int)
+parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1500, type = int)
 parser.add_argument("--maxmito", help="maximal percentage of mitochondrial counts", default = 5, type = int)
 
 parser.add_argument("--features", help="number of highly variable features to catch", default = 2000, type = int)
