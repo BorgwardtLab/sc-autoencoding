@@ -55,8 +55,8 @@ component_name = "UMAP"
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
 matrix_file = input_path + "matrix.tsv"
-mat = np.loadtxt(open(matrix_file), delimiter="\t")
-data = np.transpose(mat)
+data = np.loadtxt(open(matrix_file), delimiter="\t")
+
 
 
 # load genes (for last task, finding most important genes)

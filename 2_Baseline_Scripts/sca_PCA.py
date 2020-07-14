@@ -50,8 +50,8 @@ component_name = "PC"
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
-mat = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
-data = np.transpose(mat)
+data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
+
 
 genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 
