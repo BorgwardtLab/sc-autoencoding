@@ -124,7 +124,7 @@ def compute_metrics(y_true, y_pred):
     f1score = 2*recall*precision/(recall + precision)
     
     
-    results = [accuracy, precision, recall, f1score]
+    results = [accuracy, precision, recall, f1score, tn, fp, fn, tp]
     return results
 
 
@@ -144,7 +144,7 @@ data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
 labels = barcodes.iloc[:,1]
-labelset = set(labels)
+labelset = list(set(labels))
 
 
 # %%
@@ -154,7 +154,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "starting classification...")
 
 kfolder = StratifiedKFold(n_splits=kfold, shuffle=True)
 
-pandas = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score "])
+pandas = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])
 foldnumber = 0
 
 for trainindices, testindices in kfolder.split(data, labels):
@@ -179,7 +179,36 @@ for trainindices, testindices in kfolder.split(data, labels):
 
 
 
-# %%
+
+
+# %% Calculate celltype averages
+
+
+
+celltype_averages = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])
+columns = pandas.columns
+
+for cellidx in range(len(labelset)):
+    
+    tempframe = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])    
+    
+    for foldidx in range(kfold):
+        idx = cellidx + foldidx * len(labelset)       
+        tempframe[columns[idx]] = pandas.iloc[:,idx]
+        
+    colname = labelset[cellidx]
+    celltype_averages[colname] = tempframe.mean(axis = 1)
+
+
+
+
+
+
+
+
+
+
+# %% gENERATE Output
 
 
 if not os.path.exists(output_dir):
@@ -198,7 +227,7 @@ else:
     file.write("\n")
     file.write("\n")
     file.write("\n")
-    
+    file.write("\n")    
 
 file.write("######" + args.title + "######\n")
 file.write("input_data from " + input_path + ", Classifier " + classifier + "\n")
@@ -210,15 +239,20 @@ file.write("\nAverage Accuracy: \t" + '{:.4f}'.format(averages.iloc[0]))
 file.write("\nAverage Precision:\t" + '{:.4f}'.format(averages.iloc[1]))
 file.write("\nAverage Recall:   \t" + '{:.4f}'.format(averages.iloc[2]))
 file.write("\nAverage F1 Score: \t" + '{:.4f}'.format(averages.iloc[3]))
-file.write("\n\nComplete Dataframe:\n")
 
-
+file.write("\n\nCelltype Averages:\n")
 file.close()
+celltype_averages.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
 
+
+file = open(output_dir + "one_versus_all_classification.txt", "a")
+file.write("\nComplete Dataframe:\n")
+file.close()
 pandas.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
 
+
 # %% 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_classification.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_classification.py terminated successfully\n")
 
 
 

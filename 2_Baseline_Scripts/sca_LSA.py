@@ -7,7 +7,6 @@ Created on Wed Jul  1 23:52:35 2020
 
 
 # %% Load Data
-import scipy.io
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
@@ -232,7 +231,7 @@ if args.nosave == False:
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_LSA.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_LSA.py terminated successfully\n")
 
 
 

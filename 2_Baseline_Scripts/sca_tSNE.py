@@ -6,7 +6,6 @@ Created on Wed Jul  1 23:52:35 2020
 """
 
 # %% Load Data
-import scipy.io
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
@@ -35,7 +34,7 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
 parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaTSNE_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaTSNE_output/")
 args = parser.parse_args() #required
@@ -163,7 +162,7 @@ if args.nosave == False:
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully\n")
 
 
 

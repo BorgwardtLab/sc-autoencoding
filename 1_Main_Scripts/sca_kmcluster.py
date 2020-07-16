@@ -273,7 +273,7 @@ plt.scatter(
 x = data[correct_indexes, 0], 
 y = data[correct_indexes, 1],
 s=50, 
-c=[1, 0, 0, 0],
+c=np.array([1, 0, 0, 0]).reshape(1,-1),
 marker="o", 
 edgecolor='black',
 label= "correct ones",
@@ -283,7 +283,7 @@ plt.scatter(
 x = data[~correct_indexes, 0], 
 y = data[~correct_indexes, 1],
 s=50, 
-c=[1, 0, 0, 0.5],
+c=np.array([1, 0, 0, 0.5]).reshape(1,-1),
 marker="o", 
 edgecolor='black',
 label= "incorrect ones",
@@ -333,6 +333,8 @@ file.write("\t(" + str(purity_per_cluster).strip("[]") + ")")
 file.write("\nAverage Recall: \t" + '{:.4f}'.format(statistics.mean(recall_per_cluster)))
 file.write("\t(" + str(recall_per_cluster).strip("[]") + ")")
 
+file.write("\nCluster labels: t" + str(clusterlabels).strip("[]") + ")")
+
 file.close()
 
 
@@ -340,7 +342,7 @@ file.close()
 
 # %%
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully\n")
 
 
 

@@ -7,7 +7,6 @@ Created on Wed Jul  8 00:49:30 2020
 
 
 # %% Load Data
-import scipy.io
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import FastICA
@@ -33,7 +32,7 @@ except:
 parser = argparse.ArgumentParser(description = "calculate ICAs")  #required
 parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 100)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaICA_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaICA_output/")
 args = parser.parse_args() #required
@@ -127,14 +126,11 @@ ax.grid()
 plt.savefig(outputplot_dir + "ICA_plot.png")
 
 
-
-       
-    
 # Loading scores for PC1
 
 how_many = 10
 
-loading_scores = pd.Series(ica.components_[0], index = genes)
+loading_scores = pd.Series(ica.components_[0,:], index = genes)
 sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
@@ -168,7 +164,7 @@ if args.nosave == False:
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_ICA.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_ICA.py terminated successfully\n")
 
 
 

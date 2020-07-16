@@ -303,7 +303,7 @@ if not args.plotsonly:
         
   
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully\n")
 
 
 

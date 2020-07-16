@@ -258,6 +258,6 @@ if args.nosave == False:
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py terminated successfully")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py terminated successfully\n")
 
 
