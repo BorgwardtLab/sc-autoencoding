@@ -5,6 +5,9 @@ Created on Wed Jul  8 15:11:23 2020
 @author: Mike Toreno II
 """
 
+'''Please note, the clustering is based on all the received dimensions, however, plotted are only the first 2 (of course)'''
+
+
 
 import sys
 import os
@@ -62,7 +65,7 @@ technique_name = input_path[tech_start + 4 : tech_end]
 
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
-data = np.loadtxt(open(input_path + "coordinates.tsv"), delimiter="\t")
+data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 
 
 # load barcodes
@@ -96,12 +99,11 @@ predicted_labels = km.fit_predict(data)
 
 
 
-# %% Plotting
+# %% Plotting first simple plot
 if not os.path.exists(outputplot_dir):
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
     os.makedirs(outputplot_dir)
     
-
 
 print(datetime.now().strftime("%H:%M:%S>"), "Plotting Clusters...")
 
@@ -113,31 +115,24 @@ shapes = [".","o","v","^","<",">","8","s","p","P","*","h","H","X","D","d"]
 
 
 
-x = data[predicted_labels == 0]
-y = data[predicted_labels == 1]
-
-
-
-
-
-#plt.figure()
-for i in range(k):
-    plt.scatter(
-    x = data[predicted_labels == i, 0], 
-    y = data[predicted_labels == i, 1],
-    s=50, 
-    c=colors[i,].reshape(1,-1),
-    marker=random.choice(shapes), 
-    edgecolor='black',
-    label='cluster {0:d}'.format(i)
-    )
-plt.legend(scatterpoints=1)
-plt.title(technique_name)
-plt.xlabel = "Component 1"
-plt.ylabel = "Component 2"
-plt.grid()
-plt.show()
-plt.savefig(outputplot_dir + "clusterplot.png")
+# #plt.figure()
+# for i in range(k):
+#     plt.scatter(
+#     x = data[predicted_labels == i, 0], 
+#     y = data[predicted_labels == i, 1],
+#     s=50, 
+#     c=colors[i,].reshape(1,-1),
+#     marker=random.choice(shapes), 
+#     edgecolor='black',
+#     label='cluster {0:d}'.format(i)
+#     )
+# plt.legend(scatterpoints=1)
+# plt.title(technique_name)
+# plt.xlabel = "Component 1"
+# plt.ylabel = "Component 2"
+# plt.grid()
+# plt.show()
+# plt.savefig(outputplot_dir + "clusterplot.png")
 
 # %% Elbow
 
@@ -184,8 +179,6 @@ multiassigned = np.zeros(k, dtype=bool)
 global_counts = Counter(truelabels)
 
 
-
-
 for cluster in range(k):
     indexes = np.where(predicted_labels == cluster)[0] 
 
@@ -203,7 +196,7 @@ for cluster in range(k):
         
         
     clusterlabels.append(most_common_str)         
-        
+    # clusterlabels_noedit    
     
     
     # calculate purity
@@ -218,6 +211,16 @@ for cluster in range(k):
 # add cluster number to multiassigneds, to mark them e.g. on the plot
 
 
+
+# create clusterlabels dictionary for the truefalseplot
+clusterlabels_dictionary = {}
+for i in range(len(clusterlabels)):
+    clusterlabels_dictionary[i] = clusterlabels[i]
+
+
+
+
+
 for idx in range(len(multiassigned)):
     if multiassigned[idx]:
         clusterlabels[idx] = clusterlabels[idx] + " (Cluster " + str(idx) + ")"
@@ -228,7 +231,7 @@ recall_per_cluster = np.round(recall_per_cluster, 4)
 
     
 # %%
-# replot
+# replot with labels
 
 plt.figure()
 for cluster in range(k):
@@ -242,14 +245,65 @@ for cluster in range(k):
     label= clusterlabels[cluster],
     )
         
+plt.title(technique_name + " Clustering Prediction")
+plt.xlabel = "Component 1"
+plt.ylabel = "Component 2"
+plt.legend(scatterpoints=1)
+plt.grid()
+plt.show()
+plt.savefig(outputplot_dir + "clusterplot_prediction.png")
+    
+
+
+# %%replot with true labels
+
+predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
+
+correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()
+
+print(sum(correct_indexes))
+
+truedata = data[correct_indexes, 0]
+
+
+
+plt.figure()
+
+plt.scatter(
+x = data[correct_indexes, 0], 
+y = data[correct_indexes, 1],
+s=50, 
+c=[1, 0, 0, 0],
+marker="o", 
+edgecolor='black',
+label= "correct ones",
+)
+
+plt.scatter(
+x = data[~correct_indexes, 0], 
+y = data[~correct_indexes, 1],
+s=50, 
+c=[1, 0, 0, 0.5],
+marker="o", 
+edgecolor='black',
+label= "incorrect ones",
+)
+
+        
 plt.title(technique_name)
 plt.xlabel = "Component 1"
 plt.ylabel = "Component 2"
 plt.legend(scatterpoints=1)
 plt.grid()
 plt.show()
-plt.savefig(outputplot_dir + "clusterplot_labelled.png")
+plt.savefig(outputplot_dir + "clusterplot_mistakes.png")
     
+
+
+
+
+
+
 
 
 # %% Saving result
@@ -285,6 +339,7 @@ file.close()
 
 
 # %%
+
 print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully")
 
 

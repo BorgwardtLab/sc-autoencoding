@@ -140,7 +140,7 @@ def compute_metrics(y_true, y_pred):
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
-data = np.loadtxt(open(input_path + "coordinates.tsv"), delimiter="\t")
+data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
 labels = barcodes.iloc[:,1]
