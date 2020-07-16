@@ -116,6 +116,10 @@ def compute_metrics(y_true, y_pred):
     
     accuracy = (tp+tn)/(tp+fp+fn+tn)
     precision = tp/(tp+fp)
+    
+    print("precision = {0:f} / (tp {0:f} + fp {1:f})".format(tp, fp))
+    print("remove this statement if all runs well")
+    
     recall = tp/(tp+fn)
     f1score = 2*recall*precision/(recall + precision)
     

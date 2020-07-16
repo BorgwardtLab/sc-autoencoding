@@ -169,12 +169,12 @@ if args.nosave == False:
     
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
     
-    np.savetxt(output_dir + "coordinates.tsv", reduced, delimiter = "\t")
+    np.savetxt(output_dir + "matrix.tsv", reduced, delimiter = "\t")
     
     with open(output_dir + "genes.tsv", "w") as outfile:
         outfile.write("\n".join(genes))
     
-    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_Isomap.py terminated successfully")
 

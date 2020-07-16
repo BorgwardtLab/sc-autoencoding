@@ -241,12 +241,12 @@ if args.nosave == False:
 
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
   
-    np.savetxt(output_dir + "coordinates.tsv", PCs, delimiter = "\t")
+    np.savetxt(output_dir + "matrix.tsv", PCs, delimiter = "\t")
         
     
-    genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
+    genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
     
-    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
     
     
     

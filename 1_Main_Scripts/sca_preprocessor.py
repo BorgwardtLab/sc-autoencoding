@@ -36,6 +36,9 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 
+parser.add_argument("--saveobject", help="hitting this flag allows will save the adata object, so it can be evaluated with other techniques", action="store_true")
+
+
 parser.add_argument("--mingenes", help="minimal amount of genes per cell", default = 200, type = int)
 parser.add_argument("--mincells", help="minimal number of cells for a gene", default = 5, type = int)
 
@@ -298,12 +301,16 @@ if not args.plotsonly:
     genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
     barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
         
-        
-
-
+  
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully")
 
 
+
+if not args.saveobject:
+    import pickle
+    file = open(output_dir + "/AnnData.obj", "wb")
+    pickle.dump(AnnData, file)
+    
 
 
