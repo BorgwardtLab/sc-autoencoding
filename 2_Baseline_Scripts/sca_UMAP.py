@@ -148,7 +148,7 @@ plt.scatter(
     marker = ",",
     c=[sns.color_palette()[x] for x in df.celltype.map(colourdictionary)])
 plt.gca().set_aspect('equal', 'datalim')
-plt.title('UMAP projection of the single cells', fontsize=24)
+plt.title('UMAP projection of the single cells with sns', fontsize=24)
 plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")   
 
 

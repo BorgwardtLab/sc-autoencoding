@@ -184,8 +184,14 @@ for cluster in range(k):
 
     truelabels_in_cluster = truelabels[indexes]   
     counts = Counter(truelabels_in_cluster)
-    most_common_str = ((counts.most_common(2))[0])[0]
-    most_common_cnt = ((counts.most_common(2))[0])[1]
+    most_common_str = ((counts.most_common(1))[0])[0]
+    most_common_cnt = ((counts.most_common(1))[0])[1]
+    
+    
+    ### remove this section if all runs well
+    gulli = counts.most_common()
+    print(gulli)
+    print("------")
     
     
     # find "multiple assigned celltypes"
@@ -332,7 +338,7 @@ file.write("\t(" + str(purity_per_cluster).strip("[]") + ")")
 file.write("\nAverage Recall: \t" + '{:.4f}'.format(statistics.mean(recall_per_cluster)))
 file.write("\t(" + str(recall_per_cluster).strip("[]") + ")")
 
-file.write("\nCluster labels: t" + str(clusterlabels).strip("[]") + ")")
+file.write("\nCluster labels: \t" + str(clusterlabels).strip("[]") + ")")
 
 file.close()
 
