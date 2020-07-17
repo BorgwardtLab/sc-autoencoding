@@ -39,6 +39,7 @@ parser.add_argument("-s", "--nosave", help="passing this flag prevents the progr
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaUMAP_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaUMAP_output/")
+parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 args = parser.parse_args() #required
 
 
@@ -83,7 +84,7 @@ data = StandardScaler(with_mean=False).fit_transform(data) # Standardizing the f
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating UMAP...")
-reducer = umap.UMAP(verbose = 1, n_components = num_components)
+reducer = umap.UMAP(verbose = args.verbosity, n_components = num_components)
 newdata = reducer.fit_transform(data)
 
 

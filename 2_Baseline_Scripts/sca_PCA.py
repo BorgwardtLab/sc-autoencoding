@@ -30,7 +30,7 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 99)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")

@@ -261,7 +261,6 @@ predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
 
 correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()
 
-print(sum(correct_indexes))
 
 truedata = data[correct_indexes, 0]
 

@@ -30,7 +30,7 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "calculate ICAs")  #required
-parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 100)
+parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 50)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaICA_output/")
@@ -130,17 +130,25 @@ plt.savefig(outputplot_dir + "ICA_plot.png")
 
 how_many = 10
 
-loading_scores = pd.Series(ica.components_[0,:], index = genes)
+#generate index
+index = []
+for i in range(len(ica.components_[0,:])):
+    index.append("PC " + str(i))
+    
+loading_scores = pd.Series(ica.components_[0,:], index = index)
 sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
 top_genes = sorted_loading_scores[0:how_many].index.values
     
 
-file = open(outputplot_dir + 'most_important_genes.log', 'w')
+file = open(outputplot_dir + 'most_important_components.log', 'w')
 for i in range(how_many):
     text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
     file.write(text)
 file.close()
 
+# %%
+
+gulli = ica.components_[0,:]
 
 
 # %% Saving the data

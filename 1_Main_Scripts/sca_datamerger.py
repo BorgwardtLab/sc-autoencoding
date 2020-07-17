@@ -173,7 +173,7 @@ else:
         
         
     print(datetime.now().strftime("%H:%M:%S>"), "sca_datamerger.py has terminated successfully")
-    print("data is found in " + args.output_dir)
+    print("data is found in " + args.output_dir + "\n")
     
 
 

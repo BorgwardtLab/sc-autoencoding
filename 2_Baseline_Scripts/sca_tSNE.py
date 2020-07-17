@@ -37,6 +37,7 @@ parser.add_argument("-s", "--nosave", help="passing this flag prevents the progr
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaTSNE_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaTSNE_output/")
+parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 args = parser.parse_args() #required
 
 
@@ -92,7 +93,7 @@ data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the 
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Calculating tSNE...")
-tsne = TSNE(n_components=num_components, verbose = 3, method= mymethod)
+tsne = TSNE(n_components=num_components, verbose = args.verbosity, method= mymethod)
 tsnedata = tsne.fit_transform(data)
 
 
