@@ -4,7 +4,7 @@ rm run_all.log
 python 1_Main_Scripts/sca_datamerger.py --mode both --input_dir "../inputs/raw_input" --output_dir "../inputs/raw_input_combined" |& tee -a run_all.log
 
 
-python 1_Main_Scripts/sca_preprocessor.py --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 1000 --input_dir "../inputs/raw_input_combined/filtered_matrices_mex/hg19/" --output_dir "../inputs/preprocessed_data/" --outputplot_dir "../outputs/preprocessed_data/" --verbosity 0 |& tee -a run_all.log
+python 1_Main_Scripts/sca_preprocessor.py --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 2000 --input_dir "../inputs/raw_input_combined/filtered_matrices_mex/hg19/" --output_dir "../inputs/preprocessed_data/" --outputplot_dir "../outputs/preprocessed_data/" --verbosity 0 |& tee -a run_all.log
 
 #Rscript 1_Main_Scripts/sca_preprocessing.R ../inputs/raw_input_combined/filtered_matrices_mex/hg19/ ../inputs/preprocessed_data/ ../outputs/preprocessed_data/ 200 1750 5 2000 |& tee -a run_all.log
 
@@ -31,4 +31,6 @@ python 1_Main_Scripts/sca_classification.py --title "Isomap" --kfold 5 --classif
 python 1_Main_Scripts/sca_classification.py --title "t-SNE" --kfold 5 --classifier "logreg" --input_dir "../inputs/baseline_data/scaTSNE_output/" --output_dir "../outputs/ova_classification/" |& tee -a run_all.log
 python 1_Main_Scripts/sca_classification.py --title "UMAP" --kfold 5 --classifier "logreg" --input_dir "../inputs/baseline_data/scaUMAP_output/" --output_dir "../outputs/ova_classification/" |& tee -a run_all.log
 
+
+python 1_Main_Scripts/sca_kmcluster.py --title "original data" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/preprocessed_data/" --output_dir "../outputs/kmcluster/" --outputplot_dir "../outputs/kmcluster/original_data/" |& tee -a run_all.log
 

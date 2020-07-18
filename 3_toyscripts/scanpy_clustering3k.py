@@ -70,9 +70,7 @@ sc.pl.umap(AnnData, color=['CST3', 'NKG7', 'PPBP'], use_raw=False)
 
 
 
-
-
-# %% Clustering the neighborhood graph
+### Clustering the neighborhood graph
 sc.tl.leiden(AnnData)
 
 
@@ -80,7 +78,7 @@ sc.pl.umap(AnnData, color=['leiden', 'CST3', 'NKG7'])
 
 
 # save the result
-adata.write(results_file)
+AnnData.write(results_file)
 
 
 
