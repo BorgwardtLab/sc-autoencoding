@@ -15,10 +15,11 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import scipy.io
+import matplotlib.pyplot as plt
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting dca_preprocessor.py")
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
 
 
 try:
@@ -30,7 +31,8 @@ except:
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/dca/dca_preprocessed_data/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/preprocessed_data/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/preprocessed_data/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 
@@ -68,6 +70,10 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     
     
+if not os.path.exists(outputplot_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
+    os.makedirs(outputplot_dir)    
+
 
 
 
@@ -116,14 +122,29 @@ AnnData = sc.read_10x_mtx(path = input_dir, var_names = "gene_ids", cache = Fals
 
 
 
+# %% Plot 20 top detected genes
+
+sc.pl.highest_expr_genes(AnnData, n_top=20, )
+plt.savefig(outputplot_dir + "top_20_detected_genes.png")
+
+
+
+
+
 
 # %% basic filtering
 print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with min_genes= {a:d} and min_cells= {b:d}...".format(a = min_genes_per_cell, b=min_cells_per_gene))
+
+
 
 sc.pp.filter_cells(AnnData, min_genes = min_genes_per_cell) # only keep cells with at least 200 genes detecte
 # could also pass counts instead of genes
 
 sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes that are present in at least # cells
+
+
+
+
 
 
 # %% Calculate numbers
@@ -132,14 +153,38 @@ sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes 
 AnnData.var['mt'] = AnnData.var['gene_symbols'].str.startswith(('MT-', 'MT.', 'MT\\'))  # annotate the group of mitochondrial genes as 'mt'
 # only finds like 13 genes :/ But technically they do the same as seurat, so must be same?
 
+
 sc.pp.calculate_qc_metrics(AnnData, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
 # adds(for each gene) n_cells_by_count, mean counts, pct_dropbout by counts, total counts
 # the qc_vars = ['mt'] does not influence the calculations of AnnData.var,
 # but instead the percentage calculation is made into AnnData.obs
 
 
+
+
+
+
+# %% Violinplots
+
+sc.pl.violin(AnnData, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'], jitter=0.4, multi_panel=True)
+plt.savefig(outputplot_dir + "Violin_plot.png")
+
+
+
+sc.pl.scatter(AnnData, x='total_counts', y='pct_counts_mt')
+plt.savefig(outputplot_dir + "mt_percentage.png")
+
+sc.pl.scatter(AnnData, x='total_counts', y='n_genes_by_counts')
+plt.savefig(outputplot_dir + "genes_percentage.png")
+
+
+
+
+
+
 #%% Filter Mitochondrial Genes and those with too many genes
 print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with n_genes_by_count < {a:d} and pct_counts_mt < {b:d}...".format(a = max_num_features, b = max_mt_perc))
+
 
 # slicing
 AnnData = AnnData[AnnData.obs.n_genes_by_counts < max_num_features, :]
@@ -148,16 +193,10 @@ AnnData = AnnData[AnnData.obs.pct_counts_mt < max_mt_perc, :]
 
 
 
-### generate counts-only object
-adatacounts = AnnData.copy()
-
-
-
-
-
 
 # %% Normalize
 print(datetime.now().strftime("%H:%M:%S>"), "Normalizing...")
+
 
 sc.pp.normalize_total(AnnData, target_sum=1e4)
 
@@ -165,14 +204,31 @@ sc.pp.normalize_total(AnnData, target_sum=1e4)
 # %% Logarithmize
 print(datetime.now().strftime("%H:%M:%S>"), "Logarithmizing...")
 
+
 sc.pp.log1p(AnnData)
+
 
 
 
 # %% Feature Selection
 print(datetime.now().strftime("%H:%M:%S>"), "Doing feature selection with {a:d} highly variable genes...".format(a = num_top_genes))
 
+# fs_min_mean = 0.0125
+# fs_max_mean = 3
+# fs_min_disp = 0.5
+
+#sc.pp.highly_variable_genes(AnnData, min_mean=fs_min_mean, max_mean=fs_max_mean, min_disp=fs_min_disp)
+
 sc.pp.highly_variable_genes(AnnData, n_top_genes = num_top_genes + 1)
+
+
+
+# %% plot highly variable genes
+
+sc.pl.highly_variable_genes(AnnData)
+plt.savefig(outputplot_dir + "highly_variable_genes.png")
+
+
 
 
 
@@ -182,17 +238,31 @@ AnnData.raw = AnnData
 
 
 
+
 # %% remove non variable features
-
-
-
 AnnData = AnnData[:, AnnData.var.highly_variable]
-adatacounts = adatacounts[:, AnnData.var.highly_variable.index]
-
-densematrix = scipy.sparse.csr_matrix(adatacounts.X).todense()
 
 
-# %
+
+
+
+# %% Regress out effects of total_counts_per_cell and pt_mitoch
+print(datetime.now().strftime("%H:%M:%S>"), "Regress out effects of total counts per cell / pt_mito...")
+
+
+sc.pp.regress_out(AnnData, ['total_counts', 'pct_counts_mt'])
+
+
+# Scaling each gene unit to variance
+print(datetime.now().strftime("%H:%M:%S>"), "Scaling each gene unit to variance...")
+sc.pp.scale(AnnData, max_value=10)
+
+
+
+# %%
+
+
+
 
 # %% Exporting
 
@@ -207,7 +277,7 @@ if not args.plotsonly:
     genes["symbols"] = list(AnnData.var["gene_symbols"])
     
     
-    panda = pd.DataFrame(densematrix) #obs*vars
+    panda = pd.DataFrame(AnnData.X) #obs*vars
     
     
     barcodelist = list(AnnData.obs_names)
@@ -220,7 +290,7 @@ if not args.plotsonly:
     
     ''' the reason why i wrote this ugly blcok is, if i just panda'd the AnnData.obs_name, it would
     write it out with quotatation marks around it, (probably due to the inclusion of the \t, that forces 
-    it to somehow keep the string as one (what i didn't want, as its two columns)). I've tried to just disable quotation marks
+    it to somehow keep the object as one (what i didn't want')). I've tried to just disable quotation marks
     with quotin=csv.QUOTE_NONE, but then it wanted anothe rescape character, and I gave up. And then I've tried
     to split an array of strings in two in a nice manner, but had to give up, and do it with these for items now
     I think this equals to 2 loops, so awesome for runtime (not that it matters) 
@@ -233,20 +303,14 @@ if not args.plotsonly:
         
   
 
-print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully\n")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+if not args.saveobject:
+    import pickle
+    file = open(output_dir + "/AnnData.obj", "wb")
+    pickle.dump(AnnData, file)
+    
 
 

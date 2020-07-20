@@ -42,7 +42,6 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
-
 parser.add_argument("-e","--eps", help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = int, default = 3)
 parser.add_argument("-m","--min_samples", help="The number of samples (or total weight) in a neighborhood for a point to be considered as a core point. This includes the point itself.", type = int, default = 2)
 args = parser.parse_args() #required
@@ -124,11 +123,6 @@ shapes = [".","o","v","^","<",">","8","s","p","P","*","h","H","X","D","d"]
 
 
 # %%
-
-
-
-
-
 
 
 # %% Evaluate Purity
