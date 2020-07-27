@@ -120,8 +120,8 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
             
             idx_of_purity = p2.stdout.find("global purity is: ")
             
-            current_purity = p2.stdout[idx_of_purity+18:idx_of_purity+24]
-            current_purity = float(current_purity)
+            floatstring = p2.stdout[idx_of_purity+18:idx_of_purity+24]
+            current_purity = float(floatstring)
 
 
         
