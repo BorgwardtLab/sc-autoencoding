@@ -53,7 +53,7 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
              
     
     
-    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py")    
+    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py with num_components = {numcom:d}".format(numcom = num_components))    
     component_name = "PC"    
 
     
