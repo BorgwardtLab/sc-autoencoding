@@ -43,7 +43,8 @@ parser.add_argument("--mincells", help="minimal number of cells for a gene", def
 parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1500, type = int)
 parser.add_argument("--maxmito", help="maximal percentage of mitochondrial counts", default = 5, type = int)
 
-parser.add_argument("--features", help="number of highly variable features to catch", default = 2000, type = int)
+parser.add_argument("--features", help="number of highly variable features to catch", default = 1200, type = int)
+parser.add_argument("--limit_cells", help="only take a certain number of samples, to keep the countmatrix small", default = 0, type = int)
 
 args = parser.parse_args() #required
 
@@ -51,7 +52,6 @@ args = parser.parse_args() #required
 
 input_dir = args.input_dir
 output_dir = args.output_dir
-outputplot_dir = args.outputplot_dir
 
 min_genes_per_cell = args.mingenes
 min_cells_per_gene = args.mincells
@@ -176,14 +176,11 @@ sc.pp.highly_variable_genes(AnnData, n_top_genes = num_top_genes + 1)
 
 
 
-# %% freeze the state of the object, by setting the .raw to the normalized/logarithmized
-AnnData.raw = AnnData
-# to reverse: .raw.to_adata()
+
 
 
 
 # %% remove non variable features
-
 
 
 AnnData = AnnData[:, AnnData.var.highly_variable]
@@ -192,9 +189,35 @@ adatacounts = adatacounts[:, AnnData.var.highly_variable.index]
 densematrix = scipy.sparse.csr_matrix(adatacounts.X).todense()
 
 
-# %
+
+
+
+
+# %%
+
+if args.limit_cells > 0:
+    
+    num = args.limit_cells
+    
+    assert isinstance(num, int)
+    
+    
+    lucky_cells_idx = np.linspace(0, len(densematrix)-1, num, dtype = int)
+
+    densematrix = densematrix[lucky_cells_idx, :]
+
+
+
+
+
+
+
+
+
 
 # %% Exporting
+
+
 
 if not args.plotsonly: 
     
@@ -227,10 +250,16 @@ if not args.plotsonly:
     anyway, this is a bad solution, but it fixes the problem, so meh'''
     
     
+    
+    if args.limit_cells > 0:
+        barcodes = barcodes.iloc[lucky_cells_idx, :]
+        
+    
+    
     panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = False)
     genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
     barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
-        
+
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")

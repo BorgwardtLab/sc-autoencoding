@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser(description = "evaluation")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument('-n', '--num_components', nargs='+', type = int, default = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],help="pass the number of compontents to try like this: python script.py --num_compontents 5 10 20 40")
+parser.add_argument('--nargs', nargs='+', type=int)
 parser.add_argument("-k", "--num_kmclusters", default = 5, help= "number of k for k-means clusters")
 parser.add_argument("--reps", default = 100, help= "how many times you want kmcluster to be repeated for each value of num_components")
 
@@ -25,6 +26,15 @@ args = parser.parse_args() #required
 
 
 
+
+
+
+
+
+
+##############################################################################
+##### Main
+
 def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
             input_dir = "../inputs/preprocessed_data/",
              output_dir = "../outputs/hyperparameter/scaPCA_output/",
@@ -32,6 +42,8 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
              repetitions = 100
              ):
 
+    
+    print("i started ahhaha")
 
     
     # %%
@@ -44,17 +56,12 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
         pass
        
     
-    sys.path.insert(1, "../2_Baseline_Scripts")
-    from sca_PCA import sca_PCA
-    sys.path.insert(1, "../1_Main_Scripts")
-    from sca_kmcluster import sca_kmcluster
-    
-    
+
     import matplotlib.pyplot as plt
     import statistics
     import numpy as np
     
-    
+    import subprocess
     
     
          
@@ -88,30 +95,37 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
             os.makedirs(intermediate_dir)
         
         
-        sca_PCA(num_components = numcomp,
-                input_path = input_dir,
-                output_dir = intermediate_dir,
-                outputplot_dir = intermediate_dir)
+        commandstring = "python ../2_Baseline_Scripts/sca_PCA.py --num components {numcom:d} --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outp:s}".format(numcom = numcomp, inp = input_dir, outp = intermediate_dir)
+              
+        p1 = subprocess.run(args = commandstring, shell = True, capture_output = True, text = True, check = True)
         
         
-        for j in range(repetitions):
-            current_purity = sca_kmcluster(k = num_cluster,
-                          dimensions = 0,
-                          input_path = intermediate_dir,
-                          output_dir = intermediate_dir,
-                          outputplot_dir = intermediate_dir + str(j),
-                          verbosity = 0,
-                          elbow = False,
-                          title = "PCA with {0:d} components".format(numcomp),
-                          reset = False)
+        # sca_PCA(num_components = numcomp,
+        #         input_path = input_dir,
+        #         output_dir = intermediate_dir,
+        #         outputplot_dir = intermediate_dir)
         
-            purities[i, j] = current_purity
+        
+        
+        
+        # for j in range(repetitions):
+        #     current_purity = sca_kmcluster(k = num_cluster,
+        #                   dimensions = 0,
+        #                   input_path = intermediate_dir,
+        #                   output_dir = intermediate_dir,
+        #                   outputplot_dir = intermediate_dir + str(j),
+        #                   verbosity = 0,
+        #                   elbow = False,
+        #                   title = "PCA with {0:d} components".format(numcomp),
+        #                   reset = False)
+        
+        #     purities[i, j] = current_purity
             
-            plt.close('all')
+        #     plt.close('all')
             
             
             
-        errorbars[i] = statistics.stdev(purities[i,:])
+        # errorbars[i] = statistics.stdev(purities[i,:])
     
             
     
@@ -153,7 +167,13 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
 
 
 if __name__ == "__main__":
-    pca_kmc(componentslist = args.num_components,
+    
+    
+    fake = [3, 5, 7]
+    
+    
+    
+    pca_kmc(componentslist = fake,
             input_dir = args.input_dir,
              output_dir = args.output_dir,
              num_cluster = args.num_kmclusters,

@@ -19,10 +19,9 @@ coomatrix = scipy.io.mmread(mtx_file)
 
 
 genesdf = pd.read_csv("../inputs/raw_input_combined/filtered_matrices_mex/hg19/genes.tsv", delimiter = "\t", header = None)
-genes = genesdf.iloc[:,0]
+
 
 barcodes = pd.read_csv("../inputs/raw_input_combined/filtered_matrices_mex/hg19/barcodes.tsv", delimiter = "\t", header = None)
-labels = barcodes.iloc[:,1]
 
 
 
@@ -31,8 +30,8 @@ labels = barcodes.iloc[:,1]
 # %%  Cut back data for handlability lmao
 
 print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-num_cells = 5555
-num_genes = 6666
+num_cells = 333
+num_genes = 222
 
 
 ### this block gets the indices of the num_genes highest rowcounts
@@ -45,8 +44,8 @@ indices = np.argpartition(rowsums, -num_genes)[-num_genes:]
 linspacing = np.linspace(0, coomatrix.shape[1]-1, num_cells, dtype = int)
 
 
-labels = labels[linspacing]
-genes = genes[indices]
+labels = barcodes.iloc[linspacing, :]
+genes = genesdf.iloc[indices, :]
 
 
 
@@ -65,21 +64,22 @@ print(coomatrix.shape)
 # Convert to dense
 print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
 data = coomatrix.toarray()
+data = np.transpose(data)
 
 
 # bring in the pandas
-panda = pd.DataFrame(data, index = genes, columns = labels)
+panda = pd.DataFrame(data)
 
 
 # %%
-
-panda.to_csv("../../1. Eraslan/dca_test/countmatrix.tsv", sep = "\t")
-
+print(datetime.now().strftime("%H:%M:%S>"), "Creating Output..")
 
 
+panda.to_csv("../inputs/dca/toydata/countmatrix.tsv", sep = "\t", header= False, index = False)
+genes.to_csv("../inputs/dca/toydata/genes.tsv", sep = "\t", header= False, index = False)
+labels.to_csv("../inputs/dca/toydata/barcodes.tsv", sep = "\t", header= False, index = False)
 
 
 
-
-
+print(datetime.now().strftime("%H:%M:%S>"), "Done")
 
