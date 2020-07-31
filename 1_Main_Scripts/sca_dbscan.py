@@ -43,8 +43,8 @@ parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, 
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 
-parser.add_argument("-e","--eps", help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = int, default = 3)
-parser.add_argument("-m","--min_samples", help="The number of samples (or total weight) in a neighborhood for a point to be considered as a core point. This includes the point itself.", type = int, default = 2)
+parser.add_argument("-e","--eps", help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = int, default = 30)
+parser.add_argument("-m","--min_samples", help="The number of samples (or total weight) in a neighborhood for a point to be considered as a core point. This includes the point itself.", type = int, default = 5)
 args = parser.parse_args() #required
 
 
@@ -86,7 +86,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "Clustering...")
 
 
 
-args.eps = 10
+args.eps = 15
 args.min_samples = 2
 
 
@@ -96,34 +96,11 @@ dbscanner = DBSCAN(eps=args.eps, min_samples=args.min_samples)
 
 
 predicted_labels = dbscanner.fit_predict(data)
-labelset = set(predicted_labels)
 
-print(labelset)
-
-# %%
-gulli1 = dbscanner.core_sample_indices_
-gulli2 = dbscanner.components_
-gulli3 = dbscanner.labels_
+n_clusters = len(set(predicted_labels)) - (1 if -1 in predicted_labels else 0)
+n_labels = len(set(predicted_labels))   # will always include -1
 
 
-# %% Plotting
-if not os.path.exists(outputplot_dir):
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
-    os.makedirs(outputplot_dir)
-    
-
-print(datetime.now().strftime("%H:%M:%S>"), "Plotting Clusters...")
-
-import random
-
-import matplotlib.cm as cm 
-colors = cm.rainbow(np.linspace(0, 1, len(labelset)))
-shapes = [".","o","v","^","<",">","8","s","p","P","*","h","H","X","D","d"]
-
-
-
-
-# %%
 
 
 
@@ -140,17 +117,18 @@ clusterlabels = []
 purity_per_cluster = []
 recall_per_cluster = []
   
-multiassigned = np.zeros(len(labelset), dtype=bool)
+multiassigned = np.zeros(n_labels, dtype=bool)
 
 global_counts = Counter(truelabels)
 
 
-for cluster in (range(-1, len(labelset)-1)):
+
+for cluster in (range(n_clusters)):
+    print("cluster")
+    print(cluster)
     
+    print(set(predicted_labels))
     
-    
-    
-#### I WORKED UNTIL HERE I WORKED UNTIL HERE    
     
     
     
@@ -193,28 +171,86 @@ for i in range(len(clusterlabels)):
 
 
 
-
+# add cluster to each name that is doubly
 for idx in range(len(multiassigned)):
     if multiassigned[idx]:
         clusterlabels[idx] = clusterlabels[idx] + " (Cluster " + str(idx) + ")"
 
+
+
 purity_per_cluster = np.round(purity_per_cluster, 4)       
 recall_per_cluster = np.round(recall_per_cluster, 4)  
+
+
+
+
+
+
+# %% Plotting
+
+if not os.path.exists(outputplot_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
+    os.makedirs(outputplot_dir)
+    
+    
+print(datetime.now().strftime("%H:%M:%S>"), "Plotting Clusters...")
+
+import random
+
+import matplotlib.cm as cm 
+colors = cm.rainbow(np.linspace(0, 1, n_labels))
+shapes = [".","o","v","^","<",">","8","s","p","P","*","h","H","X","D","d"]
+
+
+
+
 
 
     
 # %%
 # replot with labels
 
+colors = cm.rainbow(np.linspace(0, 1, len(set(truelabels))))
+
+
+
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(1,1,1) 
+# ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+# ax.set_ylabel(component_name + '_2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+ax.set_title('Real Labels', fontsize = 20)
+
+for target, color in zip(set(truelabels),colors):
+    indicesToKeep = truelabels == target
+    
+    ax.scatter(data[indicesToKeep, 0]
+                , data[indicesToKeep, 1]
+                , c = color.reshape(1,-1)
+                , s = 5)
+ax.legend(set(truelabels))
+ax.grid()
+plt.savefig(outputplot_dir + "truelabels.png")
+
+
+
+
+
+
+
+# %% plot
+
+colors = cm.rainbow(np.linspace(0, 1, n_labels))
+
+
 plt.figure()
-for cluster in range(k):
+for cluster in range(n_clusters):
     plt.scatter(
     x = data[predicted_labels == cluster, 0], 
     y = data[predicted_labels == cluster, 1],
-    s=50, 
+    s=5, 
     c=colors[cluster,].reshape(1,-1),
     marker=random.choice(shapes), 
-    edgecolor='black',
+    edgecolor=colors[cluster,].reshape(1,-1),
     label= clusterlabels[cluster],
     )
         
@@ -228,11 +264,32 @@ plt.savefig(outputplot_dir + "clusterplot_prediction.png")
     
 
 
-# %%replot with true labels
+# %% plot errors
+
+if -1 in set(predicted_labels):
+    clusterlabels_dictionary[-1] = "Not assigned"
+
 
 predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
 
-correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()
+
+correct_indexes = np.zeros(len(predicted_labels_text), dtype = bool)
+for i in range(len(predicted_labels_text)):
+    if predicted_labels_text[i] == truelabels[i]:
+        correct_indexes[i] = True
+
+
+
+
+correct_indexes = np.array(predicted_labels_text) == np.array(truelabels).all()
+
+
+print(Counter(correct_indexes))
+print(sum(correct_indexes))
+print(Counter(predicted_labels))
+
+
+
 
 
 truedata = data[correct_indexes, 0]
@@ -244,7 +301,7 @@ plt.figure()
 plt.scatter(
 x = data[correct_indexes, 0], 
 y = data[correct_indexes, 1],
-s=50, 
+s=10, 
 c=np.array([1, 0, 0, 0]).reshape(1,-1),
 marker="o", 
 edgecolor='black',
@@ -254,10 +311,10 @@ label= "correct ones",
 plt.scatter(
 x = data[~correct_indexes, 0], 
 y = data[~correct_indexes, 1],
-s=50, 
+s=5, 
 c=np.array([1, 0, 0, 0.5]).reshape(1,-1),
 marker="o", 
-edgecolor='black',
+edgecolor=np.array([1, 0, 0, 0.5]).reshape(1,-1),
 label= "incorrect ones",
 )
 
@@ -288,9 +345,9 @@ if not os.path.exists(output_dir):
 
 
 if args.reset:
-    file = open(output_dir + "km_clustering_results.txt", "w")
+    file = open(output_dir + "dbscan_clustering_results.txt", "w")
 else:
-    file = open(output_dir + "km_clustering_results.txt", "a")
+    file = open(output_dir + "dbscam_clustering_results.txt", "a")
     file.write("\n")
     file.write("\n")
     file.write("\n")

@@ -270,11 +270,53 @@ def sca_kmcluster(k = 5,
         
     
     
+    
+    
+    
+    
+    
+    
+    
+    # %%
+    
+    colors = cm.rainbow(np.linspace(0, 1, len(set(truelabels))))
+
+
+
+    fig = plt.figure(figsize = (8,8))
+    ax = fig.add_subplot(1,1,1) 
+    # ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+    # ax.set_ylabel(component_name + '_2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+    ax.set_title('Real Labels', fontsize = 20)
+    
+    for target, color in zip(set(truelabels),colors):
+        indicesToKeep = truelabels == target
+        
+        ax.scatter(data[indicesToKeep, 0]
+                    , data[indicesToKeep, 1]
+                    , c = color.reshape(1,-1)
+                    , s = 5)
+    ax.legend(set(truelabels))
+    ax.grid()
+    plt.savefig(outputplot_dir + "truelabel_plot.png")
+    
+
+
+
+
+    
     # %%replot truefalse plot
     
     predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
-    correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()
     
+    # has not worked always???
+    #correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()
+    correct_indexes = np.zeros(len(predicted_labels_text), dtype = bool)
+    for i in range(len(predicted_labels_text)):
+        if predicted_labels_text[i] == truelabels[i]:
+            correct_indexes[i] = True
+    
+
     
     plt.figure()
     
