@@ -45,6 +45,12 @@ input_path = args.input_dir
 outputplot_dir = args.outputplot_dir
 
 
+if not os.path.exists(outputplot_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+    os.makedirs(outputplot_dir)
+
+
+
 
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
@@ -76,7 +82,6 @@ distances = np.sort(distances, axis=0)
 
 # %%
 
-
 plt.figure()
 plt.plot(distances)
 
@@ -85,9 +90,10 @@ plt.yticks(np.arange(0,80,5))
 plt.grid(which = "both", axis = "y")
 
 
-plt.savefig("epsplot.png")
+plt.savefig(outputplot_dir + "epsplot.png")
 
 
 
 
+print(datetime.now().strftime("%H:%M:%S>"), "dbscan_epssearch_knn finished successfully")
 
