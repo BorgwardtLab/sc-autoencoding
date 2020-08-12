@@ -1,4 +1,4 @@
-sA# Copyright 2016 Goekcen Eraslan
+# Copyright 2016 Goekcen Eraslan
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -89,31 +89,15 @@ class Autoencoder():
         else:
             self.hidden_dropout = [self.hidden_dropout]*len(self.hidden_size)
 
-
-
-
-
     def build(self):
 
         self.input_layer = Input(shape=(self.input_size,), name='count')
-        
-        
         self.sf_layer = Input(shape=(1,), name='size_factors')
-        
-        
         last_hidden = self.input_layer
-
-
-
-
 
         if self.input_dropout > 0.0:
             last_hidden = Dropout(self.input_dropout, name='input_dropout')(last_hidden)
 
-
-
-
-        # loop through layers
         for i, (hid_size, hid_drop) in enumerate(zip(self.hidden_size, self.hidden_dropout)):
             center_idx = int(np.floor(len(self.hidden_size) / 2.0))
             if i == center_idx:
@@ -125,11 +109,6 @@ class Autoencoder():
             else:
                 layer_name = 'dec%s' % (i-center_idx)
                 stage = 'decoder'
-
-
-
-
-
 
             # use encoder-specific l1/l2 reg coefs if given
             if self.l1_enc_coef != 0. and stage in ('center', 'encoder'):
@@ -147,10 +126,6 @@ class Autoencoder():
                                 name=layer_name)(last_hidden)
             if self.batchnorm:
                 last_hidden = BatchNormalization(center=True, scale=False)(last_hidden)
-
-
-
-
 
             # Use separate act. layers to give user the option to get pre-activations
             # of layers when requested
@@ -186,7 +161,6 @@ class Autoencoder():
             with open(os.path.join(self.file_path, 'model.pickle'), 'wb') as f:
                 pickle.dump(self, f)
 
-
     def load_weights(self, filename):
         self.model.load_weights(filename)
         self.encoder = self.get_encoder()
@@ -210,10 +184,6 @@ class Autoencoder():
             ret = Model(inputs=self.model.input,
                         outputs=self.model.get_layer('center').output)
         return ret
-
-
-
-
 
     def predict(self, adata, mode='denoise', return_info=False, copy=False):
 
@@ -252,7 +222,7 @@ class Autoencoder():
             print('dca: Saving denoised expression...')
             write_text_matrix(adata.X,
                               os.path.join(file_path, 'mean.tsv'),
-                              rownames=rownames, colnames=colnames, transpose=True)
+                              rownames=rownames, colnames=colnames, transpose=False)
 
         if mode in ('latent', 'full'):
             print('dca: Saving latent representations...')
@@ -271,6 +241,7 @@ class PoissonAutoencoder(Autoencoder):
 
         self.extra_models['mean_norm'] = Model(inputs=self.input_layer, outputs=mean)
         self.extra_models['decoded'] = Model(inputs=self.input_layer, outputs=self.decoder_output)
+        
         self.model = Model(inputs=[self.input_layer, self.sf_layer], outputs=output)
 
         self.encoder = self.get_encoder()
@@ -393,11 +364,6 @@ class NBSharedAutoencoder(NBAutoencoder):
         self.encoder = self.get_encoder()
 
 
-
-
-
-
-### THIS ONE THE DEFAULTY
 class ZINBAutoencoder(Autoencoder):
 
     def build_output(self):
