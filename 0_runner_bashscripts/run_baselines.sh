@@ -1,6 +1,5 @@
 # conda activate tf
-rm run_baselines.log
-rm run_all.log
+
 rm log_run_baselines
 
 

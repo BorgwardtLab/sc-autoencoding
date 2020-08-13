@@ -12,8 +12,8 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description = "evaluation")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/Optimization/num_PCA/")
 parser.add_argument('-n', '--num_components', nargs='+', type = int, default = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],help="pass the number of components to try like this: python script.py --num_components 5 10 20 40")
 parser.add_argument("-k", "--num_kmclusters", default = 5, help= "number of k for k-means clusters", type = int)
 parser.add_argument("--reps", default = 100, help= "how many times you want kmcluster to be repeated for each value of num_components", type = int)
@@ -35,14 +35,14 @@ args = parser.parse_args() #required
 ##### Main
 
 def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
-            input_dir = "../inputs/preprocessed_data/",
-             output_dir = "../outputs/hyperparameter/scaPCA_output/",
+            input_dir = "../inputs/data/preprocessed_data/",
+             output_dir = "../outputs/Optimization/num_PCA/",
              num_cluster = 5,
              repetitions = 100
              ):
 
     
-    print("i started ahhaha")
+    print("pca-kmcluster_evaluation started")
 
     
     # %%
@@ -107,7 +107,7 @@ def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
         
         for j in range(repetitions):
             
-            command = "python ../1_Main_Scripts/sca_kmcluster.py --title {title:s} --k {k:d} --verbosity 0 --dimensions 0 --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outplot:s}".format(k = num_cluster, inp = intermediate_dir, outp = intermediate_dir, outplot = intermediate_dir + str(j), title = "PCA_with_{0:d}_components".format(numcomp))
+            command = "python ../4_Evaluation/sca_kmcluster.py --title {title:s} --k {k:d} --verbosity 0 --dimensions 0 --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outplot:s}".format(k = num_cluster, inp = intermediate_dir, outp = intermediate_dir, outplot = intermediate_dir + str(j), title = "PCA_with_{0:d}_components".format(numcomp))
             print(command)
             
             p2 = subprocess.run(args = command, shell = True, capture_output = True, text = True, check = False)
