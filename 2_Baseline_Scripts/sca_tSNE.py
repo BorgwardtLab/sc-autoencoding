@@ -34,9 +34,9 @@ input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
 parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaTSNE_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaTSNE_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaTSNE_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/baseline_data/scaTSNE_output/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 args = parser.parse_args() #required
 

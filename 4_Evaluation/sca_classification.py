@@ -33,8 +33,8 @@ except:
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-k","--kfold", help="the number of k-folds to test the classifier on", type = int, default = 5)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--output_dir", help="plot directory", default = "../outputs/ova_classification/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-p","--output_dir", help="plot directory", default = "../outputs/baselines/ova_classification/")
 parser.add_argument("-c","--classifier", help="helptext", default = "logreg", choices = ["logreg","lda","c"])
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")

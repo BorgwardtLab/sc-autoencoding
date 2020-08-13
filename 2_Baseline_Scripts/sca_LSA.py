@@ -37,9 +37,9 @@ except:
 parser = argparse.ArgumentParser(description = "Do Latent Semantic Analysis")  #required
 parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int, default = 100)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaLSA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaLSA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaLSA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/baseline_data/scaLSA_output/")
 args = parser.parse_args() #required
 
 

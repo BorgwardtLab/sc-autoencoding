@@ -30,9 +30,9 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/preprocessed_data/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/data/preprocessed_data/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/preprocessing/preprocessed_data/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 

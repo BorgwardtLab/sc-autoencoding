@@ -38,8 +38,8 @@ as combined_matrix, and contains the names of the original input file \
 or also compressed into a new .tar.gz file (combined_input.tar.gz), saved in \
 the output directory. (per default ./input/")
 
-parser.add_argument("-i", "--input_dir", help = "change the input directory", default = "../inputs/raw_input") 
-parser.add_argument("-o", "--output_dir", help = "change the output directory", default = "../inputs/raw_input_combined")
+parser.add_argument("-i", "--input_dir", help = "change the input directory", default = "../inputs/data/raw_input") 
+parser.add_argument("-o", "--output_dir", help = "change the output directory", default = "../inputs/data/raw_input_combined")
 parser.add_argument("-m", "--mode", help = "choose between compressed and decompressed", \
     choices = ["compressed", "decompressed", "both"], default = "decompressed")
 args = parser.parse_args()
@@ -66,11 +66,13 @@ celltype_label = []
 
 
 for filepath in glob.iglob(args.input_dir + "/*.tar.gz"):
-    print(datetime.now().strftime("%H:%M:%S>"), "unpacking " + filepath[20:] + "...")
+    print(datetime.now().strftime("%H:%M:%S>"), "unpacking " + filepath[25:] + "...")
     tarfile = tarfile.open(filepath, "r:gz")
     mtx_file = tarfile.extractfile("filtered_matrices_mex/hg19/matrix.mtx")
     
-    current_label = filepath[20:filepath.find("_filtered_gene_bc_matrices.tar.gz")]
+    
+    
+    current_label = filepath[25:filepath.find("_filtered_gene_bc_matrices.tar.gz")]
     current_matrix = scipy.io.mmread(mtx_file)
     combined_matrix = scipy.sparse.hstack((combined_matrix, current_matrix))
     

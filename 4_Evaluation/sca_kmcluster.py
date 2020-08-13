@@ -14,15 +14,14 @@ import argparse
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/baselines/kmcluster/PCA/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 args = parser.parse_args() #required
-
 
 
 
@@ -37,7 +36,7 @@ def sca_kmcluster(k = 5,
                   reset = False):
 
     
-        
+    
     import sys
     import os
     
@@ -73,9 +72,9 @@ def sca_kmcluster(k = 5,
     
     
     technique_name = input_path[tech_start + 4 : tech_end]
-    
-    
-    
+
+
+
     
     # %% Read Input data
     print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
@@ -84,7 +83,10 @@ def sca_kmcluster(k = 5,
     
     # load barcodes
     barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+    global truelabels
     truelabels = barcodes.iloc[:,1]
+    
+
     
     
     # %% Clustering
@@ -198,7 +200,7 @@ def sca_kmcluster(k = 5,
         most_common_str = ((counts.most_common(1))[0])[0]
         most_common_cnt = ((counts.most_common(1))[0])[1]
   
-              
+
         ### remove this section if all runs well
         print("\ncounts for cluster nr {0:d}:".format(cluster))
         print(counts.most_common())
