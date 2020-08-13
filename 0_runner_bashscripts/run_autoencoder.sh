@@ -11,7 +11,7 @@ python ../4_Autoencoder/sca_countdata_preprocessor.py --mingenes 200 --mincells 
 
 
 
-python ../4_Autoencoder/sca_autoencoder.py --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/autoencoder_output/" --verbosity 0 |& tee -a log_run_autoencoder
+python ../4_Autoencoder/sca_autoencoder.py --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/autoencoder_output/" |& tee -a log_run_autoencoder
 
 
 ### Evaluate the baselines with Kmeans clustering
@@ -20,7 +20,6 @@ python ../1_Main_Scripts/sca_kmcluster.py --reset --title "SCAutoencoder" --k 5 
 
 ### Evaluate the baselines with classification
 python ../1_Main_Scripts/sca_classification.py --reset --title "SCAutoencoder" --kfold 5 --classifier "logreg" --input_dir "../inputs/sca/autoencoder_output/" --output_dir "../outputs/sca/ova_classification/" |& tee -a log_run_autoencoder
-
 
 
 

@@ -10,7 +10,6 @@ Created on Sun Jul 19 17:22:21 2020
 import argparse
 
 
-
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
@@ -600,8 +599,6 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
 
 
 
-
-
 def read_input(input_dir, output_dir):
     
     data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
@@ -619,16 +616,6 @@ def read_input(input_dir, output_dir):
     
     return adata, genes, barcodes
     
-
-
-
-
-
-
-
-
-
-
 
 
 
