@@ -1,5 +1,9 @@
 # conda activate tf
 rm run_baselines.log
+rm run_all.log
+rm log_run_baselines
+
+
 
 python ../1_Main_Scripts/sca_datamerger.py --mode both --input_dir "../inputs/raw_input" --output_dir "../inputs/raw_input_combined" |& tee -a run_all.log
 
@@ -34,6 +38,11 @@ python ../1_Main_Scripts/sca_classification.py --title "t-SNE" --kfold 5 --class
 python ../1_Main_Scripts/sca_classification.py --title "UMAP" --kfold 5 --classifier "logreg" --input_dir "../inputs/baseline_data/scaUMAP_output/" --output_dir "../outputs/ova_classification/" |& tee -a run_all.log
 python ../1_Main_Scripts/sca_classification.py --title "original_data" --kfold 5 --classifier "logreg" --input_dir "../inputs/preprocessed_data/" --output_dir "../outputs/original_data/" |& tee -a run_all.log
 
+
+
+mv ./run_all.log ./log_run_baselines
+
+echo "I have finished running all baselines"
 
 
 

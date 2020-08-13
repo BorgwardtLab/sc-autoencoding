@@ -75,7 +75,7 @@ panda = pd.DataFrame(data)
 print(datetime.now().strftime("%H:%M:%S>"), "Creating Output..")
 
 
-panda.to_csv("../inputs/dca/toydata/countmatrix.tsv", sep = "\t", header= False, index = False)
+panda.to_csv("../inputs/dca/toydata/matrix.tsv", sep = "\t", header= False, index = False)
 genes.to_csv("../inputs/dca/toydata/genes.tsv", sep = "\t", header= False, index = False)
 labels.to_csv("../inputs/dca/toydata/barcodes.tsv", sep = "\t", header= False, index = False)
 

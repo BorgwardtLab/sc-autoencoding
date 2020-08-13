@@ -15,7 +15,6 @@ parser = argparse.ArgumentParser(description = "evaluation")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument('-n', '--num_components', nargs='+', type = int, default = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],help="pass the number of components to try like this: python script.py --num_components 5 10 20 40")
-parser.add_argument('--nargs', nargs='+', type=int)
 parser.add_argument("-k", "--num_kmclusters", default = 5, help= "number of k for k-means clusters", type = int)
 parser.add_argument("--reps", default = 100, help= "how many times you want kmcluster to be repeated for each value of num_components", type = int)
 

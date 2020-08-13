@@ -18,7 +18,7 @@ import scipy.io
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting dca_preprocessor.py")
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
 
 
 try:
@@ -30,11 +30,8 @@ except:
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/dca/dca_preprocessed_data/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/sca_preprocessed_data/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
-parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
-
-parser.add_argument("--saveobject", help="hitting this flag allows will save the adata object, so it can be evaluated with other techniques", action="store_true")
 
 
 parser.add_argument("--mingenes", help="minimal amount of genes per cell", default = 200, type = int)
@@ -43,7 +40,7 @@ parser.add_argument("--mincells", help="minimal number of cells for a gene", def
 parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1500, type = int)
 parser.add_argument("--maxmito", help="maximal percentage of mitochondrial counts", default = 5, type = int)
 
-parser.add_argument("--features", help="number of highly variable features to catch", default = 1200, type = int)
+parser.add_argument("--features", help="number of highly variable features to catch", default = 1300, type = int)
 parser.add_argument("--limit_cells", help="only take a certain number of samples, to keep the countmatrix small", default = 0, type = int)
 
 args = parser.parse_args() #required
@@ -73,6 +70,9 @@ if not os.path.exists(output_dir):
 
 
 
+
+
+
 # fs_min_mean = 0.0125
 # fs_max_mean = 3
 # fs_min_disp = 0.5
@@ -95,9 +95,6 @@ barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = No
 
 
 
-
-
-
 # %% ScanPy Setup
 
 print(datetime.now().strftime("%H:%M:%S>"), "Launching Scanpy")
@@ -109,12 +106,16 @@ sc.settings.set_figure_params(dpi=80, facecolor='white')
 results_file = 'write/pbmc3k.h5ad'  # the file that will store the analysis results
 
 
+
+
+
+
+
+
+
 # %% Read data into anndata object (holds slots for annotation etc)
 
 AnnData = sc.read_10x_mtx(path = input_dir, var_names = "gene_ids", cache = False)
-
-
-
 
 
 # %% basic filtering
@@ -122,6 +123,8 @@ print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with min_genes= {a:d
 
 sc.pp.filter_cells(AnnData, min_genes = min_genes_per_cell) # only keep cells with at least 200 genes detecte
 # could also pass counts instead of genes
+
+
 
 sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes that are present in at least # cells
 
@@ -136,6 +139,7 @@ sc.pp.calculate_qc_metrics(AnnData, qc_vars=['mt'], percent_top=None, log1p=Fals
 # adds(for each gene) n_cells_by_count, mean counts, pct_dropbout by counts, total counts
 # the qc_vars = ['mt'] does not influence the calculations of AnnData.var,
 # but instead the percentage calculation is made into AnnData.obs
+
 
 
 #%% Filter Mitochondrial Genes and those with too many genes
@@ -155,40 +159,33 @@ adatacounts = AnnData.copy()
 
 
 
-
-# %% Normalize
+# %% Normalize (for AnnData only, to find variable genes)
 print(datetime.now().strftime("%H:%M:%S>"), "Normalizing...")
-
 sc.pp.normalize_total(AnnData, target_sum=1e4)
 
-
-# %% Logarithmize
+# %% Logarithmize (for AnnData only, to find variable genes)
 print(datetime.now().strftime("%H:%M:%S>"), "Logarithmizing...")
-
 sc.pp.log1p(AnnData)
+    
+
+
 
 
 
 # %% Feature Selection
 print(datetime.now().strftime("%H:%M:%S>"), "Doing feature selection with {a:d} highly variable genes...".format(a = num_top_genes))
 
-sc.pp.highly_variable_genes(AnnData, n_top_genes = num_top_genes + 1)
+sc.pp.highly_variable_genes(AnnData, n_top_genes = num_top_genes)
 
 
 
-
-
-
-
-# %% remove non variable features
-
+# remove non variable features
 
 AnnData = AnnData[:, AnnData.var.highly_variable]
 adatacounts = adatacounts[:, AnnData.var.highly_variable.index]
 
+
 densematrix = scipy.sparse.csr_matrix(adatacounts.X).todense()
-
-
 
 
 
@@ -200,7 +197,7 @@ if args.limit_cells > 0:
     num = args.limit_cells
     
     assert isinstance(num, int)
-    
+
     
     lucky_cells_idx = np.linspace(0, len(densematrix)-1, num, dtype = int)
 
@@ -219,55 +216,49 @@ if args.limit_cells > 0:
 
 
 
-if not args.plotsonly: 
     
-    print(datetime.now().strftime("%H:%M:%S>"), "Generating Output...")
-    # those are useless, only mean and dispersion etc
-    # AnnData.write_csvs("filename2", skip_data=False)
+print(datetime.now().strftime("%H:%M:%S>"), "Generating Output...")
+# those are useless, only mean and dispersion etc
+# AnnData.write_csvs("filename2", skip_data=False)
+
+
+genes = pd.DataFrame(adatacounts.var_names)
+genes["symbols"] = list(adatacounts.var["gene_symbols"])
+
+
+panda = pd.DataFrame(densematrix) #obs*vars
+
+
+barcodelist = list(adatacounts.obs_names)
+# alright, I give up. Lets' do it cavemen style
+bc_names = [item.split('\t')[0] for item in barcodelist]
+bc_types = [item.split('\t')[1] for item in barcodelist]
+# damn i even have to caveman the df creation, i suck so hard
+barcodes = pd.DataFrame(data = bc_names)
+barcodes["type"] = bc_types
+
+''' the reason why i wrote this ugly blcok is, if i just panda'd the AnnData.obs_name, it would
+write it out with quotatation marks around it, (probably due to the inclusion of the \t, that forces 
+it to somehow keep the string as one (what i didn't want, as its two columns)). I've tried to just disable quotation marks
+with quotin=csv.QUOTE_NONE, but then it wanted anothe rescape character, and I gave up. And then I've tried
+to split an array of strings in two in a nice manner, but had to give up, and do it with these for items now
+I think this equals to 2 loops, so awesome for runtime (not that it matters) 
+anyway, this is a bad solution, but it fixes the problem, so meh'''
+
+
+
+if args.limit_cells > 0:
+    barcodes = barcodes.iloc[lucky_cells_idx, :]
     
-    
-    genes = pd.DataFrame(AnnData.var_names)
-    genes["symbols"] = list(AnnData.var["gene_symbols"])
-    
-    
-    panda = pd.DataFrame(densematrix) #obs*vars
-    
-    
-    barcodelist = list(AnnData.obs_names)
-    # alright, I give up. Lets' do it cavemen style
-    bc_names = [item.split('\t')[0] for item in barcodelist]
-    bc_types = [item.split('\t')[1] for item in barcodelist]
-    # damn i even have to caveman the df creation, i suck so hard
-    barcodes = pd.DataFrame(data = bc_names)
-    barcodes["type"] = bc_types
-    
-    ''' the reason why i wrote this ugly blcok is, if i just panda'd the AnnData.obs_name, it would
-    write it out with quotatation marks around it, (probably due to the inclusion of the \t, that forces 
-    it to somehow keep the string as one (what i didn't want, as its two columns)). I've tried to just disable quotation marks
-    with quotin=csv.QUOTE_NONE, but then it wanted anothe rescape character, and I gave up. And then I've tried
-    to split an array of strings in two in a nice manner, but had to give up, and do it with these for items now
-    I think this equals to 2 loops, so awesome for runtime (not that it matters) 
-    anyway, this is a bad solution, but it fixes the problem, so meh'''
-    
-    
-    
-    if args.limit_cells > 0:
-        barcodes = barcodes.iloc[lucky_cells_idx, :]
-        
-    
-    
-    panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = False)
-    genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
-    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
+
+
+panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = False)
+genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
+barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
-
-
-
-
-
 
 
 
