@@ -37,7 +37,7 @@ except:
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/optimization/sca_DBScan/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/optimization/dbscan_epsearch/")
 args = parser.parse_args() #required
 
 

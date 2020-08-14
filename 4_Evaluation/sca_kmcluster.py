@@ -52,6 +52,7 @@ def sca_kmcluster(k = 5,
     
     
     print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_kmcluster.py")
+    print(input_path)
     
     
     try:

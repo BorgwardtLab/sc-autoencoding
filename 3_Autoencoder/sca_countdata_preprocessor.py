@@ -31,6 +31,7 @@ except:
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/sca_preprocessed_data")
+
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 
 

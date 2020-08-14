@@ -12,9 +12,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 
+# parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
+# parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
+
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
-
 args = parser.parse_args() #required
 
 
@@ -29,6 +31,9 @@ from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, 
 from keras.models import Model
 from keras.objectives import mean_squared_error
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+
+
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorial_crossentropy, sparse_categorial_crossentropy, kld, poisson, cosine_proximity
 
 
 import numpy as np
@@ -47,6 +52,14 @@ import keras.optimizers as opt
 # later on we can use them in Keras smoothly:
 # https://github.com/fchollet/keras/blob/master/keras/objectives.py#L7
 def poisson_loss(y_true, y_pred):
+    
+    global ytrue
+    ytrue = y_true
+    
+    global ypred
+    ypred = y_pred
+    
+    
     y_pred = tf.cast(y_pred, tf.float32)
     y_true = tf.cast(y_true, tf.float32)
 
@@ -59,21 +72,44 @@ def poisson_loss(y_true, y_pred):
 
     # last term can be avoided since it doesn't depend on y_pred
     # however keeping it gives a nice lower bound to zero
-    ret = y_pred - y_true*tf.log(y_pred+1e-10) + tf.lgamma(y_true+1.0)
-
+    ret = y_pred - y_true*tf.math.log(y_pred+1e-10) + tf.math.lgamma(y_true+1.0)
+    print("ret = {}".format(ret))
+    print("nelem = {}".format(nelem))
+    
     return tf.divide(tf.reduce_sum(ret), nelem)
 
 
 def _nan2zero(x):
-    return tf.where(tf.is_nan(x), tf.zeros_like(x), x)
+    return tf.where(tf.math.is_nan(x), tf.zeros_like(x), x)
 
 
 def _nelem(x):
-    nelem = tf.reduce_sum(tf.cast(~tf.is_nan(x), tf.float32))   # just summing all the elements of a tensor
+    nelem = tf.reduce_sum(tf.cast(~tf.math.is_nan(x), tf.float32))   # just summing all the elements of a tensor
+    print(tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype))
     return tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype)
 # I think this aims to return the number of elements that are not Nan. But I'm not sure exactly
 
 
+
+# def salmys_poisson_loss(y_true, y_pred):
+#     print("hey")
+#     global ytrue
+#     ytrue = y_true
+    
+#     global ypred
+#     ypred = y_pred
+
+# # %%
+# y_pred = ypred
+# y_true = ytrue
+
+
+# y_pred = tf.cast(y_pred, tf.float32)
+# y_true = tf.cast(y_true, tf.float32)
+
+
+# nelem = _nelem(y_true)
+# y_true = _nan2zero(y_true)
 
 
 
@@ -195,8 +231,9 @@ class Autoencoder():
         print(datetime.now().strftime("%H:%M:%S>"), "Building output with loss function: mean_squared_error...")
         
 # Define Loss for the training         
-        self.loss = mean_squared_error
-
+        # self.loss = mean_squared_error
+        # self.loss = poisson_loss
+        self.loss = poisson
 
 # Create the output layer (mean), as well as size/factors lambda       
         mean = Dense(self.output_size, 

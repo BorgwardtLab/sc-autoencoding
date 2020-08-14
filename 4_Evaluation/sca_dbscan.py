@@ -52,6 +52,7 @@ input_path = args.input_dir
 output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
 
+print(input_path)
 
 tech_start = input_path.find("/sca")
 tech_end = input_path.find("_output/")

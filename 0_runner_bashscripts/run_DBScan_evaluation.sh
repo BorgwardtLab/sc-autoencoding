@@ -6,7 +6,7 @@ rm log_run_DBScan_evaluation.log
 
 
 #for epsearch
-python ../5_Optimization/dbscan_epssearch_knn.py --input_dir "../inputs/data/preprocessed_data/" --outputplot_dir "../outputs/Optimization/num_PCA/" |& tee -a log_run_DBScan_evaluation.log
+python ../5_Optimization/dbscan_epssearch_knn.py --input_dir "../inputs/data/preprocessed_data/" --outputplot_dir "../outputs/optimization/num_PCA/" |& tee -a log_run_DBScan_evaluation.log
 date
 echo "finished the epsearch"
 

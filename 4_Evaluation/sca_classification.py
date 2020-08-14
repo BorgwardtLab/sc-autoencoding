@@ -116,7 +116,7 @@ def compute_metrics(y_true, y_pred):
     
     accuracy = (tp+tn)/(tp+fp+fn+tn)
     precision = tp/(tp+fp)
-    #print("the line is {0:d}/({0:d}+{1:d})".format(tp, fp))
+    print("the line is {0:d}/({0:d}+{1:d})".format(tp, fp))
     
     recall = tp/(tp+fn)
     f1score = 2*recall*precision/(recall + precision)
@@ -137,6 +137,7 @@ def compute_metrics(y_true, y_pred):
 # %% Read Input data
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
+print(input_path)
 
 data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
