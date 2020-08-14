@@ -14,9 +14,9 @@ import argparse
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/baselines/kmcluster/PCA/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/autoencoder_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/kmcluster/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/kmcluster/PCA/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")

@@ -317,12 +317,17 @@ class Autoencoder():
 
         if mode in ('latent', 'full'):
             print(datetime.now().strftime("%H:%M:%S>"), 'Saving latent representations...')
-            pd.DataFrame(adata.obsm['latent'], index=rownames).to_csv(file_path + "matrix.tsv",
+            pd.DataFrame(adata.obsm['latent'], index=rownames).to_csv(file_path + "latent_layer.tsv",
                                                                   sep='\t',
                                                                   index=(rownames is not None),
                                                                   header=(colnames is not None),
                                                                   float_format='%.6f')
-
+            
+            pd.DataFrame(adata.obsm['latent'], index=rownames).to_csv(file_path + "matrix.tsv",
+                                                                  sep='\t',
+                                                                  index=False,
+                                                                  header=False,
+                                                                  float_format='%.6f')
 
 # %%
 
