@@ -12,8 +12,8 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description = "evaluation")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/optimization/dbscan_gridsearch/")
 
 parser.add_argument('-e', '--eps', nargs='+', type = float, default = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50], help="pass the number of components to try like this: python script.py --num_components 5 10 20 40")
 parser.add_argument('-m', '--minpts', nargs='+', type = int, default = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100], help="pass the number of components to try like this: python script.py --num_components 5 10 20 40")
@@ -31,17 +31,22 @@ args = parser.parse_args() #required
 
 
 
+
+
 ##############################################################################
 ##### Main
 
-def gridsearch(eps = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50],
-             min_pts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100],
-             input_dir = "../inputs/preprocessed_data/",
-             output_dir = "../outputs/hyperparameter/scaPCA_output/",
+def dbscan_gridsearch(input_dir,
+             output_dir,
+             eps = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50],
+             min_pts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100]
              ):
 
+
+    print("Gridsearch starting")
     
-    print("i started ahhaha")
+    eps.sort()
+    min_pts.sort()
 
     
     # %%
@@ -56,8 +61,8 @@ def gridsearch(eps = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50],
     
 
     import matplotlib.pyplot as plt
-    import statistics
     import numpy as np
+    import pandas as pd
     
     import subprocess
     
@@ -65,103 +70,115 @@ def gridsearch(eps = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50],
          
     # %% 
 
-    try:
-        num_clusters = sys.argv[1]
-        print("using k = {0:d}.".format(num_cluster))
-    except:
-        print("default k used for kmcluster (5).")
     
+    purities = np.zeros((len(eps), len(min_pts)))
+    num_clusters = np.zeros((len(eps), len(min_pts)))
 
-    
-    purities = np.zeros((len(componentslist), repetitions))
-    errorbars = np.zeros(len(componentslist))
-    
-    
-    
-    
-    for i in range(len(componentslist)):
-        
-        numcomp = componentslist[i]
-        
-        intermediate_dir =  output_dir + str(numcomp) + "/"   
-        
-        
-        if not os.path.exists(intermediate_dir):
-            os.makedirs(intermediate_dir)
-        
-        
-        commandstring = "python ../2_Baseline_Scripts/sca_PCA.py --num_components {numcom:d} --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outp:s}".format(numcom = numcomp, inp = input_dir, outp = intermediate_dir)
-        p1 = subprocess.run(args = commandstring, shell = True, capture_output = True, text = True, check = False)
 
-        print(p1.stdout)
-        print(p1.stderr)
+
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+
+
+    file = open(output_dir + "dbscan_clustering_results.txt", "w")
+    file.write("DBScan Gridsearch:\n###############################\n\n")    
+    file.close()
+                        
+    
+    for i in range(len(eps)):
+        ep = eps[i]
         
-        # sca_PCA(num_components = numcomp,
-        #         input_path = input_dir,
-        #         output_dir = intermediate_dir,
-        #         outputplot_dir = intermediate_dir)
-        
-        
-        
-        
-        for j in range(repetitions):
+        for j in range(len(min_pts)):
+            minp = min_pts[j]
+
+            outputplot_dir = output_dir + "eps{0}_minpts{1}/".format(ep, minp)
+            if not os.path.exists(outputplot_dir):
+                os.makedirs(outputplot_dir)
             
-            command = "python ../1_Main_Scripts/sca_kmcluster.py --title {title:s} --k {k:d} --verbosity 0 --dimensions 0 --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outplot:s}".format(k = num_cluster, inp = intermediate_dir, outp = intermediate_dir, outplot = intermediate_dir + str(j), title = "PCA_with_{0:d}_components".format(numcomp))
+            command = "python ../4_Evaluation/sca_dbscan.py --eps {eps} --min_samples {minpts} --title {title:s} --verbosity 0 --dimensions 0 --input_dir {inp:s} --output_dir {outp:s} --outputplot_dir {outplot:s}".format(eps = ep, minpts = minp, inp = input_dir, outp = output_dir, outplot = outputplot_dir, title = "DBScan_with_eps{eps}_minpts{minpts}".format(eps = ep, minpts = minp))
             print(command)
             
             p2 = subprocess.run(args = command, shell = True, capture_output = True, text = True, check = False)
-        
+
 
             print(p2.stdout)
             print(p2.stderr)
             
             
-            idx_of_purity = p2.stdout.find("global purity is: ")
+            idx_of_purity = p2.stdout.find("average purity: ")
+            purity = p2.stdout[idx_of_purity+16:idx_of_purity+24]
+            purity = float(purity)
             
-            floatstring = p2.stdout[idx_of_purity+18:idx_of_purity+24]
-            current_purity = float(floatstring)
-
-
-        
-            purities[i, j] = current_purity
+            purities[i,j] = purity
+            
+            
+            idx_of_nclust = p2.stdout.find("number of clusters found: ")
+            n_clusters = p2.stdout[idx_of_nclust+26:idx_of_nclust+28]
+            n_clusters = int(n_clusters)            
+            num_clusters[i,j] = n_clusters
+            
             
             plt.close('all')
-
-        errorbars[i] = statistics.stdev(purities[i,:])
-
+            
+            
+    purities = pd.DataFrame(data = purities, index = eps, columns = min_pts)        
+    num_clusters = pd.DataFrame(data = num_clusters, index = eps, columns = min_pts)                
+            
+    print(purities)
+    print(num_clusters)        
+            
+    
+    global pur
+    pur = purities
+    
+    global numclu
+    numclu = num_clusters
     
 
+    purities.to_csv(output_dir + "purity_table.tsv", sep = "\t", index = True, header = True)
+    num_clusters.to_csv(output_dir + "n_clusters_table.tsv", sep = "\t", index = True, header = True)
 
+    # np.savetxt(output_dir + "purity_table.tsv", purities, delimiter = "\t")
+    # np.savetxt(output_dir + "n_clusters_table.tsv", num_clusters, delimiter = "\t")
+
+# %%
 
     
-    # %%
+    fig, ax = plt.subplots(1,1)
+    
+    plt.title("purities per combination\nNOTE: AXIS IS NOT EVENLY SPACED")
+    img = ax.imshow(purities, interpolation = "bilinear", origin = "lower")
+    fig.colorbar(img)
+    
+    ax.set_xlabel("min_pts")
+    ax.set_ylabel("eps")
+    
+    plt.xticks(np.arange(len(min_pts)), min_pts)   
+    plt.yticks(np.arange(len(eps)), eps)
+    
+
+    
+    plt.savefig(output_dir + "purities.png")
     
     
-    averages = np.average(purities, axis = 1)
+    
     
     plt.figure()
-    for i, (x,y) in enumerate(zip(componentslist, averages)):
-        
-        label = "{:.5f}".format(y)
-        
-        plt.annotate(label, # this is the text
-                 (x,y), # this is the point to label
-                 textcoords="offset points", # how to position the text (if xytesxt is points or pixels)
-                 xytext=(30,5), # distance from text to points (x,y)
-                 ha='center') # horizontal alignment can be left, right or center
-        
-        plt.errorbar(x,y,yerr= errorbars[i])
+    plt.title("purities per combination\nNOTE: AXIS IS NOT EVENLY SPACED")
+    img2 = plt.imshow(num_clusters, interpolation = "bilinear", origin = "lower")
+    plt.colorbar(img2)
     
-    plt.plot(componentslist, averages, linestyle = "-", marker = "o")
-    plt.title("global purities for different number of PCs")
-    plt.xlabel("number of principal components calculated")
-    plt.ylabel("global purity evaluated by kmcluster")
-    plt.show()
-    plt.savefig(output_dir + "puritygraph.png")
+    plt.xlabel("min_pts")
+    plt.ylabel("eps")    
     
+    plt.xticks(np.arange(len(min_pts)), min_pts)   
+    plt.yticks(np.arange(len(eps)), eps)    
+
+    plt.savefig(output_dir + "num_clusters.png")
     
-    np.savetxt(output_dir + "purities.csv", purities, delimiter = "\t")
-    
+
 
 
 
@@ -170,17 +187,6 @@ def gridsearch(eps = [10, 12.5, 15, 17.5, 20, 25, 30, 35, 40, 45, 50],
 
 if __name__ == "__main__":
     
-    
-   
-    pca_kmc(componentslist = args.num_components,
-            input_dir = args.input_dir,
-             output_dir = args.output_dir,
-             num_cluster = args.num_kmclusters,
-             repetitions = args.reps
-             )
-
-
-
-
+    dbscan_gridsearch(input_dir = args.input_dir, output_dir = args.output_dir, eps = args.eps, min_pts= args.minpts)
 
 

@@ -474,7 +474,6 @@ def sca(adata,
         mode = "full",
         ae_type = "normal",
         
-        
         # training args
         epochs = 300,
         reduce_lr = 10,
@@ -490,8 +489,8 @@ def sca(adata,
         output_dir = ("./sca_output/")
         ):
     
-    
-## input checker    
+
+    ## input checker    
     assert isinstance(adata, anndata.AnnData), 'adata must be an AnnData instance'
     assert mode in ('denoise', 'latent', 'full'), '%s is not a valid mode.' % mode
     

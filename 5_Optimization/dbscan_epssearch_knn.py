@@ -17,8 +17,8 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.cluster import DBSCAN
-import statistics
+
+
 
 from sklearn.neighbors import NearestNeighbors
 
@@ -36,8 +36,8 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/hyperparameter/sca_DBScan/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/optimization/sca_DBScan/")
 args = parser.parse_args() #required
 
 

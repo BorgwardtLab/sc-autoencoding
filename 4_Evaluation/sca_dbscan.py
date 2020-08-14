@@ -36,14 +36,14 @@ except:
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 #parser.add_argument("-k","--k", default = 6, help="the number of clusters to find", type = int)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/dbscan/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/dbscan/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 
-parser.add_argument("-e","--eps", help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = int, default = 30)
+parser.add_argument("-e","--eps", help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = float, default = 30)
 parser.add_argument("-m","--min_samples", help="The number of samples (or total weight) in a neighborhood for a point to be considered as a core point. This includes the point itself.", type = int, default = 5)
 args = parser.parse_args() #required
 
@@ -124,14 +124,7 @@ global_counts = Counter(truelabels)
 
 
 for cluster in (range(n_clusters)):
-    print("cluster")
-    print(cluster)
-    
-    print(set(predicted_labels))
-    
-    
-    
-    
+
     indexes = np.where(predicted_labels == cluster)[0] 
     truelabels_in_cluster = truelabels[indexes]   
     counts = Counter(truelabels_in_cluster)
@@ -255,8 +248,8 @@ for cluster in range(n_clusters):
     )
         
 plt.title(technique_name + " Clustering Prediction")
-plt.xlabel = "Component 1"
-plt.ylabel = "Component 2"
+plt.xlabel("Component 1")
+plt.ylabel("Component 2")
 plt.legend(scatterpoints=1)
 plt.grid()
 plt.show()
@@ -282,12 +275,6 @@ for i in range(len(predicted_labels_text)):
 
 
 correct_indexes = np.array(predicted_labels_text) == np.array(truelabels).all()
-
-
-print(Counter(correct_indexes))
-print(sum(correct_indexes))
-print(Counter(predicted_labels))
-
 
 
 
@@ -320,8 +307,8 @@ label= "incorrect ones",
 
         
 plt.title(technique_name)
-plt.xlabel = "Component 1"
-plt.ylabel = "Component 2"
+plt.xlabel("Component 1")
+plt.ylabel("Component 2")
 plt.legend(scatterpoints=1)
 plt.grid()
 plt.show()
@@ -347,7 +334,7 @@ if not os.path.exists(output_dir):
 if args.reset:
     file = open(output_dir + "dbscan_clustering_results.txt", "w")
 else:
-    file = open(output_dir + "dbscam_clustering_results.txt", "a")
+    file = open(output_dir + "dbscan_clustering_results.txt", "a")
     file.write("\n")
     file.write("\n")
     file.write("\n")
@@ -366,8 +353,9 @@ file.write("\nCluster labels: \t" + str(clusterlabels).strip("[]") + ")")
 
 file.close()
 
-
-
+print("average purity: {0:.6f}".format(statistics.mean(purity_per_cluster)))
+print(statistics.mean(purity_per_cluster))
+print("number of clusters found: {0:02d}".format(n_clusters))
 
 # %%
 
