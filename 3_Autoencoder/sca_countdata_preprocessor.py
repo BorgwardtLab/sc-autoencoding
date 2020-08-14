@@ -257,6 +257,11 @@ panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = Fal
 genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
 barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
+
+panda.transpose()
+panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = False, header = False)
+
+
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
