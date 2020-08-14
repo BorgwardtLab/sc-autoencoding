@@ -28,11 +28,6 @@ args = parser.parse_args() #required
 
 
 
-
-
-
-
-
 ##############################################################################
 ##### Main
 
@@ -42,8 +37,9 @@ def dbscan_gridsearch(input_dir,
              min_pts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 50, 100]
              ):
 
+    from datetime import datetime
 
-    print("Gridsearch starting")
+    print(datetime.now().strftime("%H:%M:%S>"), "Starting dbscan_gridsearch_pca.py")
     
     eps.sort()
     min_pts.sort()
@@ -74,8 +70,8 @@ def dbscan_gridsearch(input_dir,
     purities = np.zeros((len(eps), len(min_pts)))
     num_clusters = np.zeros((len(eps), len(min_pts)))
 
-
-
+    totals = len(min_pts) * len(eps)
+    runcounter = 1
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -92,6 +88,11 @@ def dbscan_gridsearch(input_dir,
         
         for j in range(len(min_pts)):
             minp = min_pts[j]
+            
+            print(datetime.now().strftime("%H:%M:%S>"), "Starting dbscan with eps = {eps} and minpts = {minpts}. ({idx}/{total})".format(eps = ep, minpts = minp, idx = runcounter, total = totals))
+            runcounter = runcounter + 1
+
+
 
             outputplot_dir = output_dir + "eps{0}_minpts{1}/".format(ep, minp)
             if not os.path.exists(outputplot_dir):
@@ -148,7 +149,7 @@ def dbscan_gridsearch(input_dir,
     
     fig, ax = plt.subplots(1,1)
     
-    plt.title("purities per combination\nNOTE: AXIS IS NOT EVENLY SPACED")
+    plt.title("purities per combination\n(axis NOT evenly spaced)")
     img = ax.imshow(purities, interpolation = "bilinear", origin = "lower")
     fig.colorbar(img)
     
@@ -166,7 +167,7 @@ def dbscan_gridsearch(input_dir,
     
     
     plt.figure()
-    plt.title("purities per combination\nNOTE: AXIS IS NOT EVENLY SPACED")
+    plt.title("number of found clusters per combination\n(axis NOT evenly spaced)")
     img2 = plt.imshow(num_clusters, interpolation = "bilinear", origin = "lower")
     plt.colorbar(img2)
     
@@ -180,7 +181,7 @@ def dbscan_gridsearch(input_dir,
     
 
 
-
+    print(datetime.now().strftime("%H:%M:%S>"), "Gridsearch terminated successfully")
 
 # %%
 
