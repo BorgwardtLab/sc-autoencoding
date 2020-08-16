@@ -33,7 +33,7 @@ from keras.objectives import mean_squared_error
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
-from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorial_crossentropy, sparse_categorial_crossentropy, kld, poisson, cosine_proximity
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
 
 
 import numpy as np
@@ -47,24 +47,28 @@ import keras.optimizers as opt
 
 
 
+from keras import backend as K
+MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
+DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
+
+
 # In the implementations, I try to keep the function signature
 # similar to those of Keras objective functions so that
 # later on we can use them in Keras smoothly:
 # https://github.com/fchollet/keras/blob/master/keras/objectives.py#L7
+
 def poisson_loss(y_true, y_pred):
     
     global ytrue
-    ytrue = y_true
     
     global ypred
     ypred = y_pred
-    
     
     y_pred = tf.cast(y_pred, tf.float32)
     y_true = tf.cast(y_true, tf.float32)
 
     # we can use the Possion PMF from TensorFlow as well
-    # dist = tf.contrib.distributions
+    # dist = tf.math.contrib.distributions
     # return -tf.reduce_mean(dist.Poisson(y_pred).log_pmf(y_true))
 
     nelem = _nelem(y_true)
@@ -76,7 +80,10 @@ def poisson_loss(y_true, y_pred):
     print("ret = {}".format(ret))
     print("nelem = {}".format(nelem))
     
-    return tf.divide(tf.reduce_sum(ret), nelem)
+    result = tf.math.divide(tf.math.reduce_sum(ret), nelem)
+    ytrue = result
+    
+    return result
 
 
 def _nan2zero(x):
@@ -85,8 +92,8 @@ def _nan2zero(x):
 
 def _nelem(x):
     nelem = tf.reduce_sum(tf.cast(~tf.math.is_nan(x), tf.float32))   # just summing all the elements of a tensor
-    print(tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype))
     return tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype)
+
 # I think this aims to return the number of elements that are not Nan. But I'm not sure exactly
 
 
@@ -231,12 +238,15 @@ class Autoencoder():
         print(datetime.now().strftime("%H:%M:%S>"), "Building output with loss function: mean_squared_error...")
         
 # Define Loss for the training         
-        # self.loss = mean_squared_error
+        self.loss = mean_squared_error
         # self.loss = poisson_loss
-        self.loss = poisson
+# , , , , , , , 
+        # working       mse, mae, map, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, kld, cosine_proximity
+        # not working   sparse_categorical_crossentropy, self.loss = poisson_loss
+        
 
 # Create the output layer (mean), as well as size/factors lambda       
-        mean = Dense(self.output_size, 
+        mean = Dense(self.output_size, activation = MeanAct,
                      kernel_initializer=self.initializer,
                      kernel_regularizer=self.regularizer,
                      name='mean')(self.decoder_output)
@@ -381,7 +391,7 @@ def train(adata, network,
           epochs=300,
           reduce_lr=10, 
           use_raw_as_output=False, ###i still don't understand output. I think it is what we compare the end result to, so you can have a slightly fake autoencoder, in which you compare input = X, out'put = raw.X, that is e.g. not normalized or whatever.
-          early_stop=30,
+          early_stop=35,
           batch_size=32, 
           clip_grad=5.,                 # todo find out effect on optimizer
           validation_split=0.1,     # the fraction of data, that is validation data (on which the loss and model metrics are calculated)
@@ -614,6 +624,10 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
         # filter min coutns
         sc.pp.filter_genes(adata, min_counts=1)
         sc.pp.filter_cells(adata, min_counts=1)
+        
+        
+    adata.raw = adata.copy()
+
 
 
     if size_factors:
@@ -622,16 +636,14 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
     else:
         adata.obs['size_factors'] = 1.0
  
-    
+
+ 
     if logtrans:
         sc.pp.log1p(adata)
             
 
     if normalize:
         sc.pp.scale(adata)
-
-
-    adata.raw = adata.copy()
 
 
     return adata

@@ -11,7 +11,7 @@ rm log_run_autoencoder_DCA.log
 
 
 
-dca "../inputs/sca/sca_preprocessed_data/matrix.tsv" "../inputs/sca/DCA_output/" |& tee -a log_run_autoencoder_DCA.log
+dca "../inputs/sca/sca_preprocessed_data/matrix_transposed.tsv" "../inputs/sca/DCA_output/" |& tee -a log_run_autoencoder_DCA.log
 cp "../inputs/sca/sca_preprocessed_data/barcodes.tsv" "../inputs/sca/DCA_output/barcodes.tsv"
 cp "../inputs/sca/sca_preprocessed_data/genes.tsv" "../inputs/sca/DCA_output/genes.tsv"
 python ../9_toyscripts/dca_output_to_matrix.py --input_dir "../inputs/sca/DCA_output/" |& tee -a log_run_autoencoder_DCA.log
