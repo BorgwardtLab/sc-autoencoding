@@ -3,3 +3,4 @@ outputs/
 tmp*
 _destroy_temp.bat
 __pycache__
+log*

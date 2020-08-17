@@ -258,15 +258,18 @@ genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = Fals
 barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
 
+
+
+panda.columns = genes.iloc[:,0]
+panda.index = barcodelist
+
 panda = panda.transpose()
 
-
-panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = False, header = False)
+panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = True, header = True)
 
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
-
 
 
 

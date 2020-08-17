@@ -36,7 +36,7 @@ args = parser.parse_args() #required
 
 def pca_kmc(componentslist = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100],
             input_dir = "../inputs/data/preprocessed_data/",
-             output_dir = "../outputs/Optimization/num_PCA/",
+             output_dir = "../outputs/optimization/num_PCA/",
              num_cluster = 5,
              repetitions = 100
              ):

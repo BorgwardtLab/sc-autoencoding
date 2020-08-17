@@ -19,7 +19,7 @@ input_dir = args.input_dir
 
 
 pandas = pd.read_csv(input_dir + "latent.tsv", delimiter = "\t", header = None, index_col = 0)
-pandas.transpose()
+# pandas = pandas.transpose()
 pandas.to_csv(path_or_buf= input_dir + "matrix.tsv", sep = "\t", header = False, index = False, float_format='%.6f')
 
 
