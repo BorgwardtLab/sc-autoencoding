@@ -5,7 +5,7 @@
 
 
 # change name here
-intermediate="poisson"
+intermediate="poisson_loss"
 
 # change to the correct autoencoder
 
