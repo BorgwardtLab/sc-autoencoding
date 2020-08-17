@@ -145,34 +145,6 @@ x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size = 0.
 
 
 
-# %% Parameter search etc. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # %%
@@ -209,7 +181,20 @@ if args.ova:
             binary_trainlabels = (np.array(trainlabels.iloc[:,1]) == label)
             binary_testlabels = (np.array(testlabels.iloc[:,1]) == label)
             
-            #result = classify(traindata, binary_trainlabels, testdata, binary_testlabels, classifier)
+            
+            
+            classifier = RandomForestClassifier(n_estimators = n_trees, criterion = "gini")
+            classifier.fit(x_train, y_train)
+            
+            y_pred = classifier.predict(x_test)  
+        
+
+            
+            result = compute_metrics()
+            
+            
+            
+            
             
             resultname = "Fold " + str(foldnumber) + ": " + label
             pandas[resultname] = result
@@ -217,16 +202,7 @@ if args.ova:
         
 
 
-
-
-else:
-    classifier = RandomForestClassifier(n_estimators = n_trees, criterion = "gini")
-    classifier.fit(x_train, y_train)
-    
-    y_pred = classifier.predict(x_test)    
-    
-    
-    
+ 
     
     
     

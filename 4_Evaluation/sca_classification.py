@@ -17,8 +17,8 @@ from datetime import datetime
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import confusion_matrix
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_classifcation.py")
@@ -35,7 +35,7 @@ parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-k","--kfold", help="the number of k-folds to test the classifier on", type = int, default = 5)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
 parser.add_argument("-p","--output_dir", help="plot directory", default = "../outputs/baselines/ova_classification/")
-parser.add_argument("-c","--classifier", help="helptext", default = "logreg", choices = ["logreg","lda","c"])
+parser.add_argument("-c","--classifier", help="helptext", default = "forest", choices = ["logreg","lda","forest"])
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
 args = parser.parse_args() #required
@@ -57,6 +57,8 @@ def classify(traindata, trainlabels, testdata, testlabels, classifier):
         metric = logistic_regression(traindata, trainlabels, testdata, testlabels)
     elif classifier == "lda":
         metric = linear_discriminant_analysis(traindata, trainlabels, testdata, testlabels)  
+    elif classifier == "forest":
+        metric = random_forrest(traindata, trainlabels, testdata, testlabels)
     else:
         print("illegal method lol, this wasn't supposed to be possible")
     return metric
@@ -64,8 +66,29 @@ def classify(traindata, trainlabels, testdata, testlabels, classifier):
 
 
 
+def random_forrest(traindata, trainlabels, testdata, testlabels):
+    from sklearn.ensemble import RandomForestClassifier
+    
+    max_depth = 20
+    max_features = 30
+    min_sample_leaf = 1; # keep in mind, as integer it works differently than as float
+    min_sample_split = 2; #same
+    n_trees = 150;
+    
+    classifier = RandomForestClassifier(n_estimators = n_trees, criterion = "gini",
+                                        max_depth = max_depth, max_features = max_features,
+                                        min_sample_leaf = min_sample_leaf, min_sample_split = min_sample_split)
+    classifier.fit(traindata, trainlabels)
+    y_pred = classifier.predict(testdata) 
+    
+    metric = compute_metrics(testlabels, y_pred)
+    return metric
+
+
+
+
 def linear_discriminant_analysis(traindata, trainlabels, testdata, testlabels):
-        
+    from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
     lda = LinearDiscriminantAnalysis()
     lda.fit(traindata, trainlabels)
     
@@ -79,6 +102,7 @@ def linear_discriminant_analysis(traindata, trainlabels, testdata, testlabels):
 
 
 def logistic_regression(traindata, trainlabels, testdata, testlabels):
+    from sklearn.linear_model import LogisticRegression
     
     ### scaler = StandardScaler().fit(unscaled_traindata);
     ### traindata = scaler.transform(unscaled_traindata);    

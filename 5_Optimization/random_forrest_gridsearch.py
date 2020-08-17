@@ -103,7 +103,7 @@ true_binlabel = labels == my_label
 
 x_train, x_test, y_train, y_test = train_test_split(data, true_binlabel, test_size = 0.25)
 
-
+print("n_estimators")
 ### n_estimators
 n_estimators = [1, 2, 4, 8, 16, 32, 64, 100, 200]
 train_results = []
@@ -137,6 +137,7 @@ plt.savefig(outputplot_dir + "auc_n_estimators.png")
 
 
 ### max depth
+print("max depth")
 max_depths = np.linspace(1, 32, 32, endpoint=True)
 train_results = []
 test_results = []
@@ -163,7 +164,8 @@ plt.savefig(outputplot_dir + "auc_max_depth.png")
 
     
 ### min samples split
-# the higher, the more constrained does each tree get, as it has to consider more samples    
+# the higher, the more constrained does each tree get, as it has to consider more samples  
+print("min sample split")  
 min_samples_splits = np.linspace(0.1, 1.0, 10, endpoint=True)
 train_results = []
 test_results = []
@@ -191,6 +193,7 @@ plt.savefig(outputplot_dir + "auc_min_samples_split.png")
 
 ### min sample leaf 
 # -> how many samples a leaf must have at least
+print("min sample leaf")
 min_samples_leafs = np.linspace(0.1, 0.5, 5, endpoint=True)
 train_results = []
 test_results = []
@@ -217,8 +220,8 @@ plt.savefig(outputplot_dir + "auc_min_samples_leafs.png")
 
 
 
-
 ### max features
+print("max features")
 max_features = list(range(1,data.shape[1]))
 train_results = []
 test_results = []
