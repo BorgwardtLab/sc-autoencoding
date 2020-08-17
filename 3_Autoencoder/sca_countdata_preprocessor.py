@@ -258,9 +258,10 @@ genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = Fals
 barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
 
 
-panda.transpose()
-panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = False, header = False)
+panda = panda.transpose()
 
+
+panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = False, header = False)
 
   
 

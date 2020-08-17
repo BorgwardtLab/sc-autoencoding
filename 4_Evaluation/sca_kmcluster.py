@@ -11,17 +11,32 @@ Created on Wed Jul  8 15:11:23 2020
 
 import argparse
 
+# parser = argparse.ArgumentParser(description = "clustering data")  #required
+# parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
+# parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
+# parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/autoencoder_output/")
+# parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/kmcluster/")
+# parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/kmcluster/PCA/")
+# parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
+# parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
+# parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
+# parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
+# args = parser.parse_args() #required
+
+
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/autoencoder_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/kmcluster/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/kmcluster/PCA/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/DCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/dca/kmcluster/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/dca/kmcluster/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 args = parser.parse_args() #required
+
+
 
 
 
@@ -35,7 +50,7 @@ def sca_kmcluster(k = 5,
                   title = "title_placeholder",
                   reset = False):
 
-    
+    global data
     
     import sys
     import os
@@ -80,6 +95,9 @@ def sca_kmcluster(k = 5,
     # %% Read Input data
     print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
     data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
+    
+    
+
     
     
     # load barcodes
@@ -293,6 +311,9 @@ def sca_kmcluster(k = 5,
     ax.set_title('Real Labels', fontsize = 20)
     
     for target, color in zip(set(truelabels),colors):
+        
+        global indicesToKeep
+        
         indicesToKeep = truelabels == target
         
         ax.scatter(data[indicesToKeep, 0]

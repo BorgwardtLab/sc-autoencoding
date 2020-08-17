@@ -21,6 +21,17 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import make_classification
 
 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve, auc
+
+import matplotlib.pyplot as plt
+
+
+
+
+
+
+
 
 
 try:
@@ -36,6 +47,8 @@ parser.add_argument("-p","--output_dir", help="out directory", default = "../out
 #parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 #parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
 parser.add_argument("--ova", help="to use one-versus all classification instead of multiclass", action="store_true")
+parser.add_argument("--plotonly", help="to only show the plots in order to find sweet parameters for the forest", action="store_true")
+
 args = parser.parse_args() #required
 
 
@@ -46,6 +59,29 @@ output_dir = args.output_dir
 
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_randforrest.py")
 print(input_path)
+
+
+
+
+# %%
+
+n_trees = 100
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # %% functions
@@ -97,15 +133,49 @@ genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
 
 
-# labels = barcodes.iloc[:,1]
+labels = barcodes.iloc[:,1]
 # labelset = list(set(labels))
 
 
 # %%
 
+x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size = 0.25)
 
 
 
+
+
+# %% Parameter search etc. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# %%
 
 
 if args.ova:
@@ -149,6 +219,18 @@ if args.ova:
 
 
 
+else:
+    classifier = RandomForestClassifier(n_estimators = n_trees, criterion = "gini")
+    classifier.fit(x_train, y_train)
+    
+    y_pred = classifier.predict(x_test)    
+    
+    
+    
+    
+    
+    
+    
 
 
 # %% Calculate celltype averages
