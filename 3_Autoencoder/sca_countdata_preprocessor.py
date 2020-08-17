@@ -260,8 +260,14 @@ barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header 
 
 
 
+# for fucks sake now I even have to change the barcode list. 
+joined_barcodes = [x.replace("\t", "_") for x in barcodelist]
+
+
+
+
 panda.columns = genes.iloc[:,0]
-panda.index = barcodelist
+panda.index = joined_barcodes
 
 panda = panda.transpose()
 
