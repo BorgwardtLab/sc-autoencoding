@@ -43,7 +43,7 @@ ova="../outputs/sca/"$intermediate"/ova_classification/"
 
 
 
-python ../3_Autoencoder/sca_autoencoder.py --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir $ae_outdir |& tee -a $filename
+python ../3_Autoencoder/sca_autoencoder_poisson.py --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir $ae_outdir |& tee -a $filename
 
 
 
@@ -56,7 +56,7 @@ python ../4_Evaluation/sca_classification.py --reset --title "SCAutoencoder" --k
 
 
 
-echo "I have finished running the autoencoder"
+echo "I have finished running the poisson autoencoder"
 
 
 
