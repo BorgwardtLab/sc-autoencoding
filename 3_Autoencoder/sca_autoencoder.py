@@ -33,7 +33,7 @@ from keras.objectives import mean_squared_error
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
-#from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
 
 
 import numpy as np
@@ -239,8 +239,8 @@ class Autoencoder():
         
 # Define Loss for the training         
         self.loss = mean_squared_error
-        # self.loss = poisson_loss
-# , , , , , , , 
+        #self.loss = poisson
+
         # working       mse, mae, map, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, kld, cosine_proximity
         # not working   sparse_categorical_crossentropy, self.loss = poisson_loss
         
