@@ -529,7 +529,7 @@ def sca(adata,
         # training args
         epochs = 300,
         reduce_lr = 10,
-        early_stop = 15,
+        early_stop = 35,
         batch_size = 32,
         optimizer = "RMSprop",
         batchnorm = True,
