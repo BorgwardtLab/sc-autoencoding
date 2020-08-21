@@ -7,16 +7,20 @@ date
 echo "finished run_baselines.sh"
 
 
+
+bash run_autoencoder_DCA.sh
+date
+echo "finished run_autoencoder_DCA.sh"
+
+
+
+
 bash run_autoencoder.sh
 date
 echo "finished run_autoencoder.sh"
 
 
 
-
-bash evaluate_pca-kmcluster.sh
-date
-echo "finished evaluate_pca-kmcluster.sh"
 
 
 

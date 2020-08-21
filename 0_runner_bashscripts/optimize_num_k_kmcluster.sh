@@ -1,7 +1,7 @@
 
 
 
-filename=optimize_kmclustering.log
+filename=optimize_num_k_kmcluster.log
 
 
 rm $filename
