@@ -30,7 +30,7 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "calculate ICAs")  #required
-parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 50)
+parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 30)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaICA_output/")
@@ -43,6 +43,8 @@ input_path = args.input_dir
 output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
 component_name = "IC"
+num_components = args.num_components
+
 
 
 
@@ -52,7 +54,6 @@ print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
 matrix_file = input_path + "matrix.tsv"
 data = np.loadtxt(open(matrix_file), delimiter="\t")
-
 
 
 # load genes (for last task, finding most important genes)
@@ -66,22 +67,39 @@ barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = N
 labels = barcodes.iloc[:,1]
 
 
+test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+train_index = np.logical_not(test_index)
 
 
-# %% 
-
-num_components = args.num_components
 
 
-# %% do PCA
+
+
+
+# %% replacing data with testdata only
+
+original_data = data
+
+testdata = data[test_index]
+data = data[train_index]
+
+
+
+
+
+# %% do ICA
+
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
-data = StandardScaler().fit_transform(data) # Standardizing the features
+myscaler = StandardScaler()
+data =  myscaler.fit_transform(data)
+testdata = myscaler.transform(testdata)
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating independant components...")
 ica = FastICA(n_components=num_components)
 ICs = ica.fit_transform(data)
+test_ICs = ica.transform(testdata)
 
 
 
@@ -146,9 +164,17 @@ for i in range(how_many):
     file.write(text)
 file.close()
 
-# %%
 
-gulli = ica.components_[0,:]
+
+# %% Recombine Data
+outdata = np.zeros(shape = (original_data.shape[0], num_components))
+
+
+outdata[train_index] = ICs
+outdata[test_index] = test_ICs
+
+
+
 
 
 # %% Saving the data
@@ -161,7 +187,7 @@ if args.nosave == False:
 
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
     
-    np.savetxt(output_dir + "matrix.tsv", ICs, delimiter = "\t")
+    np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
     
     
     with open(output_dir + "genes.tsv", "w") as outfile:
@@ -171,6 +197,8 @@ if args.nosave == False:
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+    
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_ICA.py terminated successfully\n")
 

@@ -49,6 +49,8 @@ component_name = "t-SNE"
 
 
 
+print("WARNING: TSNE BY ITSELF IS UNABLE TO HANDLE A TRAINING-TESTING SPLIT")
+
 
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
@@ -69,6 +71,8 @@ barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = N
 labels = barcodes.iloc[:,1]
 
 
+test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+train_index = np.logical_not(test_index)
 
 
 # %% setup defaults
@@ -162,7 +166,10 @@ if args.nosave == False:
     
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+    
+    
+    
 print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully\n")
 
 

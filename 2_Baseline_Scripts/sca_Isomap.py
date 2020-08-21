@@ -6,6 +6,9 @@ Created on Wed Jul  1 23:52:35 2020
 """
 
 
+
+
+
 # %% Load Data
 import numpy as np
 import pandas as pd
@@ -21,10 +24,25 @@ import argparse
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_Isomap.py")
 
 
+
+
+if True:
+    print("isomap has been aborted")
+    sys.exit()
+
+
+
+
+
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
 except:
     pass
+
+
+
+
+
 
 
 

@@ -48,7 +48,7 @@ input_path = args.input_dir
 output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
 component_name = "UMAP"
-
+num_components = args.num_components
 
 
 # %% Read Input data
@@ -70,22 +70,36 @@ barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = N
 labels = barcodes.iloc[:,1]
 
 
+test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+train_index = np.logical_not(test_index)
+
+
 
 
 # %%
-    
-num_components = args.num_components
+
+original_data = data
+
+testdata = data[test_index]
+data = data[train_index]
+
+
+
+
 
 # %%
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
-data = StandardScaler(with_mean=False).fit_transform(data) # Standardizing the features
+myscaler = StandardScaler()
+data =  myscaler.fit_transform(data)
+testdata = myscaler.transform(testdata)
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "calculating UMAP...")
 reducer = umap.UMAP(verbose = args.verbosity, n_components = num_components)
 newdata = reducer.fit_transform(data)
+new_testdata = reducer.transform(testdata)
 
 
 
@@ -154,7 +168,23 @@ plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")
 
 
 
-# %% Diagnostics
+
+
+# %% recombine data
+
+
+outdata = np.zeros(shape = (original_data.shape[0], num_components))
+
+
+outdata[train_index] = newdata
+outdata[test_index] = new_testdata
+
+
+
+
+
+
+# %% output
 
 
 if args.nosave == False:
@@ -173,7 +203,8 @@ if args.nosave == False:
     
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+    
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_UMAP terminated successfully\n")
 

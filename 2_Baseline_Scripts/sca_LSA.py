@@ -35,7 +35,7 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "Do Latent Semantic Analysis")  #required
-parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int, default = 100)
+parser.add_argument("-n","--num_components", help="the number of LSA components to calculate", type = int, default = 30)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaLSA_output/")
@@ -49,6 +49,9 @@ output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
 component_name = "LS"
 
+num_lsa = args.num_components
+
+
 
 
 # %% Read Input data
@@ -56,7 +59,6 @@ print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
 matrix_file = input_path + "matrix.tsv"
 data = np.loadtxt(open(matrix_file), delimiter="\t")
-
 
 
 # load genes (for last task, finding most important genes)
@@ -70,17 +72,28 @@ barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = N
 labels = barcodes.iloc[:,1]
 
 
+test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+train_index = np.logical_not(test_index)
 
 
-# %%
+
+# %% replacing data with testdata only
+
+original_data = data
+
+testdata = data[test_index]
+data = data[train_index]
+
+
     
-num_lsa = args.num_components
-
 
 # %% doing LSA
 
 print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
-data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the features
+
+myscaler = StandardScaler()
+data =  myscaler.fit_transform(data)
+testdata = myscaler.transform(testdata)
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Calculating LSA...")
@@ -89,7 +102,7 @@ svd.fit(data)
 
 #lsa = latent semantic analysis
 lsa = svd.transform(data)
-
+test_lsa = svd.transform(testdata)
 
 
 #%% Outputs
@@ -179,7 +192,7 @@ if num_lsa > 50:
     plt.figure(figsize=[16,8])
     plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
     plt.ylabel('Percentage of explained variance')
-    plt.xlabel('Principal component')
+    plt.xlabel('Linear components (?)')
     plt.title('Scree plot')
     plt.show()    
     plt.savefig(outputplot_dir + "LSA_scree_plot_top50.png")    
@@ -208,6 +221,20 @@ file.close()
 
 
 
+# %% Recombine Data
+
+outdata = np.zeros(shape = (original_data.shape[0], num_lsa))
+
+
+outdata[train_index] = lsa
+outdata[test_index] = test_lsa
+
+
+
+
+
+
+
 
 # %% saving data
 
@@ -220,22 +247,18 @@ if args.nosave == False:
         
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
     
-    np.savetxt(output_dir + "matrix.tsv", lsa, delimiter = "\t")
-    
+    np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
     
     with open(output_dir + "genes.tsv", "w") as outfile:
         outfile.write("\n".join(genes))
-        
     
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-
-
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+    
+    
+    
 print(datetime.now().strftime("%H:%M:%S>"), "sca_LSA.py terminated successfully\n")
-
-
-
-
 
 
 

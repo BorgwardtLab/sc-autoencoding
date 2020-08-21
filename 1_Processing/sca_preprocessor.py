@@ -14,9 +14,10 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import scanpy as sc
-import scipy.io
 import matplotlib.pyplot as plt
 
+import scipy.io
+from sklearn.model_selection import train_test_split
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
@@ -35,18 +36,15 @@ parser.add_argument("-o","--output_dir", help="output directory", default = "../
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/preprocessing/preprocessed_data/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
+parser.add_argument("--test_fraction", help="enter a float between 0-1. This will be the fraction of the data, that is marked as test data.", default = 0.25, type = float)
 
 parser.add_argument("--saveobject", help="hitting this flag allows will save the adata object, so it can be evaluated with other techniques", action="store_true")
 
-
 parser.add_argument("--mingenes", help="minimal amount of genes per cell", default = 200, type = int)
 parser.add_argument("--mincells", help="minimal number of cells for a gene", default = 5, type = int)
-
 parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1500, type = int)
 parser.add_argument("--maxmito", help="maximal percentage of mitochondrial counts", default = 5, type = int)
-
 parser.add_argument("--features", help="number of highly variable features to catch", default = 2000, type = int)
-
 args = parser.parse_args() #required
 
 
@@ -54,14 +52,15 @@ args = parser.parse_args() #required
 input_dir = args.input_dir
 output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
+test_fraction = float(args.test_fraction)
 
 min_genes_per_cell = args.mingenes
 min_cells_per_gene = args.mincells
-
 max_num_features = args.maxfeatures
 max_mt_perc = args.maxmito
-
 num_top_genes = args.features 
+
+
 
 
 
@@ -259,7 +258,7 @@ sc.pp.scale(AnnData, max_value=10)
 
 
 
-# %%
+
 
 
 
@@ -297,11 +296,38 @@ if not args.plotsonly:
     anyway, this is a bad solution, but it fixes the problem, so meh'''
     
     
-    panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = False)
-    genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
-    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
-        
-  
+    panda.to_csv(output_dir + "matrix.tsv", sep = "\t", index = False, header = False)
+    genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+    
+    
+
+    
+    # %% Train Test Split
+
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split\n")
+
+    X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=test_fraction)
+    
+    train_indexes = list(X_train.index)
+    test_indexes = list(X_test.index)
+    
+    test_index = np.zeros(len(bc_types), dtype = bool)
+    
+    
+    for i in test_indexes:
+        test_index[i] = True
+
+    
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+
+
+
+
+# %%
+
+
+
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully\n")
 
@@ -309,7 +335,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated succ
 
 if not args.saveobject:
     import pickle
-    file = open(output_dir + "/AnnData.obj", "wb")
+    file = open(output_dir + "/AnnData_preprocessor.obj", "wb")
     pickle.dump(AnnData, file)
     
 

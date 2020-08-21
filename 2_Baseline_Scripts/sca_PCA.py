@@ -14,7 +14,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 99)
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 30)
 parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
@@ -25,14 +25,13 @@ args = parser.parse_args() #required
 
 
 
-def sca_PCA(input_path = "../inputs/preprocessed_data/",
-             output_dir = "../inputs/baseline_data/scaPCA_output/",
-             outputplot_dir = "../inputs/baseline_data/scaPCA_output/",
-             nosave = False,
-             num_components = 99
-             ):
-
-
+def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
+              output_dir = "../inputs/baselines/baseline_data/scaPCA_output/",
+              outputplot_dir = "../outputs/baselines/baseline_data/scaPCA_output/",
+              nosave = False,
+              num_components = 30
+              ):
+ 
     
     import numpy as np
     from sklearn.preprocessing import StandardScaler
@@ -55,7 +54,7 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
     print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py with num_components = {numcom:d}".format(numcom = num_components))    
     component_name = "PC"    
-
+    
     
     
     
@@ -65,12 +64,27 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
     data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
     
-    
     genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
-    
     
     barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
     labels = barcodes.iloc[:,1]
+    
+    
+    test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+    train_index = np.logical_not(test_index)
+    
+    
+    
+    
+    
+    ##############################################################################
+    # from here on out: 
+        # data = traindata
+        # testdata = testdata
+    complete_data = data
+    testdata = data[test_index]
+    data = data[train_index]
+    ##############################################################################
     
     
     
@@ -113,15 +127,15 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
     
     
-    # %% 
-    
-    num_components = num_components
     
     
     # %% do PCA
     
     print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
-    data = StandardScaler().fit_transform(data) # Standardizing the features
+    
+    myscaler = StandardScaler()
+    data =  myscaler.fit_transform(data)
+    
     
     
     print(datetime.now().strftime("%H:%M:%S>"), "calculating principal components...")
@@ -129,8 +143,34 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     PCs = myPCA.fit_transform(data)
     
     
-    
     explained_variance = myPCA.explained_variance_ratio_
+    
+    
+    
+    
+    
+    #################### do testdata
+    test_PCs = myscaler.transform(testdata)
+    test_PCs = myPCA.transform(test_PCs)
+    
+    
+    
+    
+    
+    
+    # %% i know this is messy, but this section here tries to combine the test and traindata into a single output matrix again.
+    
+    
+    # I keep it as a np array here. Other scripts maybe get a dataframe
+    #outdata = pd.DataFrame(data = np.zeros(shape = (len(complete_data), num_components)))
+    
+    
+    
+    outdata = np.zeros(shape = (len(complete_data), num_components))
+    
+    outdata[train_index] = PCs
+    outdata[test_index] = test_PCs
+    
     
     
     
@@ -171,10 +211,10 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
                     , s = 5)
     ax.legend(targets)
     ax.grid()
-    plt.savefig(outputplot_dir + "PCA_plot.png")
+    plt.savefig(outputplot_dir + "PCA_plot_trainingdata.png")
     
     
-
+    
     
     
     ### Save Variances
@@ -244,6 +284,13 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
     
     
+    
+    
+    
+    
+    
+    
+    
     # %% Saving the data
     
     if nosave == False:
@@ -254,14 +301,15 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
         print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
       
-        np.savetxt(output_dir + "matrix.tsv", PCs, delimiter = "\t")
-            
         
+      
+        np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
+            
         genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
         
         barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
         
-        
+        np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
         
         # with open(output_dir + "barcodes.tsv", "w") as outfile:
         #     outfile.write("\n".join(barcodes))
@@ -272,7 +320,7 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
     
     
     print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py terminated successfully\n")
-    
+
 
 
 
@@ -284,8 +332,8 @@ def sca_PCA(input_path = "../inputs/preprocessed_data/",
 
 if __name__ == "__main__":
     sca_PCA(input_path = args.input_dir, output_dir= args.output_dir, 
-             outputplot_dir= args.outputplot_dir, nosave = args.nosave, 
-             num_components= args.num_components)
+              outputplot_dir= args.outputplot_dir, nosave = args.nosave, 
+              num_components= args.num_components)
 
 
 

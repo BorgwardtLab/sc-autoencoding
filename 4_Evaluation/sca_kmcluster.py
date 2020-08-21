@@ -11,27 +11,15 @@ Created on Wed Jul  8 15:11:23 2020
 
 import argparse
 
-# parser = argparse.ArgumentParser(description = "clustering data")  #required
-# parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
-# parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-# parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/autoencoder_output/")
-# parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/kmcluster/")
-# parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/kmcluster/PCA/")
-# parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
-# parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
-# parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
-# parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
-# args = parser.parse_args() #required
-
-
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 5, help="the number of clusters to find", type = int)
 parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/DCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/sca/dca/kmcluster/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/sca/dca/kmcluster/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/baselines/kmcluster/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/kmcluster/scaPCA_output/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
+parser.add_argument("--elbowrange", help="the elobow will try all k's from 1-elbowrange", type = int, default = 11)
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 args = parser.parse_args() #required
@@ -39,14 +27,14 @@ args = parser.parse_args() #required
 
 
 
-
 def sca_kmcluster(k = 5,
                   dimensions = 0,
-                  input_path = "../inputs/baseline_data/scaPCA_output/",
-                  output_dir = "../inputs/baseline_data/scaPCA_output/",
-                  outputplot_dir = "../inputs/baseline_data/scaPCA_output/",
+                  input_path = "../inputs/baselines/baseline_data/scaPCA_output/",
+                  output_dir = "../outputs/baselines/kmcluster/scaPCA_output/",
+                  outputplot_dir = "../outputs/baselines/kmcluster/scaPCA_output/",
                   verbosity = 0,
                   elbow = False,
+                  elbowrange = 11,
                   title = "title_placeholder",
                   reset = False):
 
@@ -77,12 +65,6 @@ def sca_kmcluster(k = 5,
              
     
     
-    
-    
-    
-    
-    
-    
     tech_start = input_path.find("/sca")
     tech_end = input_path.find("_output/")
     
@@ -97,15 +79,25 @@ def sca_kmcluster(k = 5,
     data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
     
     
-
-    
-    
     # load barcodes
     barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
     global truelabels
     truelabels = barcodes.iloc[:,1]
     
-
+    
+    test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+    train_index = np.logical_not(test_index)
+    
+    
+    
+    # %% Handle train-test-split
+    
+    
+    
+    complete_data = data
+    testdata = data[test_index]
+    data = data[train_index]    
+    
     
     
     # %% Clustering
@@ -130,9 +122,38 @@ def sca_kmcluster(k = 5,
     
     
     predicted_labels = km.fit_predict(data)
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    ##############################################################################
+    # From here on out we plot, and for plotting the following stuff is important.
+    # here, at this junction, one can decide whether to plot train or testdata
+    data = data
+    predicted_labels = predicted_labels
+    # truelabels = 
     
     
     
+    
+    
+    
+    
+    
+    
+    
+
+
     
     # %% Plotting first simple plot
     if not os.path.exists(outputplot_dir):
@@ -176,7 +197,7 @@ def sca_kmcluster(k = 5,
         
         # calculate distortion for a range of number of cluster
         distortions = []
-        for i in range(1, 11):
+        for i in range(1, elbowrange):
             km = KMeans(
                 n_clusters=k, init='k-means++',
                 n_init=10, max_iter=300, 
@@ -190,10 +211,10 @@ def sca_kmcluster(k = 5,
         plt.plot(range(1, 11), distortions, marker='o')
         plt.xlabel('Number of clusters')
         plt.ylabel('Distortion')
+        plt.title("k-search (on traindata)")
         plt.show()
         plt.savefig(outputplot_dir + "Elbowplot.png")
         
-    
     
     
     
@@ -211,6 +232,11 @@ def sca_kmcluster(k = 5,
     global_counts = Counter(truelabels)
     
     
+    
+    COUNTS_PER_CLUSTER = "\n\nCounts per Cluster:"
+    
+    
+    
     for cluster in range(k):
         indexes = np.where(predicted_labels == cluster)[0] 
         truelabels_in_cluster = truelabels[indexes]   
@@ -221,9 +247,13 @@ def sca_kmcluster(k = 5,
   
 
         ### remove this section if all runs well
-        print("\ncounts for cluster nr {0:d}:".format(cluster))
-        print(counts.most_common())
-        # print("------ gulligulli")
+        #print("\ncounts for cluster nr {0:d}:".format(cluster))
+        #print(counts.most_common())
+        
+        COUNTS_PER_CLUSTER += "\ncounts for cluster nr {0:d}:\n".format(cluster)
+        COUNTS_PER_CLUSTER += str(counts.most_common())
+        #COUNTS_PER_CLUSTER += "\n"
+
         
         # find "multiple assigned celltypes"
         if most_common_str in clusterlabels:
@@ -312,7 +342,6 @@ def sca_kmcluster(k = 5,
     
     for target, color in zip(set(truelabels),colors):
         
-        global indicesToKeep
         
         indicesToKeep = truelabels == target
         
@@ -399,8 +428,10 @@ def sca_kmcluster(k = 5,
         file.write("\n")
         file.write("\n")
         
-    
-    file.write("######" + title + "######\n")
+
+    file.write("###############################\n")
+    file.write("#######" + title + "#######\n")
+    file.write("###############################\n")
     file.write("input_data from " + input_path + "\n")
     file.write("\nAverage Purity: \t" + '{:.4f}'.format(statistics.mean(purity_per_cluster)))
     file.write("\t(" + str(purity_per_cluster).strip("[]") + ")")
@@ -410,10 +441,14 @@ def sca_kmcluster(k = 5,
     
     file.write("\nCluster labels: \t" + str(clusterlabels).strip("[]") + ")")
     
+    file.write(COUNTS_PER_CLUSTER)
+    
     file.close() 
     
     
-
+    # with open(output_dir + "counts_per_cluster.tsv", "w") as outfile:
+    #     outfile.write(COUNTS_PER_CLUSTER)
+    
 
     beenzcount = 0
     for i in range(len(truelabels)):
@@ -423,21 +458,13 @@ def sca_kmcluster(k = 5,
     global_purity = beenzcount/len(truelabels)            
 
 
-        
-    
-    
-    # %%
     print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully")
     print("global purity is: {0:.4f}\n".format(global_purity))   
     
     
     return(global_purity)
     
-    
-    
-    
-    
-    
+# %%
     
     
     
@@ -447,8 +474,8 @@ def sca_kmcluster(k = 5,
 if __name__ == "__main__":
     sca_kmcluster(k = args.k, dimensions = args.dimensions, input_path = args.input_dir, 
                   output_dir = args.output_dir, outputplot_dir= args.outputplot_dir, 
-                  verbosity = args.verbosity, elbow = args.elbow, title = args.title, 
-                  reset = args.reset)
+                  verbosity = args.verbosity, elbow = args.elbow, elbowrange = args.elbowrange, 
+                  title = args.title, reset = args.reset)
 
 
 
