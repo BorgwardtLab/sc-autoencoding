@@ -38,8 +38,6 @@ def sca_kmcluster(k = 5,
                   title = "title_placeholder",
                   reset = False):
 
-    global data
-    
     import sys
     import os
     
@@ -81,7 +79,6 @@ def sca_kmcluster(k = 5,
     
     # load barcodes
     barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
-    global truelabels
     truelabels = barcodes.iloc[:,1]
     
     
@@ -89,18 +86,6 @@ def sca_kmcluster(k = 5,
     train_index = np.logical_not(test_index)
     
     
-    
-    # %% Handle train-test-split
-    
-    
-    
-    complete_data = data
-    testdata = data[test_index]
-    data = data[train_index]    
-    
-    
-    
-    # %% Clustering
     
     print(datetime.now().strftime("%H:%M:%S>"), "Clustering...")
     
@@ -114,6 +99,21 @@ def sca_kmcluster(k = 5,
     
     data = data[:,range(dims)]
     
+    
+    
+        
+    # %% Handle train-test-split
+    
+    
+    
+    complete_data = data
+    testdata = data[test_index]
+    traindata = data[train_index]    
+    
+    
+    
+    # %% Clustering    
+    
     km = KMeans(
         n_clusters=k, init='k-means++',
         n_init=10, max_iter=300, 
@@ -121,37 +121,31 @@ def sca_kmcluster(k = 5,
     ) # default values
     
     
-    predicted_labels = km.fit_predict(data)
+    predicted_train = km.fit_predict(traindata)
+    predicted_test = km.predict(testdata)
 
 
+    truelabels_train = truelabels[train_index]
+    truelabels_test = truelabels[test_index]
 
-
-
-
-
-
-
-
-
-
-    
     
     ##############################################################################
     # From here on out we plot, and for plotting the following stuff is important.
     # here, at this junction, one can decide whether to plot train or testdata
-    data = data
-    predicted_labels = predicted_labels
-    # truelabels = 
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    # for traindata
+    data = traindata
+    predicted_labels = predicted_train
+    truelabels = np.array(truelabels_train)
+
+    # for testdata (simply set flag to false to switch to plotting train instead)
+    if True:
+        data = testdata
+        predicted_labels = predicted_test
+        truelabels = np.array(truelabels_test)       
+
+
 
 
     
@@ -215,11 +209,9 @@ def sca_kmcluster(k = 5,
         plt.show()
         plt.savefig(outputplot_dir + "Elbowplot.png")
         
-    
-    
-    
-    
-    
+
+
+
     
     # %% Evaluate Purity
     from collections import Counter
@@ -239,6 +231,7 @@ def sca_kmcluster(k = 5,
     
     for cluster in range(k):
         indexes = np.where(predicted_labels == cluster)[0] 
+                
         truelabels_in_cluster = truelabels[indexes]   
         counts = Counter(truelabels_in_cluster)
         
@@ -401,13 +394,25 @@ def sca_kmcluster(k = 5,
     plt.grid()
     plt.show()
     plt.savefig(outputplot_dir + "clusterplot_mistakes.png")
-        
+
+
+
+
+
+# %%
+    unique, counts = np.unique(predicted_test, return_counts=True)
     
+
+    plt.figure()
+    plt.bar(x = unique, height = counts)
     
+    for i, y in enumerate(counts):
+        plt.text(i, y+5, str(y), color='blue', fontweight='bold')
+
+
+    plt.savefig(outputplot_dir + "cluster_histogram.png")
     
-    
-    
-    
+
     
     
     # %% Saving result

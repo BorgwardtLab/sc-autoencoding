@@ -71,13 +71,13 @@ def random_forrest(traindata, trainlabels, testdata, testlabels):
     
     max_depth = 20
     max_features = 30
-    min_sample_leaf = 1; # keep in mind, as integer it works differently than as float
-    min_sample_split = 2; #same
+    min_samples_leaf = 1; # keep in mind, as integer it works differently than as float
+    min_samples_split = 2; #same
     n_trees = 150;
     
     classifier = RandomForestClassifier(n_estimators = n_trees, criterion = "gini",
                                         max_depth = max_depth, max_features = max_features,
-                                        min_sample_leaf = min_sample_leaf, min_sample_split = min_sample_split)
+                                        min_samples_leaf = min_samples_leaf, min_samples_split = min_samples_split)
     classifier.fit(traindata, trainlabels)
     y_pred = classifier.predict(testdata) 
     
@@ -94,7 +94,6 @@ def linear_discriminant_analysis(traindata, trainlabels, testdata, testlabels):
     
     prediction = lda.predict(testdata)
     
-    print(prediction)
     metric = compute_metrics(testlabels, prediction)
     return metric
 
@@ -145,11 +144,10 @@ def compute_metrics(y_true, y_pred):
     recall = tp/(tp+fn)
     f1score = 2*recall*precision/(recall + precision)
     
+    size = sum(y_true)
     
-    results = [accuracy, precision, recall, f1score, tn, fp, fn, tp]
+    results = [accuracy, precision, recall, f1score, tn, fp, fn, tp, size]
     return results
-
-
 
 
 
@@ -166,66 +164,51 @@ print(input_path)
 data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
 barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+
+test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+train_index = np.logical_not(test_index)
+
+
+
+
+# %% Handle Train Test Split
+
+complete_data = data
+test_data = data[test_index]
+train_data = data[train_index]    
+
 labels = barcodes.iloc[:,1]
+test_labels = labels[test_index]
+train_labels = labels[train_index]  
+
+
 labelset = list(set(labels))
 
 
 # %%
-
 print(datetime.now().strftime("%H:%M:%S>"), "starting classification...")
 
+pandas = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP", "size"])
 
-kfolder = StratifiedKFold(n_splits=kfold, shuffle=True)
 
-pandas = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])
-foldnumber = 0
 
-for trainindices, testindices in kfolder.split(data, labels):
-    traindata = data[trainindices,:]
-    trainlabels = barcodes.iloc[trainindices,:]
-    testdata = data[testindices,:]
-    testlabels = barcodes.iloc[testindices,:]
+
+
+# %%
+
+'''old way, using stratifiedkfold to generate test and train indices is appended at the very end.'''
+
+
+'''no longer doing kfolds, instead just once with the train and test labels from file'''
+
+for label in labelset:
+    binary_trainlabels = (np.array(train_labels == label))
+    binary_testlabels = (np.array(test_labels == label))
     
-    foldnumber = foldnumber + 1
+    result = classify(train_data, binary_trainlabels, test_data, binary_testlabels, classifier)
     
-    for label in labelset:
-        binary_trainlabels = (np.array(trainlabels.iloc[:,1]) == label)
-        binary_testlabels = (np.array(testlabels.iloc[:,1]) == label)
-        
-        result = classify(traindata, binary_trainlabels, testdata, binary_testlabels, classifier)
-        
-        resultname = "Fold " + str(foldnumber) + ": " + label
-        pandas[resultname] = result
-        
+    pandas[label] = result
     
-
-
-
-
-
-
-# %% Calculate celltype averages
-
-
-
-celltype_averages = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])
-columns = pandas.columns
-
-for cellidx in range(len(labelset)):
-    
-    tempframe = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])    
-    
-    for foldidx in range(kfold):
-        idx = cellidx + foldidx * len(labelset)       
-        tempframe[columns[idx]] = pandas.iloc[:,idx]
-        
-    colname = labelset[cellidx]
-    celltype_averages[colname] = tempframe.mean(axis = 1)
-
-
-
-
-
 
 
 
@@ -253,7 +236,7 @@ else:
     file.write("\n")    
 
 file.write("######" + args.title + "######\n")
-file.write("input_data from " + input_path + ", Classifier " + classifier + "\n")
+file.write("Classifier " + classifier + ", input_data from " + input_path + "\n")
 
 
 averages = pandas.mean(axis = 1)
@@ -263,13 +246,9 @@ file.write("\nAverage Precision:\t" + '{:.4f}'.format(averages.iloc[1]))
 file.write("\nAverage Recall:   \t" + '{:.4f}'.format(averages.iloc[2]))
 file.write("\nAverage F1 Score: \t" + '{:.4f}'.format(averages.iloc[3]))
 
-file.write("\n\nCelltype Averages:\n")
-file.close()
-celltype_averages.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
-
 
 file = open(output_dir + "one_versus_all_classification.txt", "a")
-file.write("\nComplete Dataframe:\n")
+file.write("\n\nComplete Dataframe:\n")
 file.close()
 pandas.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
 
@@ -280,6 +259,112 @@ print(datetime.now().strftime("%H:%M:%S>"), "sca_classification.py terminated su
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# %% appendix
+
+
+
+# kfolder = StratifiedKFold(n_splits=kfold, shuffle=True)
+
+# for trainindices, testindices in kfolder.split(train_data, train_labels):
+#     traindata = data[trainindices,:]
+#     trainlabels = barcodes.iloc[trainindices,:]
+#     testdata = data[testindices,:]
+#     testlabels = barcodes.iloc[testindices,:]
+    
+#     foldnumber = foldnumber + 1
+    
+#     for label in list(set(train_labels)):
+#         binary_trainlabels = (np.array(trainlabels.iloc[:,1]) == label)
+#         binary_testlabels = (np.array(testlabels.iloc[:,1]) == label)
+        
+#         result = classify(traindata, binary_trainlabels, testdata, binary_testlabels, classifier)
+        
+#         resultname = "Fold " + str(foldnumber) + ": " + label
+#         pandas[resultname] = result
+        
+
+# celltype_averages = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])
+# columns = pandas.columns
+
+# for cellidx in range(len(labelset)):
+    
+#     tempframe = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score ", "TN", "FP", "FN", "TP"])    
+    
+#     for foldidx in range(kfold):
+#         idx = cellidx + foldidx * len(labelset)       
+#         tempframe[columns[idx]] = pandas.iloc[:,idx]
+        
+#     colname = labelset[cellidx]
+#     celltype_averages[colname] = tempframe.mean(axis = 1)
+
+
+# # %% gENERATE Output
+# if not os.path.exists(output_dir):
+#     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+#     os.makedirs(output_dir)
+
+# print(datetime.now().strftime("%H:%M:%S>"), "writing data to output file...")
+
+
+# if args.reset:
+#     file = open(output_dir + "one_versus_all_classification.txt", "w")
+# else:
+#     file = open(output_dir + "one_versus_all_classification.txt", "a")
+#     file.write("\n")
+#     file.write("\n")
+#     file.write("\n")
+#     file.write("\n")
+#     file.write("\n")    
+
+# file.write("######" + args.title + "######\n")
+# file.write("input_data from " + input_path + ", Classifier " + classifier + "\n")
+
+
+# averages = pandas.mean(axis = 1)
+
+# file.write("\nAverage Accuracy: \t" + '{:.4f}'.format(averages.iloc[0]))
+# file.write("\nAverage Precision:\t" + '{:.4f}'.format(averages.iloc[1]))
+# file.write("\nAverage Recall:   \t" + '{:.4f}'.format(averages.iloc[2]))
+# file.write("\nAverage F1 Score: \t" + '{:.4f}'.format(averages.iloc[3]))
+
+# file.write("\n\nCelltype Averages:\n")
+# file.close()
+# celltype_averages.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
+
+
+# file = open(output_dir + "one_versus_all_classification.txt", "a")
+# file.write("\nComplete Dataframe:\n")
+# file.close()
+# pandas.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
+
+
+# # %% 
+# print(datetime.now().strftime("%H:%M:%S>"), "sca_classification.py terminated successfully\n")
 
 
 

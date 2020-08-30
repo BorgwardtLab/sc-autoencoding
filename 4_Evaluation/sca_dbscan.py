@@ -86,11 +86,6 @@ else:
 print(datetime.now().strftime("%H:%M:%S>"), "Clustering...")
 
 
-
-args.eps = 15
-args.min_samples = 2
-
-
 data = data[:,range(dims)]
 dbscanner = DBSCAN(eps=args.eps, min_samples=args.min_samples)
 
@@ -168,7 +163,7 @@ for i in range(len(clusterlabels)):
 # add cluster to each name that is doubly
 for idx in range(len(multiassigned)):
     if multiassigned[idx]:
-        clusterlabels[idx] = clusterlabels[idx] + " (Cluster " + str(idx) + ")"
+        clusterlabels[idx] = clusterlabels[idx] + " (# " + str(idx) + ")"
 
 
 
@@ -261,7 +256,7 @@ plt.savefig(outputplot_dir + "clusterplot_prediction.png")
 # %% plot errors
 
 if -1 in set(predicted_labels):
-    clusterlabels_dictionary[-1] = "Not assigned"
+    clusterlabels_dictionary[-1] = "Outlier"
 
 
 predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
@@ -271,11 +266,6 @@ correct_indexes = np.zeros(len(predicted_labels_text), dtype = bool)
 for i in range(len(predicted_labels_text)):
     if predicted_labels_text[i] == truelabels[i]:
         correct_indexes[i] = True
-
-
-
-
-correct_indexes = np.array(predicted_labels_text) == np.array(truelabels).all()
 
 
 
@@ -318,6 +308,44 @@ plt.savefig(outputplot_dir + "clusterplot_mistakes.png")
 
 
 
+# %% Plot cluster information
+
+
+
+# %%
+unique, counts = np.unique(predicted_labels, return_counts=True)
+
+
+bp_labels = clusterlabels.copy()
+
+if n_clusters != n_labels:
+    bp_labels.insert(0, "Outliers")
+
+
+plt.figure()
+plt.bar(x = bp_labels, height = counts)
+
+
+# add values
+for i, y in enumerate(counts):
+    plt.text(i, y+5, str(y), color='blue', fontweight='bold')
+
+
+
+plt.xticks(bp_labels, rotation=90)
+plt.subplots_adjust(bottom=0.55, top=0.9)
+
+
+
+plt.show()
+plt.savefig(outputplot_dir + "cluster_histogram.png")
+
+
+
+
+
+
+
 
 
 
@@ -354,9 +382,23 @@ file.write("\nCluster labels: \t" + str(clusterlabels).strip("[]") + ")")
 
 file.close()
 
-print("average purity: {0:.6f}".format(statistics.mean(purity_per_cluster)))
-print(statistics.mean(purity_per_cluster))
-print("number of clusters found: {0:02d}".format(n_clusters))
+print("\taverage purity: {0:.6f}".format(statistics.mean(purity_per_cluster)))
+print("\tnumber of clusters found: {0:02d}".format(n_clusters))
+
+
+
+
+
+if n_clusters != n_labels:
+    outlier_fraction = counts[0]/len(predicted_labels)
+    print("\tOutlier Fraction is {:.4f}".format(outlier_fraction))
+else:
+    print("\tOutlier Fraction is 0.0000")
+    
+        
+    
+
+
 
 # %%
 
