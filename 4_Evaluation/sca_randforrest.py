@@ -46,7 +46,7 @@ parser.add_argument("-i","--input_dir", help="input directory", default = "../in
 parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/baselines/random_forrest/")
 #parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 #parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
-parser.add_argument("--ova", help="to use one-versus all classification instead of multiclass", action="store_true")
+# parser.add_argument("--ova", help="to use one-versus all classification instead of multiclass", action="store_true")
 parser.add_argument("--plotonly", help="to only show the plots in order to find sweet parameters for the forest", action="store_true")
 
 args = parser.parse_args() #required

@@ -1,7 +1,7 @@
 
 
 
-filename=optimize_num_PCA.log
+filename=log_optimize_num_PCA.log
 
 
 rm $filename

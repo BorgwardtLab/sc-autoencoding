@@ -309,6 +309,7 @@ if not args.plotsonly:
 
     X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=test_fraction)
     
+    
     train_indexes = list(X_train.index)
     test_indexes = list(X_test.index)
     

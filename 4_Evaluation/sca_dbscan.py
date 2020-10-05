@@ -103,7 +103,6 @@ n_labels = len(set(predicted_labels))   # will always include -1
 
 
 
-
 # %% Evaluate Purity
 from collections import Counter
 print(datetime.now().strftime("%H:%M:%S>"), "Evaluate Clustering...")

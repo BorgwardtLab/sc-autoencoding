@@ -3,6 +3,16 @@
 Created on Mon Aug 17 02:00:12 2020
 
 @author: Emilia Radikov
+
+
+
+
+
+TODO
+- instead of randomly picking a label, loop through all.
+- add the parameterranges as arguments, so they can be controlled externally
+
+
 """
 
 
@@ -44,11 +54,9 @@ except:
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
 #parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/baselines/random_forrest/")
-parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/optimization/random_forrest/")
+parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/optimization/random_forrest/binary/")
 
-#parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
-#parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
-parser.add_argument("--plotonly", help="to only show the plots in order to find sweet parameters for the forest", action="store_true")
+
 
 args = parser.parse_args() #required
 
@@ -99,9 +107,12 @@ print(my_label)
 
 true_binlabel = labels == my_label
 
-
-
 x_train, x_test, y_train, y_test = train_test_split(data, true_binlabel, test_size = 0.25)
+
+
+
+
+
 
 print("n_estimators")
 ### n_estimators
@@ -131,8 +142,13 @@ line2, = plt.plot(n_estimators, test_results, "r", label= "Test AUC")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
 plt.ylabel("AUC score")
 plt.xlabel("n_estimators")
+plt.title("mylabel = " + my_label)
 plt.show()
 plt.savefig(outputplot_dir + "auc_n_estimators.png")
+
+
+
+
 
 
 

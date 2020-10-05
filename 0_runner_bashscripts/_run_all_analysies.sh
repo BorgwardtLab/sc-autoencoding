@@ -22,9 +22,6 @@ echo "finished run_autoencoder.sh"
 
 
 
-
-
-
 echo "finished running all runners"
 
 

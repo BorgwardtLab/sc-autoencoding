@@ -16,6 +16,9 @@ import pandas as pd
 import scanpy as sc
 import scipy.io
 
+from sklearn.model_selection import train_test_split
+
+
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
@@ -30,9 +33,10 @@ except:
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/sca_preprocessed_data")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/sca_preprocessed_data/")
 
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
+parser.add_argument("--test_fraction", help="enter a float between 0-1. This will be the fraction of the data, that is marked as test data.", default = 0.25, type = float)
 
 
 parser.add_argument("--mingenes", help="minimal amount of genes per cell", default = 200, type = int)
@@ -66,14 +70,6 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     
     
-
-
-
-
-
-
-
-
 # fs_min_mean = 0.0125
 # fs_max_mean = 3
 # fs_min_disp = 0.5
@@ -253,17 +249,42 @@ if args.limit_cells > 0:
     
 
 
-panda.to_csv(output_dir + "/matrix.tsv", sep = "\t", index = False, header = False)
-genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
-barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
+panda.to_csv(output_dir + "matrix.tsv", sep = "\t", index = False, header = False)
+genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 
 
+
+
+# %% Train Test Split
+
+print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split\n")
+
+X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=args.test_fraction)
+
+
+train_indexes = list(X_train.index)
+test_indexes = list(X_test.index)
+
+test_index = np.zeros(len(bc_types), dtype = bool)
+
+
+for i in test_indexes:
+    test_index[i] = True
+
+
+np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+
+
+
+
+
+
+# %% to generate "transposed" outdata with headers for the vanilla DCA
 
 # for fucks sake now I even have to change the barcode list. 
 joined_barcodes = [x.replace("\t", "_") for x in barcodelist]
-
-
 
 
 panda.columns = genes.iloc[:,0]
@@ -271,11 +292,16 @@ panda.index = joined_barcodes
 
 panda = panda.transpose()
 
-panda.to_csv(output_dir + "/matrix_transposed.tsv", sep = "\t", index = True, header = True)
+panda.to_csv(output_dir + "matrix_transposed.tsv", sep = "\t", index = True, header = True)
 
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
+
+
+
+
+
 
 
 

@@ -226,9 +226,9 @@ print(datetime.now().strftime("%H:%M:%S>"), "writing data to output file...")
 
 
 if args.reset:
-    file = open(output_dir + "one_versus_all_classification.txt", "w")
+    file = open(output_dir + "one_versus_all_classification_" + classifier + ".txt", "w")
 else:
-    file = open(output_dir + "one_versus_all_classification.txt", "a")
+    file = open(output_dir + "one_versus_all_classification_" + classifier + ".txt", "a")
     file.write("\n")
     file.write("\n")
     file.write("\n")
@@ -247,10 +247,10 @@ file.write("\nAverage Recall:   \t" + '{:.4f}'.format(averages.iloc[2]))
 file.write("\nAverage F1 Score: \t" + '{:.4f}'.format(averages.iloc[3]))
 
 
-file = open(output_dir + "one_versus_all_classification.txt", "a")
+file = open(output_dir + "one_versus_all_classification_" + classifier + ".txt", "a")
 file.write("\n\nComplete Dataframe:\n")
 file.close()
-pandas.to_csv(output_dir + "one_versus_all_classification.txt", mode = "a", sep = "\t")
+pandas.to_csv(output_dir + "one_versus_all_classification_" + classifier + ".txt", mode = "a", sep = "\t")
 
 
 # %% 

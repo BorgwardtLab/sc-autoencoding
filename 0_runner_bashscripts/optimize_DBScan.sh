@@ -1,6 +1,6 @@
 
 
-filename=oprimize_DBScan.log
+filename=log_oprimize_DBScan.log
 
 rm $filename
 
