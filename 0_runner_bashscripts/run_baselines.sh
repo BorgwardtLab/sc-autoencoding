@@ -36,12 +36,24 @@ python ../4_Evaluation/sca_kmcluster.py --title "original_data" --k 5 --dimensio
 for classifier in logreg lda forest
 do
 
+echo python ../4_Evaluation/sca_classification.py --reset --title "PCA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaPCA_output/" --output_dir "../outputs/baselines/ova_classification/"
 python ../4_Evaluation/sca_classification.py --reset --title "PCA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaPCA_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
+echo python ../4_Evaluation/sca_classification.py --title "ICA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaICA_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 python ../4_Evaluation/sca_classification.py --title "ICA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaICA_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
+echo python ../4_Evaluation/sca_classification.py --title "LSA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaLSA_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 python ../4_Evaluation/sca_classification.py --title "LSA" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaLSA_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
 # python ../4_Evaluation/sca_classification.py --title "Isomap" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaIsomap_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
+echo python ../4_Evaluation/sca_classification.py --title "t-SNE" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaTSNE_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 python ../4_Evaluation/sca_classification.py --title "t-SNE" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaTSNE_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
+echo python ../4_Evaluation/sca_classification.py --title "UMAP" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaUMAP_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 python ../4_Evaluation/sca_classification.py --title "UMAP" --kfold 5 --classifier $classifier --input_dir "../inputs/baselines/baseline_data/scaUMAP_output/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
+
+echo python ../4_Evaluation/sca_classification.py --title "original_data" --kfold 5 --classifier $classifier --input_dir "../inputs/data/preprocessed_data/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 python ../4_Evaluation/sca_classification.py --title "original_data" --kfold 5 --classifier $classifier --input_dir "../inputs/data/preprocessed_data/" --output_dir "../outputs/baselines/ova_classification/" |& tee -a log_run_baselines.log
 
 done

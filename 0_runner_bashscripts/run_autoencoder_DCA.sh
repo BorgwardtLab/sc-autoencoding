@@ -2,6 +2,7 @@
 
 rm log_run_autoencoder_DCA.log
 
+conda activate dicia2
 
 
 # python ../1_Processing/sca_datamerger.py --mode both --input_dir "../inputs/data/raw_input" --output_dir "../inputs/data/raw_input_combined" |& tee -a log_run_baselines
@@ -34,6 +35,7 @@ python ../4_Evaluation/sca_classification.py --reset --title "DCA" --kfold 5 --c
 
 done
 
+conda activate tf
 
 echo "I have finished running DCA"
 

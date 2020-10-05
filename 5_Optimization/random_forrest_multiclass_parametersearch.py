@@ -31,12 +31,6 @@ import matplotlib.pyplot as plt
 
 
 
-
-import random
-
-
-
-
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
 except:
@@ -47,7 +41,7 @@ except:
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
 #parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/baselines/random_forrest/")
-parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/optimization/random_forest/binary/")
+parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/optimization/random_forest/multiclass/")
 
 parser.add_argument('--n_trees', nargs='+', type = int, default = [1, 2, 6, 12, 32, 50, 64, 86, 100, 120, 150, 250, 500], help="default [1, 2, 4, 8, 16, 32, 64, 100, 200]")
 parser.add_argument('--max_max_depth', type = int, default = 100, help = "it will try out the values from np.linspace(1, max_max_depth, 20)")
@@ -86,14 +80,7 @@ labels = barcodes.iloc[:,1]
 
 os.makedirs(outputplot_dir, exist_ok=True)
 
-
-# chose a random label
-my_label = random.choice(labels)
-print(my_label)
-
-true_binlabel = labels == my_label
-
-x_train, x_test, y_train, y_test = train_test_split(data, true_binlabel, test_size = 0.25)
+x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size = 0.25)
 
 # %%
 
@@ -116,9 +103,6 @@ print(max_features)
 
 
 
-
-
-
 print("n_estimators")
 train_results = []
 test_results = []
@@ -126,29 +110,27 @@ test_results = []
 for estimator in n_estimators:
     rf = RandomForestClassifier(n_estimators=estimator, n_jobs=-1)
     rf.fit(x_train, y_train)
+    
     train_pred = rf.predict(x_train)
-   
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-   
-    train_results.append(roc_auc)
-    y_pred = rf.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
-   
+    accuracy = sum(train_pred == y_train)/len(y_train)
+    train_results.append(accuracy)   
+    
+    test_pred = rf.predict(x_test)
+    accuracy = sum(test_pred == y_test)/len(y_test)
+    test_results.append(accuracy)       
+    
+
    
 from matplotlib.legend_handler import HandlerLine2D
 plt.figure()
-line1, = plt.plot(n_estimators, train_results, "b", label="Train AUC")
-line2, = plt.plot(n_estimators, test_results, "r", label= "Test AUC")
+line1, = plt.plot(n_estimators, train_results, "b", label="Train accuracy")
+line2, = plt.plot(n_estimators, test_results, "r", label= "Test accuracy")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel("AUC score")
+plt.ylabel("accuracy")
 plt.xlabel("n_estimators")
-plt.title("mylabel = " + my_label)
+plt.title(input_dir)
 plt.show()
 plt.savefig(outputplot_dir + "auc_n_estimators.png")
-
 
 
 
@@ -162,23 +144,31 @@ test_results = []
 for max_depth in max_depths:
     rf = RandomForestClassifier(max_depth=max_depth, n_jobs=-1)
     rf.fit(x_train, y_train)
+    
     train_pred = rf.predict(x_train)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    train_results.append(roc_auc)
-    y_pred = rf.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
+    accuracy = sum(train_pred == y_train)/len(y_train)
+    train_results.append(accuracy)   
+    
+    test_pred = rf.predict(x_test)
+    accuracy = sum(test_pred == y_test)/len(y_test)
+    test_results.append(accuracy)       
+    
+
 from matplotlib.legend_handler import HandlerLine2D
 plt.figure()
-line1, = plt.plot(max_depths, train_results, "b", label="Train AUC")
-line2, = plt.plot(max_depths, test_results, "r", label= "Test AUC")
+line1, = plt.plot(max_depths, train_results, "b", label="Train accuracy")
+line2, = plt.plot(max_depths, test_results, "r", label= "Test accuracy")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel("AUC score")
+plt.ylabel("accuracy")
 plt.xlabel("max depth")
 plt.show()
 plt.savefig(outputplot_dir + "auc_max_depth.png")
+
+
+
+
+
+
 
     
 ### min samples split
@@ -189,23 +179,30 @@ test_results = []
 for min_samples_split in min_samples_splits:
     rf = RandomForestClassifier(min_samples_split=min_samples_split)
     rf.fit(x_train, y_train)
+    
     train_pred = rf.predict(x_train)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    train_results.append(roc_auc)
-    y_pred = rf.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
+    accuracy = sum(train_pred == y_train)/len(y_train)
+    train_results.append(accuracy)   
+    
+    test_pred = rf.predict(x_test)
+    accuracy = sum(test_pred == y_test)/len(y_test)
+    test_results.append(accuracy)       
+    
+
 from matplotlib.legend_handler import HandlerLine2D
 plt.figure()
-line1, = plt.plot(min_samples_splits, train_results, "b", label="Train AUC")
-line2, = plt.plot(min_samples_splits, test_results, "r", label= "Test AUC")
+line1, = plt.plot(min_samples_splits, train_results, "b", label="Train accuracy")
+line2, = plt.plot(min_samples_splits, test_results, "r", label= "Test accuracy")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel("AUC score")
+plt.ylabel("accuracy")
 plt.xlabel("min sample split")
 plt.show() 
 plt.savefig(outputplot_dir + "auc_min_samples_split.png")
+
+
+
+
+
 
 
 ### min sample leaf 
@@ -216,23 +213,25 @@ test_results = []
 for min_samples_leaf in min_samples_leafs:
     rf = RandomForestClassifier(min_samples_leaf=min_samples_leaf)
     rf.fit(x_train, y_train)
+
     train_pred = rf.predict(x_train)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    train_results.append(roc_auc)
-    y_pred = rf.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
+    accuracy = sum(train_pred == y_train)/len(y_train)
+    train_results.append(accuracy)   
+    
+    test_pred = rf.predict(x_test)
+    accuracy = sum(test_pred == y_test)/len(y_test)
+    test_results.append(accuracy)       
+    
 from matplotlib.legend_handler import HandlerLine2D
 plt.figure()
-line1, = plt.plot(min_samples_leafs, train_results, "b", label="Train AUC")
-line2, = plt.plot(min_samples_leafs, test_results, "r", label= "Test AUC")
+line1, = plt.plot(min_samples_leafs, train_results, "b", label="Train accuracy")
+line2, = plt.plot(min_samples_leafs, test_results, "r", label= "Test accuracy")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel("AUC score")
+plt.ylabel("accuracy")
 plt.xlabel("min sample leaf")
 plt.show()
 plt.savefig(outputplot_dir + "auc_min_samples_leafs.png")
+
 
 
 
@@ -243,20 +242,21 @@ test_results = []
 for max_feature in max_features:
     rf = RandomForestClassifier(max_features=max_feature)
     rf.fit(x_train, y_train)
+    
     train_pred = rf.predict(x_train)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    train_results.append(roc_auc)
-    y_pred = rf.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
+    accuracy = sum(train_pred == y_train)/len(y_train)
+    train_results.append(accuracy)   
+    
+    test_pred = rf.predict(x_test)
+    accuracy = sum(test_pred == y_test)/len(y_test)
+    test_results.append(accuracy)       
+    
 from matplotlib.legend_handler import HandlerLine2D
 plt.figure()
-line1, = plt.plot(max_features, train_results, "b", label="Train AUC")
-line2, = plt.plot(max_features, test_results, "r", label= "Test AUC")
+line1, = plt.plot(max_features, train_results, "b", label="Train accuracy")
+line2, = plt.plot(max_features, test_results, "r", label= "Test accuracy")
 plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel("AUC score")
+plt.ylabel("accuracy")
 plt.xlabel("max features")
 plt.show() 
 plt.savefig(outputplot_dir + "auc_max_features.png")

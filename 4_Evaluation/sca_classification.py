@@ -42,7 +42,7 @@ args = parser.parse_args() #required
 
 
 
-input_path = args.input_dir
+input_dir = args.input_dir
 output_dir = args.output_dir
 kfold = args.kfold
 classifier = args.classifier
@@ -58,7 +58,7 @@ def classify(traindata, trainlabels, testdata, testlabels, classifier):
     elif classifier == "lda":
         metric = linear_discriminant_analysis(traindata, trainlabels, testdata, testlabels)  
     elif classifier == "forest":
-        metric = random_forrest(traindata, trainlabels, testdata, testlabels)
+        metric = random_forest(traindata, trainlabels, testdata, testlabels)
     else:
         print("illegal method lol, this wasn't supposed to be possible")
     return metric
@@ -66,11 +66,11 @@ def classify(traindata, trainlabels, testdata, testlabels, classifier):
 
 
 
-def random_forrest(traindata, trainlabels, testdata, testlabels):
+def random_forest(traindata, trainlabels, testdata, testlabels):
     from sklearn.ensemble import RandomForestClassifier
     
     max_depth = 20
-    max_features = 30
+    max_features = min(30, len(data[0]))
     min_samples_leaf = 1; # keep in mind, as integer it works differently than as float
     min_samples_split = 2; #same
     n_trees = 150;
@@ -159,13 +159,13 @@ def compute_metrics(y_true, y_pred):
 # %% Read Input data
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
-print(input_path)
+print(input_dir)
 
-data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
-genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
-barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
+genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
+barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
 
-test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
 train_index = np.logical_not(test_index)
 
 
@@ -236,7 +236,7 @@ else:
     file.write("\n")    
 
 file.write("######" + args.title + "######\n")
-file.write("Classifier " + classifier + ", input_data from " + input_path + "\n")
+file.write("Classifier " + classifier + ", input_data from " + input_dir + "\n")
 
 
 averages = pandas.mean(axis = 1)
@@ -342,7 +342,7 @@ print(datetime.now().strftime("%H:%M:%S>"), "sca_classification.py terminated su
 #     file.write("\n")    
 
 # file.write("######" + args.title + "######\n")
-# file.write("input_data from " + input_path + ", Classifier " + classifier + "\n")
+# file.write("input_data from " + input_dir + ", Classifier " + classifier + "\n")
 
 
 # averages = pandas.mean(axis = 1)

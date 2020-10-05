@@ -176,11 +176,6 @@ plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")
 outdata = np.zeros(shape = (original_data.shape[0], num_components))
 
 
-outdata[train_index] = newdata
-outdata[test_index] = new_testdata
-
-
-
 
 
 
@@ -195,7 +190,7 @@ if args.nosave == False:
 
     print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
     
-    np.savetxt(output_dir + "matrix.tsv", newdata, delimiter = "\t")
+    np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
     
     
     with open(output_dir + "genes.tsv", "w") as outfile:
