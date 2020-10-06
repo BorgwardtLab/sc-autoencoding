@@ -2,6 +2,8 @@
 
 rm log_run_autoencoder.log
 
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh
+conda activate tf
 
 
 # python ../1_Processing/sca_datamerger.py --mode both --input_dir "../inputs/data/raw_input" --output_dir "../inputs/data/raw_input_combined" |& tee -a log_run_baselines
@@ -16,13 +18,13 @@ python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --input_dir "../i
 
 
 ### Evaluate the baselines with Kmeans clustering
-python ../4_Evaluation/sca_kmcluster.py --reset --title "SCAutoencoder" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/sca/autoencoder_output/" --output_dir "../outputs/sca/kmcluster/" --outputplot_dir "../outputs/sca/kmcluster/PCA/" |& tee -a log_run_autoencoder.log
+python ../4_Evaluation/sca_kmcluster.py --reset --title "SCAutoencoder" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/sca/autoencoder_output/test_data/" --output_dir "../outputs/sca/kmcluster/" --outputplot_dir "../outputs/sca/kmcluster/PCA/" |& tee -a log_run_autoencoder.log
 
 
 ### Evaluate the baselines with classification
 for classifier in logreg lda forest
 do
-python ../4_Evaluation/sca_classification.py --reset --title "SCAutoencoder" --kfold 5 --classifier $classifier --input_dir "../inputs/sca/autoencoder_output/" --output_dir "../outputs/sca/ova_classification/" |& tee -a log_run_autoencoder.log
+python ../4_Evaluation/sca_classification.py --reset --title "SCAutoencoder" --kfold 5 --classifier $classifier --input_dir "../inputs/sca/autoencoder_output/test_data/" --output_dir "../outputs/sca/ova_classification/" |& tee -a log_run_autoencoder.log
 done
 
 

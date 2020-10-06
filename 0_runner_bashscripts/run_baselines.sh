@@ -1,7 +1,10 @@
 # conda activate tf
 
+
 rm log_run_baselines.log
 
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh
+conda activate tf
 
 
 python ../1_Processing/sca_datamerger.py --mode both --input_dir "../inputs/data/raw_input" --output_dir "../inputs/data/raw_input_combined" |& tee -a log_run_baselines.log
