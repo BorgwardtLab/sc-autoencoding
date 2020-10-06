@@ -175,6 +175,10 @@ plt.savefig(outputplot_dir + "/UMAP_plot_scatter.png")
 
 outdata = np.zeros(shape = (original_data.shape[0], num_components))
 
+outdata[train_index] = newdata
+outdata[test_index] = new_testdata
+
+
 
 
 

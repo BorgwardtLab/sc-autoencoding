@@ -85,7 +85,6 @@ testdata = data[test_index]
 data = data[train_index]
 
 
-    
 
 # %% doing LSA
 
