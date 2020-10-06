@@ -7,7 +7,6 @@ Created on Sun Jul 19 17:22:21 2020
 
 import argparse
 
-
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
@@ -15,16 +14,13 @@ parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_l
 args = parser.parse_args()
 
 
-
 import os
 import pickle
 from datetime import datetime
 
-
 from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
 from keras.models import Model
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
-
 
 from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
 # from keras.objectives import cosine_proximity
