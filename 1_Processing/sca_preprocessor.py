@@ -30,7 +30,7 @@ except:
          
 
 
-parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
+parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/data/preprocessed_data/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/preprocessing/preprocessed_data/")
@@ -328,16 +328,45 @@ if not args.plotsonly:
 # %%
 
 
-
-
 print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated successfully\n")
-
-
 
 if not args.saveobject:
     import pickle
     file = open(output_dir + "/AnnData_preprocessor.obj", "wb")
     pickle.dump(AnnData, file)
     
+
+
+
+
+
+
+
+
+# %%
+
+
+# thing = AnnData.X
+
+
+# thing = pd.DataFrame.sparse.from_spmatrix(thing)
+# backupthing = thing
+
+
+# print(backupthing.shape)
+
+# sums = thing.sum(axis = 0)
+
+# print(sums.shape)
+
+
+# for i in range(len(sums)):
+#     #print(sums[i])
+#     if sums[i] == 1:
+#         print("yoloembolo")
+
+
+
+
 
 

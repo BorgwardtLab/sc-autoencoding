@@ -29,7 +29,7 @@ except:
 
 
 #os.chdir(os.path.dirname(sys.argv[0]))
-input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
+input_dir = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 
@@ -44,7 +44,7 @@ args = parser.parse_args() #required
 
 
 
-input_path = args.input_dir
+input_dir = args.input_dir
 output_dir = args.output_dir
 outputplot_dir = args.outputplot_dir
 component_name = "UMAP"
@@ -54,23 +54,23 @@ num_components = args.num_components
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
-matrix_file = input_path + "matrix.tsv"
+matrix_file = input_dir + "matrix.tsv"
 data = np.loadtxt(open(matrix_file), delimiter="\t")
 
 
 
 # load genes (for last task, finding most important genes)
-file = open(input_path + "genes.tsv", "r")
+file = open(input_dir + "genes.tsv", "r")
 genes = file.read().split("\n")
 file.close()
 genes.remove("") 
 
 
-barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
 labels = barcodes.iloc[:,1]
 
 
-test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
+test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
 train_index = np.logical_not(test_index)
 
 

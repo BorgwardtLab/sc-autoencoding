@@ -5,20 +5,14 @@ Created on Sun Jul 19 17:22:21 2020
 @author: Mike Toreno II
 """
 
-
-
 import argparse
 
 
-parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  #required
-
-# parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
-# parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
-
+parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
-args = parser.parse_args() #required
-
+parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
+args = parser.parse_args()
 
 
 
@@ -29,11 +23,10 @@ from datetime import datetime
 
 from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
 from keras.models import Model
-from keras.objectives import mean_squared_error
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
-from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
 # from keras.objectives import cosine_proximity
 
 import numpy as np
@@ -46,11 +39,9 @@ import keras.optimizers as opt
 
 
 
-
 from keras import backend as K
 MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
 DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
-
 
 # In the implementations, I try to keep the function signature
 # similar to those of Keras objective functions so that
@@ -58,11 +49,6 @@ DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
 # https://github.com/fchollet/keras/blob/master/keras/objectives.py#L7
 
 def poisson_loss(y_true, y_pred):
-    
-    global ytrue
-    
-    global ypred
-    ypred = y_pred
     
     y_pred = tf.cast(y_pred, tf.float32)
     y_true = tf.cast(y_true, tf.float32)
@@ -81,8 +67,6 @@ def poisson_loss(y_true, y_pred):
     print("nelem = {}".format(nelem))
     
     result = tf.math.divide(tf.math.reduce_sum(ret), nelem)
-    ytrue = result
-    
     return result
 
 
@@ -94,29 +78,13 @@ def _nelem(x):
     nelem = tf.reduce_sum(tf.cast(~tf.math.is_nan(x), tf.float32))   # just summing all the elements of a tensor
     return tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype)
 
-# I think this aims to return the number of elements that are not Nan. But I'm not sure exactly
 
 
 
-# def salmys_poisson_loss(y_true, y_pred):
-#     print("hey")
-#     global ytrue
-#     ytrue = y_true
-    
-#     global ypred
-#     ypred = y_pred
-
-# # %%
-# y_pred = ypred
-# y_true = ytrue
 
 
-# y_pred = tf.cast(y_pred, tf.float32)
-# y_true = tf.cast(y_true, tf.float32)
 
 
-# nelem = _nelem(y_true)
-# y_true = _nan2zero(y_true)
 
 
 
@@ -181,14 +149,11 @@ class Autoencoder():
         
         if self.input_dropout > 0.0:
             last_hidden = Dropout(self.input_dropout, name='input_dropout')(last_hidden)
-        
-        
+                
         self.sf_layer = Input(shape=(1,), name='size_factors')
-    
         
 
 
-        
 # loop through all layers
         for i, (hid_size, hid_drop) in enumerate(zip(self.hidden_size, self.hidden_dropout)):   
             
@@ -232,18 +197,63 @@ class Autoencoder():
         self.build_output()
         
 
-
   
     def build_output(self):
-        print(datetime.now().strftime("%H:%M:%S>"), "Building output with loss function: mean_squared_error...")
+        print(datetime.now().strftime("%H:%M:%S>"), "Building output with loss function: " + self.loss_name)
+                
         
-# Define Loss for the training         
-        self.loss = mean_squared_error
-        #self.loss = poisson
+        
+        
+# Define Loss for the training
+        if self.loss_name == "poisson_loss":
+            self.loss = poisson_loss
+            
+        elif self.loss_name == "poisson":
+            self.loss = poisson            
+            
+        elif self.loss_name == "mse":
+            self.loss = mse
+            
+        elif self.loss_name == "mae":
+            self.loss = mae
+            
+        elif self.loss_name == "mape":
+            self.loss = mape
+            
+        elif self.loss_name == "msle":
+            self.loss = msle
 
-        # working       mse, mae, map, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, kld, cosine_proximity
-        # not working   sparse_categorical_crossentropy, self.loss = poisson_loss
-        
+        elif self.loss_name == "squared_hinge":
+            self.loss = squared_hinge
+
+        elif self.loss_name == "hinge":
+            self.loss = hinge
+
+        elif self.loss_name == "binary_crossentropy":
+            self.loss = binary_crossentropy
+
+        elif self.loss_name == "categorical_crossentropy":
+            self.loss = categorical_crossentropy
+
+        elif self.loss_name == "kld":
+            self.loss = kld
+
+        elif self.loss_name == "cosine_proximity":
+            self.loss = cosine_proximity
+
+        # elif self.loss_name == "sparse_categorical_crossentropy":
+        #     self.loss = sparse_categorical_crossentropy 
+        #     print("WARNING/ERROR the sparse_categorial_crossentropy is not suited, it is the same as categorial but for sparse labels.")
+            
+        else: 
+            print("couldn't assign loss correctly :/")
+            assert self.loss is not None
+
+        # working       poisson_loss, poisson, mean_squared_error, mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, kld, cosine_proximity
+        # not working   sparse_categorical_crossentropy,
+
+
+
 
 # Create the output layer (mean), as well as size/factors lambda       
         mean = Dense(self.output_size, activation = MeanAct,
@@ -267,8 +277,6 @@ class Autoencoder():
         # keep unscaled output as an extra model
         # self.extra_models['mean_norm'] = Model(inputs=self.input_layer, outputs=mean)
         # self.extra_models['decoded'] = Model(inputs=self.input_layer, outputs=self.decoder_output)
-
-
 
 
 
@@ -521,8 +529,10 @@ def plot_history(adata, output_dir = "./"):
 # %% Main
 
 
-
-def sca(adata, 
+def sca(adata_train, 
+        adata_test,
+        loss_name,
+        
         mode = "full",
         ae_type = "normal",
         
@@ -541,15 +551,16 @@ def sca(adata,
         output_dir = ("./sca_output/")
         ):
     
+    
 
     ## input checker    
-    assert isinstance(adata, anndata.AnnData), 'adata must be an AnnData instance'
+    assert isinstance(adata_train, anndata.AnnData), 'adata must be an AnnData instance'
     assert mode in ('denoise', 'latent', 'full'), '%s is not a valid mode.' % mode
     
 
 
 ## do stuff
-    input_size = adata.n_vars
+    input_size = adata_train.n_vars
     ae = Autoencoder(input_size = input_size, 
                      output_size = input_size, 
                      hidden_size = (64, 32, 64),
@@ -561,12 +572,16 @@ def sca(adata,
                      activation = "relu")
 
     # ae.save("./saved_aes")
+    
+    ae.loss_name = loss_name
 
     ae.build()
 
 
 
-    hist = train(adata[adata.obs.dca_split == 'train'], 
+
+
+    hist = train(adata_train[adata_train.obs.dca_split == 'train'], 
                  network = ae, 
                   epochs = epochs, 
                   reduce_lr = reduce_lr, 
@@ -576,7 +591,8 @@ def sca(adata,
                   verbose = verbose, 
                   learning_rate = learning_rate)
 
-    denoised = ae.predict(adata = adata, mode = mode)
+    denoised_train = ae.predict(adata = adata_train, mode = mode)
+    denoised_test = ae.predict(adata = adata_test, mode = mode)
     #def predict(self, adata, mode='denoise', return_info=False, copy=False):
     
     '''denoise now contains:
@@ -590,19 +606,20 @@ def sca(adata,
         uns["train_history"]    contains the evolution of lr, loss and val_loss
     '''
     
-    adata = denoised
-    
+    adata_train = denoised_train
+    adata_test = denoised_test
     
     # add loss history
-    adata.uns['train_history'] = hist.history
+    adata_train.uns['train_history'] = hist.history
     
     os.makedirs(output_dir, exist_ok=True)
-    plot_history(adata, output_dir)
+    plot_history(adata_train, output_dir)
     
     
-    ae.write_output(adata = adata, file_path = output_dir, mode = "full")
-
-    return (adata, ae)
+    ae.write_output(adata = adata_train, file_path = output_dir + "train_data/", mode = "full")
+    ae.write_output(adata = adata_test, file_path = output_dir + "test_data/", mode = "full")
+    
+    return (adata_train, adata_test, ae)
 
 
 
@@ -619,16 +636,12 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
     else:
         adata.obs['dca_split'] = 'train'
 
-
     if filter_:
         # filter min coutns
         sc.pp.filter_genes(adata, min_counts=1)
         sc.pp.filter_cells(adata, min_counts=1)
-        
-        
+    
     adata.raw = adata.copy()
-
-
 
     if size_factors:
         sc.pp.normalize_per_cell(adata)
@@ -636,15 +649,11 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
     else:
         adata.obs['size_factors'] = 1.0
  
-
- 
     if logtrans:
         sc.pp.log1p(adata)
             
-
     if normalize:
         sc.pp.scale(adata)
-
 
     return adata
     
@@ -657,26 +666,42 @@ def read_input(input_dir, output_dir):
     data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
     genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
     barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
-        
-    adata = sc.AnnData(data)
-    adata.obs_names = barcodes.iloc[:,0] + "_" + barcodes.iloc[:,1]
-    adata.var_names = genes.iloc[:,0]
     
-    nonzero_genes, _ = sc.pp.filter_genes(adata.X, min_counts=1)
-    assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA.'
-
-    print()
+    test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
+    train_index = np.logical_not(test_index)
     
-    return adata, genes, barcodes
+    
+    testdata = data[test_index]
+    traindata = data[train_index]
+    
+    adata_train = sc.AnnData(traindata)
+    adata_train.obs_names = barcodes.iloc[train_index,0] + "_" + barcodes.iloc[train_index,1]
+    adata_train.var_names = genes.iloc[:,0]
+
+    adata_test = sc.AnnData(testdata)
+    adata_test.obs_names = barcodes.iloc[test_index,0] + "_" + barcodes.iloc[test_index,1]
+    adata_test.var_names = genes.iloc[:,0]
+    
+    
+    
+    nonzero_genes, _ = sc.pp.filter_genes(adata_test.X, min_counts=1)
+    assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Test'
+    nonzero_genes, _ = sc.pp.filter_genes(adata_train.X, min_counts=1)
+    assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Train'
+
+    return adata_train, adata_test, genes, barcodes
     
 
 
 
-def sca_main(input_dir, output_dir):
+
+
+
+def sca_main(input_dir, output_dir, loss_name):
     
     
     # generate AnnData
-    adata, genes, barcodes = read_input(input_dir = input_dir, output_dir = output_dir)    
+    adata_train, adata_test, genes, barcodes = read_input(input_dir = input_dir, output_dir = output_dir)    
 
 
     # check if observations are unnormalized using first 10
@@ -688,7 +713,14 @@ def sca_main(input_dir, output_dir):
     #     assert np.all(X_subset.astype(int) == X_subset), norm_error
 
 
-    sca_preprocess(adata, 
+    adata_train = sca_preprocess(adata_train, 
+                   test_split = False, 
+                   filter_ = True,
+                   size_factors = True,
+                   logtrans = True,
+                   normalize = True
+                   )
+    adata_test = sca_preprocess(adata_test, 
                    test_split = False, 
                    filter_ = True,
                    size_factors = True,
@@ -698,7 +730,10 @@ def sca_main(input_dir, output_dir):
     
 
     
-    adata, net = sca(adata = adata,
+    adata_train, adata_test, net = sca(adata_train = adata_train,
+                        adata_test = adata_test,
+                        loss_name = loss_name,
+                        
                         mode = "full",
                         ae_type = "normal",
                         
@@ -720,9 +755,9 @@ def sca_main(input_dir, output_dir):
     net.save_model(output_dir)
 
 
-    # transfer genes and barcodes
-    genes.to_csv(output_dir + "/genes.tsv", sep = "\t", index = False, header = False)
-    barcodes.to_csv(output_dir + "/barcodes.tsv", sep = "\t", index = False, header = False)
+    # transfer genes and barcodes (only to test data, but its identical for train. Just no point putting it in there as well. )
+    genes.to_csv(output_dir + "test_data/genes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "test_data/barcodes.tsv", sep = "\t", index = False, header = False)
 
 
 
@@ -741,10 +776,23 @@ from sklearn.model_selection import train_test_split
 if __name__ == "__main__":
     
     sca_main(input_dir = args.input_dir,  
-             output_dir = args.output_dir)
+             output_dir = args.output_dir,
+             loss_name = args.loss)
     
     
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# %% DELETE THIS SECTION FOR REAL, IT CAN BE SAFELY DETELTED TRUST ME     
+input_dir = args.input_dir
+output_dir = args.output_dir
+    
+    
+# %%
 

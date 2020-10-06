@@ -11,7 +11,7 @@ python ../3_Autoencoder/sca_countdata_preprocessor.py --mingenes 200 --mincells 
 
 
 
-python ../3_Autoencoder/sca_autoencoder.py --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/autoencoder_output/" |& tee -a log_run_autoencoder.log
+python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/autoencoder_output/" |& tee -a log_run_autoencoder.log
 
 
 

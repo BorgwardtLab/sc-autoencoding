@@ -21,7 +21,7 @@ from sklearn.model_selection import train_test_split
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_countdata_preprocessor.py")
 
 
 try:
@@ -45,7 +45,7 @@ parser.add_argument("--mincells", help="minimal number of cells for a gene", def
 parser.add_argument("--maxfeatures", help="maximal number of genes per cell (check plot)", default = 1500, type = int)
 parser.add_argument("--maxmito", help="maximal percentage of mitochondrial counts", default = 5, type = int)
 
-parser.add_argument("--features", help="number of highly variable features to catch", default = 1300, type = int)
+parser.add_argument("--features", help="number of highly variable features to catch", default = 3000, type = int)
 parser.add_argument("--limit_cells", help="only take a certain number of samples, to keep the countmatrix small", default = 0, type = int)
 
 args = parser.parse_args() #required
@@ -75,7 +75,6 @@ if not os.path.exists(output_dir):
 # fs_min_disp = 0.5
 
 
-#FOR SOME REASON IT TAKES 1 LESS, SO I ARTIFICIALLY INCREASE BY 1 WHEN CALLING IT, NOT HERE BUT FURTHER DOWN.
 
 # %% Load Data
 
@@ -118,10 +117,9 @@ AnnData = sc.read_10x_mtx(path = input_dir, var_names = "gene_ids", cache = Fals
 # %% basic filtering
 print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with min_genes= {a:d} and min_cells= {b:d}...".format(a = min_genes_per_cell, b=min_cells_per_gene))
 
+
 sc.pp.filter_cells(AnnData, min_genes = min_genes_per_cell) # only keep cells with at least 200 genes detecte
 # could also pass counts instead of genes
-
-
 
 sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes that are present in at least # cells
 
@@ -187,44 +185,26 @@ densematrix = scipy.sparse.csr_matrix(adatacounts.X).todense()
 
 
 
-# %%
-
-if args.limit_cells > 0:
-    
-    num = args.limit_cells
-    
-    assert isinstance(num, int)
-
-    
-    lucky_cells_idx = np.linspace(0, len(densematrix)-1, num, dtype = int)
-
-    densematrix = densematrix[lucky_cells_idx, :]
-
-
-
-
-
-
-
-
-
-
 # %% Exporting
 
 
 
-    
-print(datetime.now().strftime("%H:%M:%S>"), "Generating Output...")
+
+if args.limit_cells > 0:
+    num = args.limit_cells
+    assert isinstance(num, int)
+
+    lucky_cells_idx = np.linspace(0, len(densematrix)-1, num, dtype = int)
+    densematrix = densematrix[lucky_cells_idx, :]
+
+
 # those are useless, only mean and dispersion etc
 # AnnData.write_csvs("filename2", skip_data=False)
-
 
 genes = pd.DataFrame(adatacounts.var_names)
 genes["symbols"] = list(adatacounts.var["gene_symbols"])
 
-
 panda = pd.DataFrame(densematrix) #obs*vars
-
 
 barcodelist = list(adatacounts.obs_names)
 # alright, I give up. Lets' do it cavemen style
@@ -243,15 +223,11 @@ I think this equals to 2 loops, so awesome for runtime (not that it matters)
 anyway, this is a bad solution, but it fixes the problem, so meh'''
 
 
-
 if args.limit_cells > 0:
     barcodes = barcodes.iloc[lucky_cells_idx, :]
-    
 
 
-panda.to_csv(output_dir + "matrix.tsv", sep = "\t", index = False, header = False)
-genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
-barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+
 
 
 
@@ -263,16 +239,12 @@ print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split\n")
 
 X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=args.test_fraction)
 
-
 train_indexes = list(X_train.index)
 test_indexes = list(X_test.index)
-
 test_index = np.zeros(len(bc_types), dtype = bool)
-
 
 for i in test_indexes:
     test_index[i] = True
-
 
 np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
 
@@ -281,34 +253,69 @@ np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
 
 
 
+''' so at this point we have to filter out zerogenes again, as the train-test split 
+may have "created" additional zero genes. 
+
+I think its easiest doing this caveman-style: instead of going back to anndata, manually take them out of the pandas.
+'''
+# %%
+# get zerogenes
+
+
+rowsums = X_test.sum(axis = 0)
+testzg = np.where(rowsums < 5)
+testzg = np.array(testzg)
+
+rowsums = X_train.sum(axis = 0)
+trainzg = np.where(rowsums < 5)
+trainzg = np.array(trainzg)
+
+
+
+nonzeros = np.concatenate([testzg, trainzg], axis = 1)
+nonzeros = nonzeros.flatten()
+rowsums = panda.sum(axis = 0) #jff
+
+
+
+panda_nz = panda.copy()
+panda_nz = panda_nz.drop(nonzeros, axis = 1)
+
+genes_nz = genes.copy()
+genes_nz = genes_nz.drop(nonzeros, axis = 0)
+
+
+# %%
+print(datetime.now().strftime("%H:%M:%S>"), "Generating Output...")
+
+
+panda_nz.to_csv(output_dir + "matrix.tsv", sep = "\t", index = False, header = False)
+genes_nz.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+
+
+
+
+
+
+
+
+
 # %% to generate "transposed" outdata with headers for the vanilla DCA
 
-# for fucks sake now I even have to change the barcode list. 
+
+panda_nzt = panda_nz.copy()
+panda_nzt = panda_nzt.transpose()
+
 joined_barcodes = [x.replace("\t", "_") for x in barcodelist]
+panda_nzt.columns = joined_barcodes
+
+panda_nzt.index = genes_nz.iloc[:,0]
 
 
-panda.columns = genes.iloc[:,0]
-panda.index = joined_barcodes
 
-panda = panda.transpose()
 
 panda.to_csv(output_dir + "matrix_transposed.tsv", sep = "\t", index = True, header = True)
-
   
 
-print(datetime.now().strftime("%H:%M:%S>"), "dca_preprocessor.py terminated successfully\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(datetime.now().strftime("%H:%M:%S>"), "dca_countdata_preprocessor.py terminated successfully\n")
