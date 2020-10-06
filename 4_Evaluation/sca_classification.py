@@ -14,14 +14,15 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-from sklearn.model_selection import StratifiedKFold
+
 from sklearn.metrics import confusion_matrix
 
+from collections import Counter
 
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_classifcation.py")
+
 
 
 try:
@@ -46,6 +47,15 @@ input_dir = args.input_dir
 output_dir = args.output_dir
 kfold = args.kfold
 classifier = args.classifier
+
+
+
+
+
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_classifcation.py with " + classifier)
+
+
+
 
 
 
@@ -140,6 +150,11 @@ def compute_metrics(y_true, y_pred):
     accuracy = (tp+tn)/(tp+fp+fn+tn)
     precision = tp/(tp+fp)
     print("the line is {0:d}/({0:d}+{1:d})".format(tp, fp))
+    print(["tp, fp, fn, tn"])
+    print([tp, fp, fn, tn])
+    print(Counter(y_true)) # remove me
+    
+    
     
     recall = tp/(tp+fn)
     f1score = 2*recall*precision/(recall + precision)
@@ -192,16 +207,22 @@ pandas = pd.DataFrame(index = ["Accuracy ", "Precision", "Recall   ", "F1 Score 
 
 
 
-
-
 # %%
 
 '''old way, using stratifiedkfold to generate test and train indices is appended at the very end.'''
 
-
 '''no longer doing kfolds, instead just once with the train and test labels from file'''
 
+
+print("overview of all labels:")
+print(Counter(labels))
+print(Counter(train_labels))
+print(Counter(test_labels))
+
+
+
 for label in labelset:
+    print("\ncurrent label is: " + str(label))     # remove me
     binary_trainlabels = (np.array(train_labels == label))
     binary_testlabels = (np.array(test_labels == label))
     
@@ -209,6 +230,7 @@ for label in labelset:
     
     pandas[label] = result
     
+
 
 
 

@@ -22,7 +22,7 @@ from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, 
 from keras.models import Model
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
-from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson, cosine_proximity
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson#, cosine_proximity
 # from keras.objectives import cosine_proximity
 
 import numpy as np
@@ -234,8 +234,10 @@ class Autoencoder():
         elif self.loss_name == "kld":
             self.loss = kld
 
-        elif self.loss_name == "cosine_proximity":
-            self.loss = cosine_proximity
+
+        
+        # elif self.loss_name == "cosine_proximity":                # cosine proximity cannot be imported on the server. idk why
+        #     self.loss = cosine_proximity
 
         # elif self.loss_name == "sparse_categorical_crossentropy":
         #     self.loss = sparse_categorical_crossentropy 
@@ -774,21 +776,4 @@ if __name__ == "__main__":
     sca_main(input_dir = args.input_dir,  
              output_dir = args.output_dir,
              loss_name = args.loss)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-# %% DELETE THIS SECTION FOR REAL, IT CAN BE SAFELY DETELTED TRUST ME     
-input_dir = args.input_dir
-output_dir = args.output_dir
-    
-    
-# %%
-
+ 
