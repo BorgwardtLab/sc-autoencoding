@@ -315,7 +315,7 @@ panda_nzt.index = genes_nz.iloc[:,0]
 
 
 
-panda.to_csv(output_dir + "matrix_transposed.tsv", sep = "\t", index = True, header = True)
+panda_nzt.to_csv(output_dir + "matrix_transposed.tsv", sep = "\t", index = True, header = True)
   
 
 print(datetime.now().strftime("%H:%M:%S>"), "dca_countdata_preprocessor.py terminated successfully\n")
