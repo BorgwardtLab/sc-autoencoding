@@ -27,6 +27,7 @@ echo "DCA is done"
 # bring the data into "my" format (no headers etc)
 cp "../inputs/sca/sca_preprocessed_data/barcodes.tsv" "../inputs/sca/DCA_output/barcodes.tsv"
 cp "../inputs/sca/sca_preprocessed_data/genes.tsv" "../inputs/sca/DCA_output/genes.tsv"
+cp "../inputs/sca/sca_preprocessed_data/test_index.tsv" "../inputs/sca/DCA_output/test_index.tsv"
 python ../9_toyscripts/dca_output_to_matrix.py --input_dir "../inputs/sca/DCA_output/" |& tee -a $filename
 
 
