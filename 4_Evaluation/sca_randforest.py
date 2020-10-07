@@ -14,15 +14,11 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import confusion_matrix
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_classification
 
 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_curve, auc
 
 import matplotlib.pyplot as plt
 
@@ -38,7 +34,8 @@ except:
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/baselines/random_forrest/multiclass/")
+parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/baselines/random_forrest/")
+parser.add_argument("-o","--outputplot_dir", help="out directory", default = "../outputs/baselines/random_forrest/")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
 
@@ -56,6 +53,7 @@ args = parser.parse_args()
 
 input_dir = args.input_dir
 output_dir = args.output_dir
+outputplot_dir = args.outputplot_dir
 n_trees = args.n_trees
 max_depth = args.max_depth
 min_samples_split = args.min_samples_split
@@ -153,7 +151,7 @@ prediction = forest.predict(test_data)
 
 
 num_correct = sum(test_labels == prediction)
-accuracy = num_correct/len(prediction')
+accuracy = num_correct/len(prediction)
 
 
 
@@ -189,7 +187,7 @@ for i in range(len(prediction)):
 #plt.legend(["correct","incorrect"])
 #plt.legend(labels = ["tru", "fa"])
 plt.show()
-
+plt.savefig(outputplot_dir + "correct_assignments.png")
 
 
 # %% Output
