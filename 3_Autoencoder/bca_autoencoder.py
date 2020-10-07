@@ -49,18 +49,39 @@ traindata = data[train_index]
 
 
 
+# %%
+
+import keras
+from keras import layers
 
 
 
+numfeatures = data[0].shape
 
 
+# I define the length as the number of features. 
+input_img = keras.Input(shape=(numfeatures))       
+
+# layers
+encoded = layers.Dense(32, activation = "relu")(input_img)
+decoded = layers.Dense(numfeatures, activation = "sigmoid")(encoded)
 
 
+# models
+autoencoder = keras.Model(input_img, decoded)
+
+encoder = keras.Model(input_img, encoded)
+
+encoded_input = keras.Input(shape = (32,))
+decoder_layer = autoencoder.layers[-1]
+decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
 
 
+# Compile
+autoencoder.compile(optimizer='adam', loss = "binary_crossentropy")
 
 
-
+# %%
 
 
 

@@ -149,10 +149,10 @@ def compute_metrics(y_true, y_pred):
     
     accuracy = (tp+tn)/(tp+fp+fn+tn)
     precision = tp/(tp+fp)
-    print("the line is {0:d}/({0:d}+{1:d})".format(tp, fp))
-    print(["tp, fp, fn, tn"])
-    print([tp, fp, fn, tn])
-    print(Counter(y_true)) # remove me
+    #print("the line is {0:d}/({0:d}+{1:d})".format(tp, fp))
+    #print(["tp, fp, fn, tn"])
+    #print([tp, fp, fn, tn])
+    #print(Counter(y_true)) # remove me
     
     
     
@@ -222,7 +222,7 @@ print(Counter(test_labels))
 
 
 for label in labelset:
-    print("\ncurrent label is: " + str(label))     # remove me
+    # print("\ncurrent label is: " + str(label))     # remove me
     binary_trainlabels = (np.array(train_labels == label))
     binary_testlabels = (np.array(test_labels == label))
     

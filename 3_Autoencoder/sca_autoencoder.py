@@ -687,7 +687,7 @@ def read_input(input_dir, output_dir):
     nonzero_genes, _ = sc.pp.filter_genes(adata_train.X, min_counts=1)
     assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Train'
 
-    return adata_train, adata_test, genes, barcodes
+    return adata_train, adata_test, genes, barcodes, test_index
     
 
 
@@ -699,7 +699,7 @@ def sca_main(input_dir, output_dir, loss_name):
     
     
     # generate AnnData
-    adata_train, adata_test, genes, barcodes = read_input(input_dir = input_dir, output_dir = output_dir)    
+    adata_train, adata_test, genes, barcodes, test_index = read_input(input_dir = input_dir, output_dir = output_dir)    
 
 
     # check if observations are unnormalized using first 10
@@ -757,7 +757,7 @@ def sca_main(input_dir, output_dir, loss_name):
     genes.to_csv(output_dir + "test_data/genes.tsv", sep = "\t", index = False, header = False)
     barcodes.to_csv(output_dir + "test_data/barcodes.tsv", sep = "\t", index = False, header = False)
 
-
+    np.savetxt(output_dir + "test_data/test_index.tsv", test_index, fmt = "%d")
 
 
 

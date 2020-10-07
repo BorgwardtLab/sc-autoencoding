@@ -5,8 +5,7 @@ filename=log_run_autoencoder_DCA.log
 rm $filename
 
 
-source /home/sstreib/anaconda3/etc/profile.d/conda.sh
-conda activate dicia2
+
 
 
 # python ../1_Processing/sca_datamerger.py --mode both --input_dir "../inputs/data/raw_input" --output_dir "../inputs/data/raw_input_combined" |& tee -a $filename
@@ -15,8 +14,15 @@ conda activate dicia2
 python ../1_Processing/sca_countdata_preprocessor.py --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 2000 --test_fraction 0.25 --input_dir "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/" --output_dir "../inputs/sca/sca_preprocessed_data/" --verbosity 0 |& tee -a $filename
 
 
+
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh
+conda activate dicia2
+
 dca "../inputs/sca/sca_preprocessed_data/matrix_transposed.tsv" "../inputs/sca/DCA_output/" |& tee -a $filename
 echo "DCA is done"
+
+
+
 
 # bring the data into "my" format (no headers etc)
 cp "../inputs/sca/sca_preprocessed_data/barcodes.tsv" "../inputs/sca/DCA_output/barcodes.tsv"
