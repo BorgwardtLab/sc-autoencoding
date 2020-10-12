@@ -23,7 +23,7 @@ import statistics
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_dbscan.py")
+print(datetime.now().strftime("%H:%M:%S>"), "\n\nStarting sca_dbscan.py")
 
 
 try:

@@ -52,7 +52,7 @@ classifier = args.classifier
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_classifcation.py with " + classifier)
+print(datetime.now().strftime("%H:%M:%S>"), "\nStarting sca_classifcation.py with " + classifier)
 
 
 

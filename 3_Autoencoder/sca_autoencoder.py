@@ -758,6 +758,7 @@ def sca_main(input_dir, output_dir, loss_name):
     barcodes.to_csv(output_dir + "test_data/barcodes.tsv", sep = "\t", index = False, header = False)
 
     np.savetxt(output_dir + "test_data/test_index.tsv", test_index, fmt = "%d")
+    print("REMOVEME: I SAVED TEST_INDEX.TSV")
 
 
 

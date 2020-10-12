@@ -63,7 +63,7 @@ max_features = args.max_features
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_randforrest.py")
+print(datetime.now().strftime("%H:%M:%S>"), "\n\nStarting sca_randforrest.py")
 print(input_dir)
 
 
@@ -156,14 +156,15 @@ accuracy = num_correct/len(prediction)
 
 
 
+
+# %% NOTE: THIS WAY OF PLOTTING IS very SLOW. AVOID IT IN THE FUTURE
+
 if not os.path.exists(outputplot_dir):
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Outputplot Directory...")
     os.makedirs(outputplot_dir)
 
 
 
-
-# %%
 
 truth = np.array(test_labels == prediction)
 
