@@ -60,11 +60,11 @@ numfeatures = data[0].shape
 
 
 # I define the length as the number of features. 
-input_img = keras.Input(shape=(numfeatures))       
+input_img = keras.Input(shape=(2541,))       
 
 # layers
 encoded = layers.Dense(32, activation = "relu")(input_img)
-decoded = layers.Dense(numfeatures, activation = "sigmoid")(encoded)
+decoded = layers.Dense(numfeatures[0], activation = "sigmoid")(encoded) # if it receives a tuple here it will complain, hence take the int. (compare to input definition above, where tuple)
 
 
 # models
@@ -81,23 +81,32 @@ decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
 autoencoder.compile(optimizer='adam', loss = "binary_crossentropy")
 
 
+
+
+
+# %% normalize and scale the data. 
+'''so I don't know if this makes it any better, cuz then we could have not 
+gone the extra mile to avoid doing this in the real preprocessing, but idunno.
+
+also they use another scaling, one that scales between 0 and 1 (manually, just divide by largest)
+idk what makes sense here lmao lmao
+'''
+
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+scaler.fit(traindata)
+traindata = scaler.transform(traindata)
+testdata = scaler.transform(testdata)
+
 # %%
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+autoencoder.fit(traindata, traindata,
+                epochs=50,
+                batch_size=256,
+                shuffle=True,
+                validation_data=(testdata, testdata))
 
 
 

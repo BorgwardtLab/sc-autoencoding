@@ -39,7 +39,7 @@ parser.add_argument("-o","--outputplot_dir", help="out directory", default = "..
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title placeholder")
 parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
 
-parser.add_argument("--n_trees", default = 100)
+parser.add_argument("--n_trees", type = int, default = 100)
 parser.add_argument("--max_depth", default = None)
 parser.add_argument("--min_samples_split", default = 2)
 parser.add_argument("--min_samples_leaf", default = 1)

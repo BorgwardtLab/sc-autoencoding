@@ -155,6 +155,10 @@ def compute_metrics(y_true, y_pred):
     #print(Counter(y_true)) # remove me
     
     
+    if tp + fp == 0:
+        print("WARNING: this classifier predicts only negative class")
+    
+    
     
     recall = tp/(tp+fn)
     f1score = 2*recall*precision/(recall + precision)
