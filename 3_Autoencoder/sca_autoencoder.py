@@ -9,7 +9,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/autoencoder_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/SCA_output/")
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 args = parser.parse_args()
 
@@ -536,7 +536,7 @@ def sca(adata_train,
         
         # training args
         epochs = 300,
-        reduce_lr = 10,
+        reduce_lr = 15,
         early_stop = 35,
         batch_size = 32,
         optimizer = "RMSprop",
@@ -737,8 +737,8 @@ def sca_main(input_dir, output_dir, loss_name):
                         
                         # training args
                         epochs = 300,
-                        reduce_lr = 10,
-                        early_stop = 15,
+                        reduce_lr = 15,
+                        early_stop = 35,
                         batch_size = 32,
                         batchnorm = True,
                         optimizer = "RMSprop",
