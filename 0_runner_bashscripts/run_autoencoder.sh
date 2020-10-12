@@ -1,7 +1,7 @@
 # conda activate tf
 
 
-filename=log_run_autoencoder.log
+filename=logs/log_run_autoencoder.log
 rm $filename
 
 source /home/sstreib/anaconda3/etc/profile.d/conda.sh

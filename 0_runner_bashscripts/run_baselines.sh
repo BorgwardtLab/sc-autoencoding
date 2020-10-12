@@ -84,14 +84,13 @@ python ../4_Evaluation/sca_dbscan.py  --title "original_data" --verbosity 3 --ep
 ### evaluate with randomforest multiclass
 ntrees=100
 # maxdepth=None; minsamplesplit=2; minsamplesleaf=1; maxfeatures="auto"
-python ../4_Evaluation/sca_randforest.py --reset --title "DCA" --n_trees $ntrees --input_dir "../inputs/sca/DCA_output/" --output_dir "../outputs/sca/dca/randomforest/" --outputplot_dir "../outputs/sca/dca/randomforest/" |& tee -a $filename
-
 python ../4_Evaluation/sca_randforest.py --reset --title "PCA" --n_trees $ntrees --input_dir "../inputs/baselines/baseline_data/scaPCA_output/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/scaPCA_output/" |& tee -a $filename
 python ../4_Evaluation/sca_randforest.py  --title "ICA" --n_trees $ntrees --input_dir "../inputs/baselines/baseline_data/scaICA_output/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/scaICA_output/" |& tee -a $filename
 python ../4_Evaluation/sca_randforest.py  --title "LSA" --n_trees $ntrees --input_dir "../inputs/baselines/baseline_data/scaLSA_output/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/scaLSA_output/" |& tee -a $filename
 python ../4_Evaluation/sca_randforest.py  --title "t-SNE" --n_trees $ntrees --input_dir "../inputs/baselines/baseline_data/scaTSNE_output/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/scaTSNE_output/" |& tee -a $filename
 python ../4_Evaluation/sca_randforest.py  --title "UMAP" --n_trees $ntrees --input_dir "../inputs/baselines/baseline_data/scaUMAP_output/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/scaUMAP_output/" |& tee -a $filename
 python ../4_Evaluation/sca_randforest.py  --title "original_data" --n_trees $ntrees --input_dir "../inputs/data/preprocessed_data/" --output_dir "../outputs/baselines/random_forest/" --outputplot_dir "../outputs/baselines/random_forest/preprocessed_data/" |& tee -a $filename
+
 
 
 
