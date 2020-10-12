@@ -25,6 +25,9 @@ output_dir = args.output_dir
 
 
 
+# if this is not imported before keras, we get weird errors >.<
+from sklearn.preprocessing import StandardScaler
+
 
 
 
@@ -152,7 +155,7 @@ also they use another scaling, one that scales between 0 and 1 (manually, just d
 idk what makes sense here lmao lmao
 '''
 
-from sklearn.preprocessing import StandardScaler
+
 
 scaler = StandardScaler()
 scaler.fit(traindata)
