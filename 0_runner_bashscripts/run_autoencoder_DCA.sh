@@ -17,8 +17,8 @@ python ../1_Processing/sca_countdata_preprocessor.py --mingenes 200 --mincells 1
 
 
 
-source /home/sstreib/anaconda3/etc/profile.d/conda.sh
-conda activate dicia2
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh |& tee -a $filename
+conda activate dicia2 |& tee -a $filename
 
 dca "../inputs/sca/sca_preprocessed_data/matrix_transposed.tsv" "../inputs/sca/DCA_output/" |& tee -a $filename
 echo "DCA is done"
