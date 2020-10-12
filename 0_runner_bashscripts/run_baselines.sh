@@ -1,11 +1,11 @@
 
 mkdir logs
-filename=./logs/log_run_baselines.log
+filename=logs/log_run_baselines.log
 
 rm $filename
 
-source /home/sstreib/anaconda3/etc/profile.d/conda.sh
-conda activate tf
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh |& tee -a $filename
+conda activate tf |& tee -a $filename
 
 
 

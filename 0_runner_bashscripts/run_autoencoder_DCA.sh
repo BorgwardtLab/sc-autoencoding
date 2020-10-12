@@ -1,6 +1,8 @@
 # conda activate tf
 
-filename=log_run_autoencoder_DCA.log
+
+mkdir logs
+filename=logs/log_run_autoencoder_DCA.log
 
 rm $filename
 

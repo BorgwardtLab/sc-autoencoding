@@ -23,7 +23,7 @@ import statistics
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "\n\nStarting sca_dbscan.py")
+print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_dbscan.py")
 
 
 try:
@@ -62,6 +62,7 @@ technique_name = input_path[tech_start + 4 : tech_end]
 
 
 # %% Read Input data
+
 print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
 data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
 

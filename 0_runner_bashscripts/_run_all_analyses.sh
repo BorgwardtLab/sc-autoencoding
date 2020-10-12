@@ -1,5 +1,7 @@
 
-filename = timestamps_analyses.log
+
+mkdir logs
+filename = logs/timestamps_analyses.log
 
 
 

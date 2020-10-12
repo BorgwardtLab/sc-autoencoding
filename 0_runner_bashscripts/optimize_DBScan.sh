@@ -1,6 +1,6 @@
 
-
-filename=log_optimize_DBScan.log
+mkdir logs
+filename=logs/log_optimize_DBScan.log
 
 rm $filename
 

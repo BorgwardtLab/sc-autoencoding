@@ -1,4 +1,6 @@
-filename = timestamps_optimizations.log
+
+mkdir logs
+filename = logs/timestamps_optimizations.log
 
 
 date |& tee -a $filename

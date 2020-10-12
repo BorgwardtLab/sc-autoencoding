@@ -1,7 +1,7 @@
 
 
-
-filename=log_optimize_num_PCA.log
+mkdir logs
+filename=logs/log_optimize_num_PCA.log
 
 
 rm $filename

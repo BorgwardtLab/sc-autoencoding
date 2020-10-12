@@ -1,6 +1,6 @@
 
-
-filename=log_optimize_random_forrest.log
+mkdir logs
+filename=logs/log_optimize_random_forrest.log
 
 
 rm $filename

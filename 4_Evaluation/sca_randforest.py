@@ -63,7 +63,7 @@ max_features = args.max_features
 
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "\n\nStarting sca_randforrest.py")
+print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_randforrest.py")
 print(input_dir)
 
 

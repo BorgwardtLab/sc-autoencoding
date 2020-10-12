@@ -1,7 +1,7 @@
 
 
-
-filename=log_optimize_num_k_kmcluster.log
+mkdir logs
+filename=logs/log_optimize_num_k_kmcluster.log
 
 
 rm $filename
