@@ -156,18 +156,9 @@ accuracy = num_correct/len(prediction)
 
 
 
-# %%
-# so i seriously didn't manage to plot each point in a loop individually, so we have to do some preparations instead
-# nevermind, it does work, so I'll go that route instead.
-# wrong_indexes = np.where(test_labels != prediction)
-# colours = np.repeat("k",len(prediction))
-# colours[wrong_indexes] = "r"
-# markerz = np.repeat("o", len(prediction))
-# markerz[wrong_indexes] = "X"
-# plt.figure()
-# plt.scatter(test_data[:,0], test_data[:,1], c = colours, s = 100, marker = markerz, edgecolors="g")
-
-
+if not os.path.exists(outputplot_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+    os.makedirs(outputplot_dir)
 
 
 
