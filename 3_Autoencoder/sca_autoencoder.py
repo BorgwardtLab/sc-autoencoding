@@ -349,7 +349,7 @@ class Autoencoder():
 
 
 
-    def write_output(self, adata, file_path, mode='full', colnames=None):
+    def write_output_deprecated(self, adata, file_path, mode='full', colnames=None):
         
         colnames = adata.var_names.values if colnames is None else colnames
         rownames = adata.obs_names.values
@@ -381,6 +381,67 @@ class Autoencoder():
                                                                   index=False,
                                                                   header=False,
                                                                   float_format='%.6f')
+
+
+
+
+    def write_output(self, test_adata, train_adata, test_index, file_path, mode='full', colnames=None):
+        
+        train_index = np.logical_not(test_index)
+        
+        # to give the columns and rows names. I did it before, but why bother?
+        # colnames = test_adata.var_names.values if colnames is None else colnames
+        # rownames_test = test_adata.obs_names.values
+        # rownames_train = train_adata.obs_names.values
+
+
+        print(datetime.now().strftime("%H:%M:%S>"), 'Saving output(s)...')
+        os.makedirs(file_path, exist_ok=True)
+        
+        
+
+        
+        if mode in ('denoise', 'full'):
+            print(datetime.now().strftime("%H:%M:%S>"), 'Saving denoised expression...')
+            
+            denoised_testdata = test_adata.X
+            denoised_traindata = train_adata.X
+            
+            denoised_outdata = np.zeros(shape = (denoised_testdata.shape[0] + denoised_traindata.shape[0], denoised_testdata.shape[1]))
+            denoised_outdata[train_index] = denoised_traindata
+            denoised_outdata[test_index] = denoised_testdata       
+            
+            
+            pd.DataFrame(denoised_outdata).to_csv(file_path + "denoised_matrix.tsv",
+                                                                sep='\t',
+                                                                index=None,
+                                                                header=None,
+                                                                float_format='%.6f')
+
+
+        if mode in ('latent', 'full'):
+            print(datetime.now().strftime("%H:%M:%S>"), 'Saving latent representations...')
+            
+            latent_testdata = test_adata.obsm['latent']
+            latent_traindata = train_adata.obsm['latent']
+    
+            latent_outdata = np.zeros(shape = (latent_testdata.shape[0] + latent_traindata.shape[0], latent_traindata.shape[1]))
+            latent_outdata[train_index] = latent_traindata
+            latent_outdata[test_index] = latent_testdata                
+                
+            
+            
+            pd.DataFrame(latent_outdata).to_csv(file_path + "latent_layer.tsv",
+                                                                sep='\t',
+                                                                index=None,
+                                                                header=None,
+                                                                float_format='%.6f')
+            
+            pd.DataFrame(latent_outdata).to_csv(file_path + "matrix.tsv",
+                                                                sep='\t',
+                                                                index=None,
+                                                                header=None,
+                                                                float_format='%.6f')
 
 # %%
 
@@ -530,6 +591,7 @@ def plot_history(adata, output_dir = "./"):
 def sca(adata_train, 
         adata_test,
         loss_name,
+        test_index,
         
         mode = "full",
         ae_type = "normal",
@@ -614,9 +676,13 @@ def sca(adata_train,
     plot_history(adata_train, output_dir)
     
     
-    ae.write_output(adata = adata_train, file_path = output_dir + "train_data/", mode = "full")
-    ae.write_output(adata = adata_test, file_path = output_dir + "test_data/", mode = "full")
     
+    # old way
+    # ae.write_output_deprecated(adata = adata_train, file_path = output_dir + "test_dir/", mode = "full")
+    # ae.write_output_deprecated(adata = adata_test, file_path = output_dir + "train_dir/", mode = "full")
+    
+    ae.write_output(test_adata = adata_test, train_adata = adata_train, test_index = test_index, file_path = output_dir, mode = "full")
+
     return (adata_train, adata_test, ae)
 
 
@@ -731,6 +797,7 @@ def sca_main(input_dir, output_dir, loss_name):
     adata_train, adata_test, net = sca(adata_train = adata_train,
                         adata_test = adata_test,
                         loss_name = loss_name,
+                        test_index = test_index,
                         
                         mode = "full",
                         ae_type = "normal",
@@ -753,12 +820,14 @@ def sca_main(input_dir, output_dir, loss_name):
     net.save_model(output_dir)
 
 
-    # transfer genes and barcodes (only to test data, but its identical for train. Just no point putting it in there as well. )
+    # transfer genes and barcodes
+    # I trust this more, if I do it here, insted of reading the genes from the adata again in the write_output function.
+
     genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
     np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
-    print("REMOVEME: I SAVED TEST_INDEX.TSV")
+
 
 
 
