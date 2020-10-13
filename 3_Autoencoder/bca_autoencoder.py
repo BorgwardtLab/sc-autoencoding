@@ -119,7 +119,7 @@ numfeatures = data[0].shape
 
 
 # I define the length as the number of features. 
-input_data = keras.Input(shape=(2541,))       
+input_data = keras.Input(shape=numfeatures)       
 
 # layers
 
