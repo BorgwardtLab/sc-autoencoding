@@ -22,13 +22,13 @@ python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --input_dir "../i
 
 
 ### Evaluate the baselines with Kmeans clustering
-python ../4_Evaluation/sca_kmcluster.py --reset --title "SCAutoencoder" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/sca/SCA_output/test_data/" --output_dir "../outputs/sca/kmcluster/" --outputplot_dir "../outputs/sca/kmcluster/PCA/" |& tee -a $filename
+python ../4_Evaluation/sca_kmcluster.py --reset --title "SCAutoencoder" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/sca/SCA_output/" --output_dir "../outputs/sca/kmcluster/" --outputplot_dir "../outputs/sca/kmcluster/PCA/" |& tee -a $filename
 
 
 ### Evaluate the baselines with classification
 for classifier in logreg lda forest
 do
-python ../4_Evaluation/sca_classification.py --reset --title "SCAutoencoder" --kfold 5 --classifier $classifier --input_dir "../inputs/sca/SCA_output/test_data/" --output_dir "../outputs/sca/ova_classification/" |& tee -a $filename
+python ../4_Evaluation/sca_classification.py --reset --title "SCAutoencoder" --kfold 5 --classifier $classifier --input_dir "../inputs/sca/SCA_output/" --output_dir "../outputs/sca/ova_classification/" |& tee -a $filename
 done
 
 
@@ -37,14 +37,14 @@ done
 ### evaluate with dbscan
 eps=30
 minpts=5
-python ../4_Evaluation/sca_dbscan.py --reset --title "SCAutoencoder" --verbosity 3 --eps $eps --min_samples $minpts --input_dir "../inputs/sca/SCA_output/test_data/" --output_dir "../outputs/sca/dbscan/" --outputplot_dir "../outputs/sca/dbscan/" |& tee -a $filename
+python ../4_Evaluation/sca_dbscan.py --reset --title "SCAutoencoder" --verbosity 3 --eps $eps --min_samples $minpts --input_dir "../inputs/sca/SCA_output/" --output_dir "../outputs/sca/dbscan/" --outputplot_dir "../outputs/sca/dbscan/" |& tee -a $filename
 
 
 
 ### evaluate with randomforest multiclass
 ntrees=100
 # maxdepth=None; minsamplesplit=2; minsamplesleaf=1; maxfeatures="auto"
-python ../4_Evaluation/sca_randforest.py --reset --title "SCAutoencoder" --n_trees $ntrees --input_dir "../inputs/sca/SCA_output/test_data/" --output_dir "../outputs/sca/random_forest/" --outputplot_dir "../outputs/sca/random_forest/" |& tee -a $filename
+python ../4_Evaluation/sca_randforest.py --reset --title "SCAutoencoder" --n_trees $ntrees --input_dir "../inputs/sca/SCA_output/" --output_dir "../outputs/sca/random_forest/" --outputplot_dir "../outputs/sca/random_forest/" |& tee -a $filename
 
 
 
