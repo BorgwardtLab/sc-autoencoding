@@ -754,10 +754,10 @@ def sca_main(input_dir, output_dir, loss_name):
 
 
     # transfer genes and barcodes (only to test data, but its identical for train. Just no point putting it in there as well. )
-    genes.to_csv(output_dir + "test_data/genes.tsv", sep = "\t", index = False, header = False)
-    barcodes.to_csv(output_dir + "test_data/barcodes.tsv", sep = "\t", index = False, header = False)
+    genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-    np.savetxt(output_dir + "test_data/test_index.tsv", test_index, fmt = "%d")
+    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
     print("REMOVEME: I SAVED TEST_INDEX.TSV")
 
 

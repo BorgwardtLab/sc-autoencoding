@@ -10,7 +10,7 @@ Created on Wed Oct  7 17:54:20 2020
 
 import argparse
 
-parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
+parser = argparse.ArgumentParser(description = "a very simple autoencoder")  
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/BCA_output/")
 parser.add_argument("--loss", default = "poisson", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
@@ -205,6 +205,9 @@ print(datetime.now().strftime("%H:%M:%S>"), "create output data & plots...")
 latent_testdata = encoder.predict(testdata)
 denoised_testdata = autoencoder.predict(testdata)
     
+latent_traindata = encoder.predict(traindata)
+denoised_traindata = autoencoder.predict(traindata)
+    
 
 
 # %%
@@ -255,19 +258,34 @@ print(datetime.now().strftime("%H:%M:%S>"), "write output...")
 import os
 os.makedirs(output_dir, exist_ok=True)
 
-pd.DataFrame(denoised_testdata).to_csv(output_dir + "denoised_matrix.tsv",
+
+
+
+
+denoised_outdata = np.zeros(shape = (data.shape))
+denoised_outdata[train_index] = denoised_traindata
+denoised_outdata[test_index] = denoised_testdata
+
+
+latent_outdata = np.zeros(shape = (data.shape[0], latent_testdata.shape[1]))
+latent_outdata[train_index] = latent_traindata
+latent_outdata[test_index] = latent_testdata
+
+
+
+pd.DataFrame(denoised_outdata).to_csv(output_dir + "denoised_matrix.tsv",
                                                       sep='\t',
                                                       index=None,
                                                       header=None,
                                                       float_format='%.6f')
 
-pd.DataFrame(latent_testdata).to_csv(output_dir + "latent_layer.tsv",
+pd.DataFrame(latent_outdata).to_csv(output_dir + "latent_layer.tsv",
                                                       sep='\t',
                                                       index=None,
                                                       header=None,
                                                       float_format='%.6f')
 
-pd.DataFrame(latent_testdata).to_csv(output_dir + "matrix.tsv",
+pd.DataFrame(latent_outdata).to_csv(output_dir + "matrix.tsv",
                                                       sep='\t',
                                                       index=None,
                                                       header=None,
