@@ -181,7 +181,7 @@ callbacks.append(es_cb)
 
 
 autoencoder.fit(traindata, traindata,
-                epochs=10000,
+                epochs=1000,
                 batch_size=256,
                 shuffle=True,
                 callbacks = callbacks,
@@ -206,6 +206,9 @@ denoised_testdata = autoencoder.predict(testdata)
 
 # %% Write output
 print(datetime.now().strftime("%H:%M:%S>"), "write output...")
+
+import os
+os.makedirs(output_dir, exist_ok=True)
 
 pd.DataFrame(denoised_testdata).to_csv(output_dir + "denoised_matrix.tsv",
                                                       sep='\t',
