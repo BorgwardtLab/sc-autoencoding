@@ -3,7 +3,7 @@ mkdir logs
 filename=logs/log_run_baselines.log
 
 
-timestampname=timestamps_baselines
+timestampname=logs/timestamps_baselines.log
 
 
 
@@ -17,6 +17,7 @@ conda activate tf |& tee -a $filename
 
 date |& tee -a $timestampname
 echo "starting preprocessing" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 python ../1_Processing/sca_datamerger.py --mode both --input_dir "../inputs/data/raw_input" --output_dir "../inputs/data/raw_input_combined" |& tee -a $filename
 python ../1_Processing/sca_preprocessor.py --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 2000 --test_fraction 0.25 --input_dir "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/" --output_dir "../inputs/data/preprocessed_data/" --outputplot_dir "../outputs/preprocessing/preprocessed_data/" --verbosity 0 |& tee -a $filename
@@ -26,6 +27,7 @@ python ../1_Processing/sca_preprocessor.py --mingenes 200 --mincells 1 --maxfeat
 ###Run baselines
 date |& tee -a $timestampname
 echo "starting baselines" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 python ../2_Baseline_Scripts/sca_PCA.py --num_components 50 --input_dir "../inputs/data/preprocessed_data/" --output_dir "../inputs/baselines/baseline_data/scaPCA_output/" --outputplot_dir "../outputs/baselines/baseline_data/scaPCA_output/" |& tee -a $filename
 python ../2_Baseline_Scripts/sca_LSA.py --num_components 50 --input_dir "../inputs/data/preprocessed_data/" --output_dir "../inputs/baselines/baseline_data/scaLSA_output/" --outputplot_dir "../outputs/baselines/baseline_data/scaLSA_output/" |& tee -a $filename
@@ -39,6 +41,7 @@ python ../2_Baseline_Scripts/sca_UMAP.py --num_components 2 --verbosity 0 --inpu
 ### Evaluate the baselines with Kmeans clustering
 date |& tee -a $timestampname
 echo "starting kmeans" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 python ../4_Evaluation/sca_kmcluster.py --reset --title "PCA" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/baselines/baseline_data/scaPCA_output/" --output_dir "../outputs/baselines/kmcluster/" --outputplot_dir "../outputs/baselines/kmcluster/PCA/" |& tee -a $filename
 python ../4_Evaluation/sca_kmcluster.py --title "ICA" --k 5 --dimensions 0 --verbosity 0 --input_dir "../inputs/baselines/baseline_data/scaICA_output/" --output_dir "../outputs/baselines/kmcluster/" --outputplot_dir "../outputs/baselines/kmcluster/ICA/" |& tee -a $filename
@@ -54,6 +57,7 @@ python ../4_Evaluation/sca_kmcluster.py --title "original_data" --k 5 --dimensio
 ### Evaluate the baselines with classification
 date |& tee -a $timestampname
 echo "starting classification (x3)" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 for classifier in logreg lda forest
 do
@@ -86,6 +90,7 @@ done
 ### evaluate with dbscan
 date |& tee -a $timestampname
 echo "starting dbscan" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 eps=30
 minpts=5
@@ -104,6 +109,7 @@ python ../4_Evaluation/sca_dbscan.py  --title "original_data" --verbosity 3 --ep
 ### evaluate with randomforest multiclass
 date |& tee -a $timestampname
 echo "starting random forest" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 ntrees=100
 # maxdepth=None; minsamplesplit=2; minsamplesleaf=1; maxfeatures="auto"
@@ -118,5 +124,6 @@ python ../4_Evaluation/sca_randforest.py  --title "original_data" --n_trees $ntr
 
 date |& tee -a $timestampname
 echo "I have finished running all baselines" |& tee -a $timestampname
+echo |& tee -a $timestampname
 
 

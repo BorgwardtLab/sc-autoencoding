@@ -108,7 +108,7 @@ traindata = data[train_index]
 
 # %%
 
-print(datetime.now().strftime("%H:%M:%S>"), "create model...")
+print(datetime.now().strftime("%H:%M:%S>"), "compile model...")
 
 import keras
 from keras import layers
@@ -147,15 +147,17 @@ autoencoder.compile(optimizer=args.optimizer, loss = "poisson")
 
 
 
-# %% normalize and scale the data. 
+
+# %%
+print(datetime.now().strftime("%H:%M:%S>"), "Train model...")
+
+# normalize and scale the data. 
 '''so I don't know if this makes it any better, cuz then we could have not 
 gone the extra mile to avoid doing this in the real preprocessing, but idunno.
 
 also they use another scaling, one that scales between 0 and 1 (manually, just divide by largest)
 idk what makes sense here lmao lmao
 '''
-
-
 
 scaler = StandardScaler()
 scaler.fit(traindata)
@@ -164,7 +166,8 @@ testdata = scaler.transform(testdata)
 
 
 
-# %% EXTRA STUFF
+
+
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # Callbacks
@@ -176,7 +179,8 @@ es_cb = EarlyStopping(monitor='val_loss', patience=35, verbose=1)
 callbacks.append(es_cb)
 
 
-# %%
+
+
 
 
 
@@ -188,15 +192,56 @@ autoencoder.fit(traindata, traindata,
                 validation_data=(testdata, testdata))
 
 
+history = autoencoder.history
 
-# Get Result:
-    
-    
-print(datetime.now().strftime("%H:%M:%S>"), "create output data...")
+
+
+
+
+# %% Get Result:
+        
+print(datetime.now().strftime("%H:%M:%S>"), "create output data & plots...")
     
 latent_testdata = encoder.predict(testdata)
 denoised_testdata = autoencoder.predict(testdata)
     
+
+
+# %%
+import matplotlib.pyplot as plt
+
+ploss = history.history["loss"]
+plr = history.history["lr"]
+pval_loss = history.history["val_loss"]
+
+num_epochs = len(ploss)
+epochs = history.epoch
+
+
+fig, (ax1, ax2) = plt.subplots(2, 1)
+fig.suptitle("History")
+
+ax1.plot(range(num_epochs), plr, 'b')
+ax1.set_ylabel("learning rate")
+#ax1.set_xticks([])
+ax1.tick_params(axis = 'x', which='both', bottom = True, top = False, labelbottom = False)
+
+
+ax2.plot(range(num_epochs), ploss, 'r')
+ax2.plot(range(num_epochs), pval_loss, 'g')
+ax2.legend(['loss', 'validation loss'])
+ax2.set_xlabel("epoch number")
+ax2.set_ylabel("losses")
+
+
+fig.show()
+
+plt.savefig(output_dir + "training_history.png")
+
+
+
+
+
 
 
 

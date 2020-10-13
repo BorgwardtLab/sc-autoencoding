@@ -17,7 +17,7 @@ conda activate tf |& tee -a $filename
 
 
 ### 1.) Run the BCA
-python ../3_Autoencoder/bca_autoencoder.py --loss poisson --activation = relu --optimizer = Adam --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/BCA_output/" |& tee -a $filename
+python ../3_Autoencoder/bca_autoencoder.py --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/sca/sca_preprocessed_data/" --output_dir "../inputs/sca/BCA_output/" |& tee -a $filename
 
 
 ### 2.1)Evaluate the baselines with Kmeans clustering
