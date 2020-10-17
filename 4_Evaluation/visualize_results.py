@@ -11,7 +11,7 @@ Created on Tue Oct 13 14:20:07 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
-parser.add_argument("--title", default = "Placeholder", type = str, help = "the overlying name of the analysis (e.g. baseline, autoencoder, SCA, BCA...). This will change the names of the output plots")
+parser.add_argument("--title", default = "Placeholder", type = str, help = "the overlying name of the analysis (e.g. baseline, autoencoder, SCA, BCA...). This will change the names of the output plots, and their folder")
 
 parser.add_argument("--dbscan_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
 parser.add_argument("--kmcluster_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
@@ -20,7 +20,7 @@ parser.add_argument("--random_forest_results", help="directory of the data - ent
 #parser.add_argument("--general_input", default = "off", help="instead of entering all directories individually, respect the data structure and only give the overlying directory. Will overwrite all individual directories when entered")
 parser.add_argument("--general_input", default = "../outputs/baselines/", help="instead of entering all directories individually, respect the data structure and only give the overlying directory. Will overwrite all individual directories when entered")
 
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/baselines/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/baselines/figures/")
 args = parser.parse_args()
 
 
@@ -39,7 +39,7 @@ if args.general_input != "off":
 
 
 
-output_dir = args.output_dir + "figures/"
+output_dir = args.output_dir + title + "/"
 import os
 os.makedirs(output_dir, exist_ok=True)
 
@@ -59,8 +59,61 @@ import pandas as pd
 # %%
 if not dbscan_dir == "skip":
     
-    print("yolo")
+    with open(dbscan_dir + "dbscan_clustering_results.txt", "r") as file:
+        string = file.read()
+    count = int(string.count("######")/2)
+ 
+    purities = []
+    recalls = []
+    names = []
     
+    
+    for i in range(count):
+        
+        pointer1 = string.find("######")
+        pointer2 = string.find("#", pointer1 + 6)
+        
+        
+        name = string[pointer1 + 6:pointer2]
+        names.append(name)
+        print(name)
+    
+    
+        # purity
+        pointer1 = string.find("Average Purity:")
+        pointer2 = string.find("(", pointer1)
+        
+        purity = float(string[pointer1+15:pointer2])
+        purities.append(purity)
+        print(purity)
+        
+        
+        # recall
+        pointer1 = string.find("Average Recall:")
+        pointer2 = string.find("(", pointer1)
+        
+        recall = float(string[pointer1+15:pointer2])
+        recalls.append(recall)
+        print(recall)
+        
+        
+        # shorten string
+        string = string[pointer2+30:]
+
+
+
+
+
+    ## grouped barplot
+
+    # create pandas dataframe
+    data = {"Purity": purities,
+            "Recall": recalls}
+    panda = pd.DataFrame(data, index = names)
+    
+    # plot barplot
+    panda.plot.bar(rot=0, ylim = [0,1])
+    plt.savefig(output_dir + title + "_dbscan")
     
 
 

@@ -235,7 +235,7 @@ if args.limit_cells > 0:
 
 # %% Train Test Split
 
-print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split\n")
+print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split")
 
 X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=args.test_fraction)
 

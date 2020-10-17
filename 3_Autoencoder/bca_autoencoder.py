@@ -121,8 +121,8 @@ numfeatures = data[0].shape
 # I define the length as the number of features. 
 input_data = keras.Input(shape=numfeatures)       
 
-# layers
 
+# layers
 encoded = layers.Dense(64, activation=act1)(input_data)
 encoded = layers.Dense(32, activation=act2)(encoded)
 decoded = layers.Dense(64, activation=act2)(encoded)
