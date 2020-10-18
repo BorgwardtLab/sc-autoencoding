@@ -20,6 +20,7 @@ import scipy.io
 from sklearn.model_selection import train_test_split
 
 
+
 print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_preprocessor.py")
 
 
@@ -27,7 +28,7 @@ try:
     os.chdir(os.path.dirname(sys.argv[0]))
 except:
     pass
-         
+
 
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")
@@ -37,6 +38,8 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 parser.add_argument("--test_fraction", help="enter a float between 0-1. This will be the fraction of the data, that is marked as test data.", default = 0.25, type = float)
+
+parser.add_argument("--repeats", help="number of kfolds", default = 3, type = int)
 
 parser.add_argument("--saveobject", help="hitting this flag allows will save the adata object, so it can be evaluated with other techniques", action="store_true")
 
@@ -266,10 +269,10 @@ sc.pp.scale(AnnData, max_value=10)
 # %% Exporting
 
 if not args.plotsonly: 
-    
     print(datetime.now().strftime("%H:%M:%S>"), "Generating Output...")
     # those are useless, only mean and dispersion etc
     # AnnData.write_csvs("filename2", skip_data=False)
+    
     
     
     genes = pd.DataFrame(AnnData.var_names)
@@ -283,44 +286,64 @@ if not args.plotsonly:
     # alright, I give up. Lets' do it cavemen style
     bc_names = [item.split('\t')[0] for item in barcodelist]
     bc_types = [item.split('\t')[1] for item in barcodelist]
-    # damn i even have to caveman the df creation, i suck so hard
+
     barcodes = pd.DataFrame(data = bc_names)
     barcodes["type"] = bc_types
     
     ''' the reason why i wrote this ugly blcok is, if i just panda'd the AnnData.obs_name, it would
-    write it out with quotatation marks around it, (probably due to the inclusion of the \t, that forces 
-    it to somehow keep the object as one (what i didn't want')). I've tried to just disable quotation marks
+    write it out with quotatation marks around it, probably due to the inclusion of the \t, that forces 
+    it to somehow keep the object as one (what i understand but don't want here). I've tried to just disable quotation marks
     with quotin=csv.QUOTE_NONE, but then it wanted anothe rescape character, and I gave up. And then I've tried
     to split an array of strings in two in a nice manner, but had to give up, and do it with these for items now
     I think this equals to 2 loops, so awesome for runtime (not that it matters) 
     anyway, this is a bad solution, but it fixes the problem, so meh'''
     
     
-    panda.to_csv(output_dir + "matrix.tsv", sep = "\t", index = False, header = False)
-    genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
-    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
     
     
+    
+    
+# %% Save whole thing for clustering:
+
+    complete_dir = output_dir + "complete/"
+    os.makedirs(complete_dir, exist_ok=True)
+
+
+    panda.to_csv(complete_dir + "matrix.tsv", sep = "\t", index = False, header = False)
+    genes.to_csv(complete_dir + "genes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(complete_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+
+
 
     
     # %% Train Test Split
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split")
+    
+    for i in range(args.repeats):
+        print("split", i)
+        fold_dir = output_dir + "fold_" + str(i) + "/"
+        os.makedirs(fold_dir, exist_ok=True)
+        
+        
+        X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=test_fraction, shuffle = True)   # alternative: stratify
+        # variables are unused, just extract the index from X_train
+        train_indexes = list(X_train.index)
+        test_indexes = list(X_test.index)
+        
+        
+        # create boolean
+        test_index = np.zeros(len(bc_types), dtype = bool)
+        for i in test_indexes:
+            test_index[i] = True
 
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split\n")
-
-    X_train, X_test, y_train, y_test = train_test_split(panda, bc_types, test_size=test_fraction)
     
-    
-    train_indexes = list(X_train.index)
-    test_indexes = list(X_test.index)
-    
-    test_index = np.zeros(len(bc_types), dtype = bool)
-    
-    
-    for i in test_indexes:
-        test_index[i] = True
-
-    
-    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+        np.savetxt(fold_dir + "test_index.tsv", test_index, fmt = "%d")
+        
+        
+        # save the rest of the data too
+        panda.to_csv(fold_dir + "matrix.tsv", sep = "\t", index = False, header = False)
+        genes.to_csv(fold_dir + "genes.tsv", sep = "\t", index = False, header = False)
+        barcodes.to_csv(fold_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 
 
@@ -332,38 +355,12 @@ print(datetime.now().strftime("%H:%M:%S>"), "sca_preprocessor.py terminated succ
 
 if not args.saveobject:
     import pickle
-    file = open(output_dir + "/AnnData_preprocessor.obj", "wb")
+    file = open(output_dir + "AnnData_preprocessor.obj", "wb")
     pickle.dump(AnnData, file)
     
 
 
 
-
-
-
-
-
-# %%
-
-
-# thing = AnnData.X
-
-
-# thing = pd.DataFrame.sparse.from_spmatrix(thing)
-# backupthing = thing
-
-
-# print(backupthing.shape)
-
-# sums = thing.sum(axis = 0)
-
-# print(sums.shape)
-
-
-# for i in range(len(sums)):
-#     #print(sums[i])
-#     if sums[i] == 1:
-#         print("yoloembolo")
 
 
 
