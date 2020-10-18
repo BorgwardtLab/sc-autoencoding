@@ -13,7 +13,7 @@ import sys
 
 
 z = 20
-number = sys.arv[1]
+number = sys.argv[1]
 
 
 for i in range(z):

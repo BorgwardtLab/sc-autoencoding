@@ -20,7 +20,7 @@ for i in range(z):
     with open("test.tsv", "a") as outfile:
         outfile.write(str(number))
         outfile.write("\n")
-    time.sleep(1)
+    time.sleep(5)
     
     
     
