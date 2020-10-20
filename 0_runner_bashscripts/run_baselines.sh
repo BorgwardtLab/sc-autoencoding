@@ -13,6 +13,9 @@ input="../inputs/data/preprocessed_data/"
 output="../inputs/baseline_data/"
 outputplot="../outputs/baselines/"
 
+
+
+
 (
 ### PCA
 logfile=$pcalog
@@ -47,7 +50,7 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
-python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --mode complete --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --mode complete --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
  
 
 printf "\n################### " &>> $logfile
@@ -70,14 +73,13 @@ printf "########################################################################
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
-python ../2_Baseline_Scripts/sca_LSA.py --mode complete --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_LSA.py --mode complete --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 ) & 
-
 
 
 
@@ -96,7 +98,7 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
-python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
 printf "\n################### " &>> $logfile
@@ -121,7 +123,7 @@ printf " ###################\n##################################################
 
 
 
-python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
 
