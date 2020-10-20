@@ -305,7 +305,7 @@ if not args.plotsonly:
     
 # %% Save whole thing for clustering:
 
-    complete_dir = output_dir + "complete/"
+    complete_dir = output_dir + "no_split/"
     os.makedirs(complete_dir, exist_ok=True)
 
 
@@ -319,9 +319,10 @@ if not args.plotsonly:
     # %% Train Test Split
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split")
     
-    for i in range(args.repeats):
+    for j in range(args.repeats):
+        i = j+1
         print("split", i)
-        fold_dir = output_dir + "fold_" + str(i) + "/"
+        fold_dir = output_dir + "split_" + str(i) + "/"
         os.makedirs(fold_dir, exist_ok=True)
         
         

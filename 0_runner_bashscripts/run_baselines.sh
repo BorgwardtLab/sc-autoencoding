@@ -22,7 +22,7 @@ printf "########################################################################
 echo -n START: `date` &>> $logfile
 printf " ####################\n###########################################################################\n\n" &>> $logfile
 
-python ../2_Baseline_Scripts/sca_PCA.py --mode nosplit --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_PCA.py --mode nosplit --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile

@@ -6,6 +6,24 @@ Created on Wed Jul  1 23:52:35 2020
 """
 
 # %% Load Data
+
+import argparse
+
+
+
+parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
+parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
+parser.add_argument("-d","--dimensions", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaTSNE_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaTSNE_output/")
+parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
+parser.add_argument("--mode", help="PLEASE DON'T SUBMIT A MODE - TSNE CANNOT HANDLE A TRAIN-TEST SPLIT", default = "nosplit", choices = ["nosplit"])
+
+args = parser.parse_args() #required
+
+
+
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
@@ -15,9 +33,8 @@ from datetime import datetime
 import matplotlib.cm as cm # colourpalette
 from sklearn.manifold import TSNE
 import sys
-import argparse
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_tSNE.py")
+
 
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
@@ -26,53 +43,61 @@ except:
 
 
 
-#os.chdir(os.path.dirname(sys.argv[0]))
-input_path = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
+source_input_dir = args.input_dir
+source_output_dir = args.output_dir
+source_outputplot_dir = args.outputplot_dir
 
-parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
-parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
-parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaTSNE_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/baseline_data/scaTSNE_output/")
-parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, choices = [0, 1, 2, 3], type = int)
-args = parser.parse_args() #required
-
-
-
-input_path = args.input_dir
-output_dir = args.output_dir
-outputplot_dir = args.outputplot_dir
 component_name = "t-SNE"
 
+input_dir = source_input_dir + "no_split/"
+output_dir = source_output_dir + "no_split/"
+outputplot_dir = source_outputplot_dir + "no_split/"
+
+dims = args.dimensions
 
 
-print("WARNING: TSNE BY ITSELF IS UNABLE TO HANDLE A TRAINING-TESTING SPLIT")
+
+if args.mode != "nosplit":
+    print("WARNING: TSNE BY ITSELF IS UNABLE TO HANDLE A TRAINING-TESTING SPLIT")
+    sys.exit()
+    
+
+
 
 
 # %% Read Input data
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
 
-matrix_file = input_path + "matrix.tsv"
+
+assert os.path.isfile(input_dir + "test_index.tsv") == False
+
+
+matrix_file = input_dir + "matrix.tsv"
 data = np.loadtxt(open(matrix_file), delimiter="\t")
 
-
-
 # load genes (for last task, finding most important genes)
-file = open(input_path + "genes.tsv", "r")
+file = open(input_dir + "genes.tsv", "r")
 genes = file.read().split("\n")
 file.close()
 genes.remove("") 
 
 
-barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
 labels = barcodes.iloc[:,1]
 
 
-test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
-train_index = np.logical_not(test_index)
+
+
+# %%
+if dims < 0:
+    data = data[:,dims]
+elif dims == 0:
+    dims = data.shape[1]
+
+
+
 
 
 # %% setup defaults
@@ -149,27 +174,28 @@ plt.savefig(outputplot_dir + "/tSNE_Plot.png")
 
 
 
-# %% Diagnostics
+# %% Outputs
 
-if args.nosave == False:
-    
-    if not os.path.exists(output_dir):
-        print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-        os.makedirs(output_dir)    
-    
-    print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
-    
-    np.savetxt(output_dir + "matrix.tsv", tsnedata, delimiter = "\t")
-    
-    with open(output_dir + "genes.tsv", "w") as outfile:
-        outfile.write("\n".join(genes))
-    
-    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
-    
-    
-    
+new_genes =  []
+for i in range(num_components):
+    new_genes.append("tSNE_Component_" + str(i + 1) + "_(from_" + str(dims) + "PCs)")
+genes = pd.DataFrame(new_genes)
+
+
+
+
+
+if not os.path.exists(output_dir):
+    print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+    os.makedirs(output_dir)    
+
+print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+np.savetxt(output_dir + "matrix.tsv", tsnedata, delimiter = "\t")
+genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+
+
 print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully\n")
 
 

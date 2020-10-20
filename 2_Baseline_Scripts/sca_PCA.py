@@ -14,121 +14,333 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 30)
-parser.add_argument("-s", "--nosave", help="passing this flag prevents the program from saving the reduced coordinates to prevent storage issues. (plots and other output still gets saved)", action="store_true")
+parser.add_argument("-n","--num_components", help="the number of PCAs to calculate", type = int, default = 100)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaPCA_output/")
+parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 args = parser.parse_args() #required
 
 
+num_components = args.num_components
+source_input_dir = args.input_dir
+source_output_dir = args.output_dir
+source_outputplot_dir = args.outputplot_dir
+component_name = "PC"   
+
+
+if args.mode == "complete":
+    nosplit = True
+    split = True
+elif args.mode == "split":
+    nosplit = False
+    split = True
+elif args.mode == "nosplit":
+    nosplit = True
+    split = False
+else:
+    print("invalid mode")
 
 
 
-def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
-              output_dir = "../inputs/baselines/baseline_data/scaPCA_output/",
-              outputplot_dir = "../outputs/baselines/baseline_data/scaPCA_output/",
-              nosave = False,
-              num_components = 30
-              ):
+
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+from datetime import datetime
+import matplotlib.cm as cm # colourpalette
+import sys
+
+
+
+
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+         
+
+
+# args.mode = "nosplit"
+
+
+    
+    
+    
+# %% SPLIT  
+    
+    
+if split == True:
+    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py (split) with num_components = {numcom:d}".format(numcom = num_components))    
+ 
+
+    # determine number of splits
+    num_splits = 0
+    cancel = False
+    
+    while True:
+        num_splits += 1
+        directory = source_input_dir + "split_" + str(num_splits + 1)
+        
+        isdirectory = os.path.isdir(directory)
+        
+        if isdirectory == False:
+            print(datetime.now().strftime("%H:%M:%S>"), str(num_splits) + " splits detected\n")    
+            break
  
     
-    import numpy as np
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.decomposition import PCA
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import os
-    from datetime import datetime
-    import matplotlib.cm as cm # colourpalette
-    import sys
+ 
     
+# %% loop through splits
+ 
+    for split in range(1, num_splits + 1):
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "Starting split #" + str(split))       
+        
+     
+        input_dir = source_input_dir + "split_" + str(split) + "/"
+        output_dir = source_output_dir + "split_" + str(split) + "/"
+        outputplot_dir = source_outputplot_dir + "split_" + str(split) + "/"
+        
+
+ 
     
+        # %% Read Input data
+        print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
+        
+        data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
+        
+        genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
+        
+        barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
+        labels = barcodes.iloc[:,1]
+        
+        test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
+        train_index = np.logical_not(test_index)
+        
+        
+        
+        original_data = data.copy()
+        testdata = data[test_index]
+        traindata = data[train_index]
+        ##############################################################################
+        
+
+
+        
+        # %% do PCA
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
+        myscaler = StandardScaler()
+        traindata =  myscaler.fit_transform(traindata)
+        testdata = myscaler.fit_transform(testdata)
+        
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "calculating principal components...")
+        myPCA = PCA(n_components=num_components)
+        train_PCs = myPCA.fit_transform(traindata)
+        test_PCs = myPCA.transform(testdata)
+
+
+
+        explained_variance = myPCA.explained_variance_ratio_
+        
+
+        outdata = np.zeros(shape = (len(original_data), num_components))
+        outdata[train_index] = train_PCs
+        outdata[test_index] = test_PCs
+        
+
+
+
+        
+        # %%  Plots
+        
+        if not os.path.exists(outputplot_dir):
+            print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
+            os.makedirs(outputplot_dir)
+            
+        
+        
+
+        print(datetime.now().strftime("%H:%M:%S>"), "drawing plots...")
+        targets = set(labels) # what it will draw in plot, previously it was targets = ['b_cells' ... 'cytotoxic_t'], now its dynamic :*
+        
+        
+        # 2D plot train
+        df_train = pd.DataFrame(data = train_PCs[:,[0,1]], columns = [component_name + '_1', component_name + '_2'])
+        df_train['celltype'] = np.array(labels[train_index]) # conversion necessary to drop the "index" form labels, otherwise it gets wrongly attached
+        
+        
+        fig = plt.figure(figsize = (8,8))
+        ax = fig.add_subplot(1,1,1) 
+        ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+        ax.set_ylabel(component_name + '_2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+        ax.set_title('Most Powerful PCAs', fontsize = 20)
+        colors = cm.rainbow(np.linspace(0, 1, len(targets)))
+        for target, color in zip(targets,colors):
+            indicesToKeep = df_train['celltype'] == target
+            ax.scatter(df_train.loc[indicesToKeep, component_name + '_1']
+                        , df_train.loc[indicesToKeep, component_name + '_2']
+                        , c = color.reshape(1,-1)
+                        , s = 5)
+        ax.legend(targets)
+        ax.grid()
+        plt.savefig(outputplot_dir + "PCA_plot_trainingdata.png")
+        
+        
+        
+        
+        # 2D plot test
+        df_test = pd.DataFrame(data = test_PCs[:,[0,1]], columns = [component_name + '_1', component_name + '_2'])
+        df_test['celltype'] = np.array(labels[test_index]) # conversion necessary to drop the "index" form labels, otherwise it gets wrongly attached
+        
+        
+        fig = plt.figure(figsize = (8,8))
+        ax = fig.add_subplot(1,1,1) 
+        ax.set_xlabel(component_name + '_1 (' + str(round(explained_variance[0]*100, 3)) + "% of variance)", fontsize = 15)
+        ax.set_ylabel(component_name + '_2 (' + str(round(explained_variance[1]*100, 3)) + "% of variance)", fontsize = 15)
+        ax.set_title('Most Powerful PCAs', fontsize = 20)
+        colors = cm.rainbow(np.linspace(0, 1, len(targets)))
+        for target, color in zip(targets,colors):
+            indicesToKeep = df_test['celltype'] == target
+            ax.scatter(df_test.loc[indicesToKeep, component_name + '_1']
+                        , df_test.loc[indicesToKeep, component_name + '_2']
+                        , c = color.reshape(1,-1)
+                        , s = 5)
+        ax.legend(targets)
+        ax.grid()
+        plt.savefig(outputplot_dir + "PCA_plot_testdata.png")
+        
+        
+
+
+        ### Save Variances
+        print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
+        explained_sum = np.cumsum(explained_variance)
+        
+        file = open(outputplot_dir + 'explained_variances_train.log', 'w')
+        for i in range(len(explained_variance)):
+            text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
+            file.write(text)
+        file.close()
+            
+            
+            
+            
+            
+        ### Scree Plots
+        perc_var = (explained_variance * 100)
+        perc_var = perc_var[0:num_components]
+        
+        labelz = [str(x) for x in range(1, len(perc_var)+1)]
+        
+        
+        plt.figure(figsize=[16,8])
+        plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
+        plt.ylabel('Percentage of explained variance')
+        plt.xlabel('Principal component')
+        plt.title('Scree plot')
+        plt.show()    
+        plt.savefig(outputplot_dir + "PCA_scree_plot_train_all.png")
+            
+            
+            
+            
+        if num_components > 50:
+            how_many = 30;
+            perc_var = (explained_variance * 100)
+            perc_var = perc_var[0:how_many]
+        
+            labelz = [str(x) for x in range(1, len(perc_var)+1)]
+            
+            plt.figure(figsize=[16,8])
+            plt.bar(x = range(1, len(perc_var)+1), height = perc_var, tick_label = labelz)
+            plt.ylabel('Percentage of explained variance')
+            plt.xlabel('Principal component')
+            plt.title('Scree plot')
+            plt.show()    
+            plt.savefig(outputplot_dir + "PCA_scree_plot_train_top30.png")    
+            
+            
+               
+            
+        # Loading scores for PC1
+        how_many = 10
+        
+        loading_scores = pd.Series(myPCA.components_[0], index = genes.iloc[:,1])
+        sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
+        top_genes = sorted_loading_scores[0:how_many].index.values
+            
+        
+        file = open(outputplot_dir + 'most_important_genes_train.log', 'w')
+        for i in range(how_many):
+            text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
+            file.write(text)
+        file.close()
+        
+        
+        
+        
+        
+        
+        # %% Saving the data
+
     
-    try:
-        os.chdir(os.path.dirname(sys.argv[0]))
-    except:
-        pass
-             
+        new_genes =  []
+        for i in range(num_components):
+            new_genes.append("PC_" + str(i + 1))
+        genes = pd.DataFrame(new_genes)
     
+
+
     
-    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py with num_components = {numcom:d}".format(numcom = num_components))    
-    component_name = "PC"    
+        if not os.path.exists(output_dir):
+            print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+            os.makedirs(output_dir)    
     
+        print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+      
+        np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
+        genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+        barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
+        np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+        
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py (split " + str(split) + ") terminated successfully\n")
+        
+     
+
+
+        
+
+# %% NO SPLIT
+if nosplit == True:
     
+    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py (nosplit) with num_components = {numcom:d}".format(numcom = num_components))    
+ 
+    input_dir = source_input_dir + "no_split/"
+    output_dir = source_output_dir + "no_split/"
+    outputplot_dir = source_outputplot_dir + "no_split/"
     
-    
+
     
     # %% Read Input data
     print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
     
-    data = np.loadtxt(open(input_path + "matrix.tsv"), delimiter="\t")
+    data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
     
-    genes = pd.read_csv(input_path + "genes.tsv", delimiter = "\t", header = None)
+    genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
     
-    barcodes = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+    barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
     labels = barcodes.iloc[:,1]
     
-    
-    test_index = np.loadtxt(fname = input_path + "test_index.tsv", dtype = bool)
-    train_index = np.logical_not(test_index)
-    
-    
-    
-    
-    
-    ##############################################################################
-    # from here on out: 
-        # data = traindata
-        # testdata = testdata
-    complete_data = data
-    testdata = data[test_index]
-    data = data[train_index]
-    ##############################################################################
-    
-    
-    
-    ### Get Labels 
-    # print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-    # file = open(input_path + "celltype_labels.tsv", "r")
-    # labels = file.read().split("\n")
-    # file.close()
-    # labels.remove("") #last, empty line is also removed
-    ### load barcodes
-    # file = open(input_path + "barcodes.tsv", "r")
-    # barcodes = file.read().split("\n")
-    # file.close()
-    # barcodes.remove("") 
-    
-    
-    
-    # %%  Cut back data for handlability lmao
-    # print(datetime.now().strftime("%H:%M:%S>"), "reading input matrix...")
-    # ### Get Matrix
-    # mtx_file = input_path + "matrix.mtx"
-    # coomatrix = scipy.io.mmread(mtx_file)
-    # coomatrix_t = np.transpose(coomatrix)
-    
-    # print(datetime.now().strftime("%H:%M:%S>"), "deleting random data pieces...")
-    # genes_uplimit = 30000
-    # genes_downlimit = 25000
-    # cells_uplimit = 15000
-    # cells_downlimit = 10000
-    # labels = labels[cells_downlimit:cells_uplimit]
-    # genes = genes[genes_downlimit:genes_uplimit]
-    # csrmatrix = coomatrix_t.tocsr()
-    # coomatrix_t = csrmatrix[cells_downlimit:cells_uplimit, genes_downlimit:genes_uplimit]
-    
-    
-    # Convert to dense
-    # print(datetime.now().strftime("%H:%M:%S>"), "converting sparse matrix to dense...")
-    #data = coomatrix_t.toarray()
-    
-    
-    
-    
-    
-    
+    assert os.path.isfile(input_dir + "test_index.tsv") == False
+
+        
     # %% do PCA
     
     print(datetime.now().strftime("%H:%M:%S>"), "scaling data...")
@@ -145,57 +357,28 @@ def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
     
     explained_variance = myPCA.explained_variance_ratio_
     
+ 
     
     
     
-    
-    #################### do testdata
-    test_PCs = myscaler.transform(testdata)
-    test_PCs = myPCA.transform(test_PCs)
-    
-    
-    
-    
-    
-    
-    # %% i know this is messy, but this section here tries to combine the test and traindata into a single output matrix again.
-    
-    
-    # I keep it as a np array here. Other scripts maybe get a dataframe
-    #outdata = pd.DataFrame(data = np.zeros(shape = (len(complete_data), num_components)))
-    
-    
-    
-    outdata = np.zeros(shape = (len(complete_data), num_components))
-    
-    outdata[train_index] = PCs
-    outdata[test_index] = test_PCs
-    
-    
-    
-    
-    #%% Outputs
-    
-    
-    
+    #%% Plots
+
     if not os.path.exists(outputplot_dir):
         print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
         os.makedirs(outputplot_dir)
-        
     
     
-    ### Create Plot
     print(datetime.now().strftime("%H:%M:%S>"), "drawing plots...")
     targets = set(labels) # what it will draw in plot, previously it was targets = ['b_cells' ... 'cytotoxic_t'], now its dynamic :*
+    
+    
+    
+    
     
     # construct dataframe for 2d plot
     df = pd.DataFrame(data = PCs[:,[0,1]], columns = [component_name + '_1', component_name + '_2'])
     df['celltype'] = labels
     
-    
-    
-    
-    # %% plots 
     
     fig = plt.figure(figsize = (8,8))
     ax = fig.add_subplot(1,1,1) 
@@ -211,12 +394,10 @@ def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
                     , s = 5)
     ax.legend(targets)
     ax.grid()
-    plt.savefig(outputplot_dir + "PCA_plot_trainingdata.png")
+    plt.savefig(outputplot_dir + "PCA_plot.png")
     
     
-    
-    
-    
+
     ### Save Variances
     print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
     explained_sum = np.cumsum(explained_variance)
@@ -250,7 +431,7 @@ def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
         
         
     if num_components > 50:
-        how_many = 50;
+        how_many = 30;
         perc_var = (explained_variance * 100)
         perc_var = perc_var[0:how_many]
     
@@ -267,8 +448,11 @@ def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
         
            
         
+        
+        
+        
+        
     # Loading scores for PC1
-    
     how_many = 10
     
     loading_scores = pd.Series(myPCA.components_[0], index = genes.iloc[:,1])
@@ -282,68 +466,36 @@ def sca_PCA(input_path = "../inputs/data/preprocessed_data/",
         file.write(text)
     file.close()
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
+
     # %% Saving the data
+
+
+
+    new_genes =  []
+    for i in range(num_components):
+        new_genes.append("PC_" + str(i + 1))
+    genes = pd.DataFrame(new_genes)
+
+
+
+    if not os.path.exists(output_dir):
+        print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+        os.makedirs(output_dir)    
+
+    print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
+  
+
+    np.savetxt(output_dir + "matrix.tsv", PCs, delimiter = "\t")
+    genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
+    barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
     
-    if nosave == False:
+
     
-        if not os.path.exists(output_dir):
-            print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-            os.makedirs(output_dir)    
+    print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py (nosplit) terminated successfully\n")
     
-        print(datetime.now().strftime("%H:%M:%S>"), "Saving output...")
-      
-        
-      
-        np.savetxt(output_dir + "matrix.tsv", outdata, delimiter = "\t")
-            
-        genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
-        
-        barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
-        
-        np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
-        
-        # with open(output_dir + "barcodes.tsv", "w") as outfile:
-        #     outfile.write("\n".join(barcodes))
-        
-        # with open(output_dir + "celltype_labels.tsv", "w") as outfile:
-        #     outfile.write("\n".join(labels))
+
+  
     
-    
-    
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py terminated successfully\n")
-
-
-
-
-#------------------------------------------------------------------------------
-# run
-#------------------------------------------------------------------------------
-
-
-
-if __name__ == "__main__":
-    sca_PCA(input_path = args.input_dir, output_dir= args.output_dir, 
-              outputplot_dir= args.outputplot_dir, nosave = args.nosave, 
-              num_components= args.num_components)
-
-
-
-
-
-
-
-
-
-
-
-
-
+         
