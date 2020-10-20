@@ -96,7 +96,7 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
-python ../2_Baseline_Scripts/sca_tSNE.py --mode complete --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
+python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $filename
 
 
 printf "\n################### " &>> $logfile

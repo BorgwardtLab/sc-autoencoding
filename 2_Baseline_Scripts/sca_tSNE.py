@@ -11,6 +11,7 @@ import argparse
 
 
 
+
 parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
 parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
 parser.add_argument("-d","--dimensions", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
