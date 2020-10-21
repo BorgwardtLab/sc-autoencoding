@@ -103,8 +103,8 @@ if split == True:
      
         input_dir = source_input_dir + "split_" + str(split) + "/"
         output_dir = source_output_dir + "split_" + str(split) + "/"
-        outputplot_dir = source_outputplot_dir + "split_" + str(split) + "/"
-        
+        #outputplot_dir = source_outputplot_dir + "split_" + str(split) + "/"
+        outputplot_dir = source_outputplot_dir + "all_splits/"
 
  
     
@@ -189,8 +189,7 @@ if split == True:
                         , s = 5)
         ax.legend(targets)
         ax.grid()
-        plt.savefig(outputplot_dir + "PCA_plot_trainingdata.png")
-        
+        plt.savefig(outputplot_dir + "PCA_plot_trainingdata_split_" + str(split) + ".png")      
         
         
         
@@ -213,7 +212,7 @@ if split == True:
                         , s = 5)
         ax.legend(targets)
         ax.grid()
-        plt.savefig(outputplot_dir + "PCA_plot_testdata.png")
+        plt.savefig(outputplot_dir + "PCA_plot_testdata_split_" + str(split) + ".png")
         
         
 
@@ -222,7 +221,7 @@ if split == True:
         print(datetime.now().strftime("%H:%M:%S>"), "saving explained variances...")
         explained_sum = np.cumsum(explained_variance)
         
-        file = open(outputplot_dir + 'explained_variances_train.log', 'w')
+        file = open(outputplot_dir + "explained_variances_train_split_" + str(split) + ".log", 'w')
         for i in range(len(explained_variance)):
             text = (str(i + 1) + "\t" + str(explained_variance[i]) + "\t" + str(explained_sum[i]) + "\n")
             file.write(text)
@@ -245,7 +244,7 @@ if split == True:
         plt.xlabel('Principal component')
         plt.title('Scree plot')
         plt.show()    
-        plt.savefig(outputplot_dir + "PCA_scree_plot_train_all.png")
+        plt.savefig(outputplot_dir + "PCA_scree_plot_train_all_split_" + str(split) + ".png")
             
             
             
@@ -263,7 +262,7 @@ if split == True:
             plt.xlabel('Principal component')
             plt.title('Scree plot')
             plt.show()    
-            plt.savefig(outputplot_dir + "PCA_scree_plot_train_top30.png")    
+            plt.savefig(outputplot_dir + "PCA_scree_plot_train_top30_split_" + str(split) + ".png")    
             
             
                
@@ -276,7 +275,7 @@ if split == True:
         top_genes = sorted_loading_scores[0:how_many].index.values
             
         
-        file = open(outputplot_dir + 'most_important_genes_train.log', 'w')
+        file = open(outputplot_dir + "most_important_genes_train_split_" + str(split) + ".log", 'w')
         for i in range(how_many):
             text = (str(top_genes[i]) + "\t" + str(sorted_loading_scores[i]) + "\n")
             file.write(text)
@@ -493,7 +492,7 @@ if nosplit == True:
     
 
     
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py (nosplit) terminated successfully\n")
+    print(datetime.now().strftime("%H:%M:%S>"), "sca_PCA.py (nosplit) terminated successfully")
     
 
   

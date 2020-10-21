@@ -197,7 +197,7 @@ genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False
 barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully\n")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_tSNE.py terminated successfully")
 
 
 
