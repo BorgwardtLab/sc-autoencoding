@@ -89,18 +89,25 @@ if split == True:
     num_splits = 0
     cancel = False
     
-    while True:
-        num_splits += 1
-        directory = source_input_dir + "split_" + str(num_splits + 1)
+
+    directory = source_input_dir + "split_" + str(num_splits + 1)
+    if os.path.isdir(directory) == False:
+        print("ERROR: NO SPLITS DETECTED")
+        sys.exit()
         
-        isdirectory = os.path.isdir(directory)
         
-        if isdirectory == False:
-            print(datetime.now().strftime("%H:%M:%S>"), str(num_splits) + " splits detected\n")    
-            break
- 
-    
- 
+    else:
+        while True:
+            num_splits += 1
+            directory = source_input_dir + "split_" + str(num_splits + 1)
+            print(directory)
+            
+            isdirectory = os.path.isdir(directory)
+            
+            if isdirectory == False:
+                print(datetime.now().strftime("%H:%M:%S>"), str(num_splits) + " splits detected\n")    
+                break
+     
     
 # %% loop through splits
  
