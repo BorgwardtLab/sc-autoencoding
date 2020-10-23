@@ -72,7 +72,7 @@ elbowrange = args.elbowrange
 
 
 
-print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_kmcluster.py")
+print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_kmcluster.py")
 print(input_dir)
 
 
@@ -215,7 +215,7 @@ for cluster in range(k):
     
     most_common_str = ((counts.most_common(1))[0])[0]
     most_common_cnt = ((counts.most_common(1))[0])[1]
-  
+    
 
     ### remove this section if all runs well
     #print("\ncounts for cluster nr {0:d}:".format(cluster))
@@ -455,15 +455,13 @@ global_purity = beenzcount/len(truelabels)
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully")
-print("global purity is: {0:.4f}\n".format(global_purity))   
+print("global purity is: {0:.4f}".format(global_purity))   
 
 
 
     
 # %%
-    
-
-
+  
 # if __name__ == "__main__":
 #     sca_kmcluster(k = args.k, dimensions = args.dimensions, input_dir = args.input_dir, 
 #                   output_dir = args.output_dir, 

@@ -5,6 +5,7 @@ directories=(
 "../inputs/baseline_data/scaLSA_output/"
 "../inputs/baseline_data/scaTSNE_output/"
 "../inputs/baseline_data/scaUMAP_output/"
+"../inputs/data/preprocessed_data/"
 )
 
 
@@ -14,11 +15,12 @@ titles=(
 "LSA"
 "tSNE"
 "UMAP"
+"original_data"
 )
 
 
 mkdir logs
-
+errfile="../ERROR_ERROR_ERROR_ERROR_ERROR_ERROR_ERROR.error"
 
 # make sure titles and directories have the same length
 if [ ${#directories[@]} = ${#titles[@]} ]; then 
@@ -39,22 +41,44 @@ output_dir=../outputs/$tech/
 ntrees=100
 
 for i in $range; do
-(
-input_dir=${directories[$i]}
-logfile=logs/4_${tech}_${titles[$i]}.log
+	(
+	input_dir=${directories[$i]}
+	logfile=logs/4_${tech}_${titles[$i]}.log
 
-printf "############################################################################\n################### " &>> $logfile
-echo -n START: `date` &>> $logfile
-printf " ###################\n############################################################################\n\n" &>> $logfile
+	printf "############################################################################\n################### " &>> $logfile
+	echo -n START: `date` &>> $logfile
+	printf " ###################\n############################################################################\n\n" &>> $logfile
 
-python ../4_Evaluation/sca_randforest.py --title ${titles[$i]} --n_trees $ntrees --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+	python ../4_Evaluation/sca_randforest.py --title ${titles[$i]} --n_trees $ntrees --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
-printf "\n################### " &>> $logfile
-echo -n DONE: `date` &>> $logfile
-printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-) &
+	printf "\n################### " &>> $logfile
+	echo -n DONE: `date` &>> $logfile
+	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+	) &
 done
+) 
 
+
+(
+tech=kmcluster
+output_dir=../outputs/$tech/
+
+for i in $range; do
+	(
+	input_dir=${directories[$i]}
+	logfile=logs/4_${tech}_${titles[$i]}.log
+
+	printf "############################################################################\n################### " &>> $logfile
+	echo -n START: `date` &>> $logfile
+	printf " ###################\n############################################################################\n\n" &>> $logfile
+
+	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k 10 --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+
+	printf "\n################### " &>> $logfile
+	echo -n DONE: `date` &>> $logfile
+	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+	) &
+done
 )
 
 
@@ -63,29 +87,41 @@ done
 tech=kmcluster
 output_dir=../outputs/$tech/
 
-for i in $range; do
-(
-input_dir=${directories[$i]}
-logfile=logs/4_${tech}_${titles[$i]}.log
+# titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data" )
+minpts=(3 3 3 3 3 3)
+eps=(20 20 20 20 20 20)
 
-printf "############################################################################\n################### " &>> $logfile
-echo -n START: `date` &>> $logfile
-printf " ###################\n############################################################################\n\n" &>> $logfile
+# sanity check to see if we have the right number of parameters supplied.
+if [ ${#minpts[@]} = ${#eps[@]} ] && [ ${#minpts[@]} = ${#titles[@]} ]; then 
 
-python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k 10 --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+	for i in $range; do
+		(
+		input_dir=${directories[$i]}
+		logfile=logs/4_${tech}_${titles[$i]}.log
 
-printf "\n################### " &>> $logfile
-echo -n DONE: `date` &>> $logfile
-printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-) &
-done
+		printf "############################################################################\n################### " &>> $logfile
+		echo -n START: `date` &>> $logfile
+		printf " ###################\n############################################################################\n\n" &>> $logfile
 
-)
+		python ../4_Evaluation/sca_dbscan.py  --title ${titles[$i]} --verbosity 3 --eps ${eps[$i]} --min_samples ${minpts[$i]} --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+
+		printf "\n################### " &>> $logfile
+		echo -n DONE: `date` &>> $logfile
+		printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+		) &
+	done
+	wait
+	)
+	
+else
+	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" &>> $errfile
+	exit
+fi
 
 
 
 
-wait
+
 echo "All Done"
 
 
