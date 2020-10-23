@@ -8,7 +8,6 @@ directories=(
 "../inputs/data/preprocessed_data/"
 )
 
-
 titles=(
 "PCA"
 "ICA"
@@ -28,10 +27,6 @@ range=$(eval echo "{0..$[${#directories[@]}-1]}")
 else
 exit
 fi
-
-
-
-
 
 
 
@@ -56,8 +51,8 @@ for i in $range; do
 	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 	) &
 done
-) 
-
+wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands
+) &
 
 (
 tech=kmcluster
@@ -79,7 +74,8 @@ for i in $range; do
 	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 	) &
 done
-)
+wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
+) &
 
 
 
@@ -110,19 +106,19 @@ if [ ${#minpts[@]} = ${#eps[@]} ] && [ ${#minpts[@]} = ${#titles[@]} ]; then
 		printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 		) &
 	done
-	wait
-	)
-	
+	wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
 else
-	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" &>> $errfile
-	exit
+	echo `date` |& tee -a $errfile
+	echo "ERROR ERROR ERROR ERROR ERROR ERROR. ERROR ERROR ERROR ERROR" |& tee -a $errfile
+	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" |& tee -a $errfile
+	echo "" &>> $errfile
 fi
+) &
 
 
 
-
-
-echo "All Done"
+wait
+echo "All Done - " `date`
 
 
 
