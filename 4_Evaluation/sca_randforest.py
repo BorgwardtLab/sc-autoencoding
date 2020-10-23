@@ -14,7 +14,6 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-from sklearn.metrics import confusion_matrix
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -117,7 +116,7 @@ if args.legacy == False:    # "normal mode"
 
 # %% Start the loop
 
-    panda = pd.DataFrame(index = ["Accuracy"])
+    #panda = pd.DataFrame(index = ["Accuracy"])
     pandas = pd.DataFrame(columns=["Accuracy"])
 
 
@@ -175,22 +174,23 @@ if args.legacy == False:    # "normal mode"
      
         # %%
     
-    
-    
+
         num_correct = sum(test_labels == prediction)
         accuracy = num_correct/len(prediction)
         
         
         
-        panda["Split_" + str(split)] = accuracy
-
-
+        #panda["Split_" + str(split)] = accuracy
         newrow = pd.Series({"Accuracy": accuracy}).rename("Split_"+str(split))
         pandas = pandas.append(newrow)
         
         
+        
+        
     
         # %% NOTE: THIS WAY OF PLOTTING IS very SLOW. AVOID IT IN THE FUTURE
+        figurename_appendix = "_{:s}_split{:d}".format(args.title, split)
+        
         
         if not os.path.exists(outputplot_dir):
             print(datetime.now().strftime("%H:%M:%S>"), "Creating Outputplot Directory...")
@@ -206,11 +206,12 @@ if args.legacy == False:    # "normal mode"
             else:
                 plt.scatter(test_data[i,0], test_data[i,1], c = "r", s = 40, marker = "x", label = "fa")
         
-        plt.title("accuracy = {:f}".format(accuracy))                
+        plt.title("{:s}_s{:d}: accuracy = {:f}".format(args.title, split, accuracy))                
         #plt.legend(["correct","incorrect"])
         #plt.legend(labels = ["tru", "fa"])
         plt.show()
-        plt.savefig(outputplot_dir + "correct_assignments_{:s}_split{:d}.png".format(args.title, split))
+        plt.savefig(outputplot_dir + "correct_assignments" + figurename_appendix)
+
 
 
     
@@ -225,14 +226,25 @@ if args.legacy == False:    # "normal mode"
         
         
         if firstrun:
-            file = open(output_dir + "randomforest_" + args.title + ".txt", "w")
-            firstrun = False 
-            file.write(datetime.now().strftime("%d. %b %Y, %H:%M:%S") + "\n\n")
-
             
+            filename = output_dir + "randomforest_" + args.title + ".txt"
+            
+            
+            if os.path.exists(filename):
+                separator = "\n\n\n\n"
+            else:
+                separator = ""
+                
+            
+            file = open(filename, "a")
+
+            file.write(separator)
+            file.write("\n##############################################################\n")
+            file.write(datetime.now().strftime("%d. %b %Y, %H:%M:%S \t - " + args.title) + "\n\n")
+
+            firstrun = False 
         else:
             file = open(output_dir + "randomforest_" + args.title + ".txt", "a")
-            file.write("\n")
             file.write("\n")
             file.write("\n")
             
@@ -246,12 +258,11 @@ if args.legacy == False:    # "normal mode"
     
     
     # Machine Output
-    
     os.makedirs(data_dir, exist_ok=True)
-    panda.to_csv(data_dir + "randomforest_" + args.title + ".tsv", sep = "\t", index = True, header = True)
-    pandas.to_csv(data_dir + "randomforest2_" + args.title + ".tsv", sep = "\t", index = True, header = True)
+    #panda.to_csv(data_dir + "randomforest_" + args.title + ".tsv", sep = "\t", index = True, header = True)
+    pandas.to_csv(data_dir + "randomforest_" + args.title + ".tsv", sep = "\t", index = True, header = True)
 
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully\n")
+    print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully")
         
 
 
@@ -355,10 +366,8 @@ if args.legacy == True:
     if not os.path.exists(output_dir):
         print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
         os.makedirs(output_dir)
-    
-    
+        
     print(datetime.now().strftime("%H:%M:%S>"), "writing data to output file...")
-    
     
     if firstrun:
         file = open(output_dir + "random_forest_mult.txt", "w")
@@ -376,7 +385,7 @@ if args.legacy == True:
     file.close()
 
     # %% 
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully\n")
+    print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully")
     
     
 
