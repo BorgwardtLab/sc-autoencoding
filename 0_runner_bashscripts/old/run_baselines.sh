@@ -1,8 +1,6 @@
 
 mkdir logs
 filename=logs/log_run_baselines.log
-
-
 timestampname=logs/timestamps_baselines.log
 
 

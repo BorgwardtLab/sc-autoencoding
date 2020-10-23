@@ -6,23 +6,41 @@ logtext=logs/0_logtext.log
 
 
 
-printf `date`":> starting run_preprocessing\n"  &>> $logfile
-bash run_preprocessing.sh &>> $0_logtext
-printf `date`":> starting run_preprocessing\n\n"  &>> $logfile
 
-
-
-printf `date`":> starting run_baselines\n"  &>> $logfile
-bash run_baselines.sh &>> $0_logtext
-printf `date`":> starting run_baselines\n\n"  &>> $logfile
-
-
-
-printf `date`":> starting run_evaluate_baselines\n"  &>> $logfile
-bash run_evaluation_baseliens.sh &>> $0_logtext
-printf `date`":> starting run_evaluate_baselines\n\n"  &>> $logfile
+techname=run_preprocessing
+start=`date +%s`
+echo $techname |& tee -a $logfile
+printf "%s %s %s %s %s %s:> starting $techname\n" `date` &>> $logfile
+bash run_preprocessing.sh &>> $logtext
+printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $logfile
+end=`date +%s`
+printf "$techname took %d minutes\n\n", `echo "($end-$start)/60" | bc` &>> $logfile
 
 
 
 
+techname=run_baselines
+start=`date +%s`
+echo $techname |& tee -a $logfile
+printf "%s %s %s %s %s %s:> starting $techname\n" `date` &>> $logfile
+bash run_baselines.sh &>> $logtext
+printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $logfile
+end=`date +%s`
+printf "$techname took %d minutes\n\n", `echo "($end-$start)/60" | bc` &>> $logfile
 
+
+
+
+techname=run_evaluation_baselines
+start=`date +%s`
+echo $techname |& tee -a $logfile
+printf "%s %s %s %s %s %s:> starting $techname\n" `date` &>> $logfile
+bash run_evaluation_baseliens.sh &>> $logtext
+printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $logfile
+end=`date +%s`
+printf "$techname took %d minutes\n\n", `echo "($end-$start)/60" | bc` &>> $logfile
+
+
+
+
+echo "i'm done"

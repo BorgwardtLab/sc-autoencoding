@@ -1,4 +1,25 @@
 
+
+
+
+
+
+
+
+condalog=logs/0_CONDALOG
+# this is not required for this scripts, but for the others, and it seems to fail spontanously, so I'm leaving it here to what might cause it
+source ~/anaconda3/etc/profile.d/conda.sh |& tee -a $condalog
+conda activate tf |& tee -a $condalog
+
+
+
+
+
+
+
+
+
+
 mkdir logs
 
 pcalog=logs/2_baselines_PCA.log
@@ -122,9 +143,7 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
-
 python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
-
 
 
 printf "\n################### " &>> $logfile

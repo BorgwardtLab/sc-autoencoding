@@ -39,7 +39,7 @@ parser.add_argument("-v","--verbosity", help="level of verbosity", default = 3, 
 parser.add_argument("-e", "--plotsonly", help="for the first run, one should only run it with this flag, where no output gets saved, only the plots to look at and get reasonable values", action="store_true")
 parser.add_argument("--test_fraction", help="enter a float between 0-1. This will be the fraction of the data, that is marked as test data.", default = 0.25, type = float)
 
-parser.add_argument("--repeats", help="number of kfolds", default = 3, type = int)
+parser.add_argument("--n_splits", help="number of split", default = 3, type = int)
 
 parser.add_argument("--saveobject", help="hitting this flag allows will save the adata object, so it can be evaluated with other techniques", action="store_true")
 
@@ -81,13 +81,6 @@ if not os.path.exists(outputplot_dir):
 
 
 
-# fs_min_mean = 0.0125
-# fs_max_mean = 3
-# fs_min_disp = 0.5
-
-
-#FOR SOME REASON IT TAKES 1 LESS, SO I ARTIFICIALLY INCREASE BY 1 WHEN CALLING IT, NOT HERE BUT FURTHER DOWN.
-
 # %% Load Data
 
 print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
@@ -122,8 +115,6 @@ results_file = 'write/pbmc3k.h5ad'  # the file that will store the analysis resu
 AnnData = sc.read_10x_mtx(path = input_dir, var_names = "gene_ids", cache = False)
 
 
-
-
 # %% Plot 20 top detected genes
 
 sc.pl.highest_expr_genes(AnnData, n_top=20, )
@@ -137,14 +128,10 @@ plt.savefig(outputplot_dir + "top_20_detected_genes.png")
 # %% basic filtering
 print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with min_genes= {a:d} and min_cells= {b:d}...".format(a = min_genes_per_cell, b=min_cells_per_gene))
 
-
-
 sc.pp.filter_cells(AnnData, min_genes = min_genes_per_cell) # only keep cells with at least 200 genes detecte
 # could also pass counts instead of genes
 
 sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes that are present in at least # cells
-
-
 
 
 
@@ -155,7 +142,6 @@ sc.pp.filter_genes(AnnData, min_cells=min_cells_per_gene) # and only keep genes 
 AnnData.var['mt'] = AnnData.var['gene_symbols'].str.startswith(('MT-', 'MT.', 'MT\\'))  # annotate the group of mitochondrial genes as 'mt'
 # only finds like 13 genes :/ But technically they do the same as seurat, so must be same?
 
-
 sc.pp.calculate_qc_metrics(AnnData, qc_vars=['mt'], percent_top=None, log1p=False, inplace=True)
 # adds(for each gene) n_cells_by_count, mean counts, pct_dropbout by counts, total counts
 # the qc_vars = ['mt'] does not influence the calculations of AnnData.var,
@@ -163,15 +149,10 @@ sc.pp.calculate_qc_metrics(AnnData, qc_vars=['mt'], percent_top=None, log1p=Fals
 
 
 
-
-
-
 # %% Violinplots
 
 sc.pl.violin(AnnData, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'], jitter=0.4, multi_panel=True)
 plt.savefig(outputplot_dir + "Violin_plot.png")
-
-
 
 sc.pl.scatter(AnnData, x='total_counts', y='pct_counts_mt')
 plt.savefig(outputplot_dir + "mt_percentage.png")
@@ -182,11 +163,8 @@ plt.savefig(outputplot_dir + "genes_percentage.png")
 
 
 
-
-
 #%% Filter Mitochondrial Genes and those with too many genes
 print(datetime.now().strftime("%H:%M:%S>"), "Filtering Data with n_genes_by_count < {a:d} and pct_counts_mt < {b:d}...".format(a = max_num_features, b = max_mt_perc))
-
 
 # slicing
 AnnData = AnnData[AnnData.obs.n_genes_by_counts < max_num_features, :]
@@ -195,43 +173,30 @@ AnnData = AnnData[AnnData.obs.pct_counts_mt < max_mt_perc, :]
 
 
 
-
 # %% Normalize
 print(datetime.now().strftime("%H:%M:%S>"), "Normalizing...")
-
-
 sc.pp.normalize_total(AnnData, target_sum=1e4)
 
 
 # %% Logarithmize
 print(datetime.now().strftime("%H:%M:%S>"), "Logarithmizing...")
-
-
 sc.pp.log1p(AnnData)
-
 
 
 
 # %% Feature Selection
 print(datetime.now().strftime("%H:%M:%S>"), "Doing feature selection with {a:d} highly variable genes...".format(a = num_top_genes))
-
 # fs_min_mean = 0.0125
 # fs_max_mean = 3
 # fs_min_disp = 0.5
-
 #sc.pp.highly_variable_genes(AnnData, min_mean=fs_min_mean, max_mean=fs_max_mean, min_disp=fs_min_disp)
-
 sc.pp.highly_variable_genes(AnnData, n_top_genes = num_top_genes + 1)
 
 
 
 # %% plot highly variable genes
-
 sc.pl.highly_variable_genes(AnnData)
 plt.savefig(outputplot_dir + "highly_variable_genes.png")
-
-
-
 
 
 # %% freeze the state of the object, by setting the .raw to the normalized/logarithmized
@@ -240,29 +205,18 @@ AnnData.raw = AnnData
 
 
 
-
 # %% remove non variable features
 AnnData = AnnData[:, AnnData.var.highly_variable]
 
 
 
-
-
 # %% Regress out effects of total_counts_per_cell and pt_mitoch
 print(datetime.now().strftime("%H:%M:%S>"), "Regress out effects of total counts per cell / pt_mito...")
-
-
 sc.pp.regress_out(AnnData, ['total_counts', 'pct_counts_mt'])
-
 
 # Scaling each gene unit to variance
 print(datetime.now().strftime("%H:%M:%S>"), "Scaling each gene unit to variance...")
 sc.pp.scale(AnnData, max_value=10)
-
-
-
-
-
 
 
 
@@ -274,10 +228,9 @@ if not args.plotsonly:
     # AnnData.write_csvs("filename2", skip_data=False)
     
     
-    
+
     genes = pd.DataFrame(AnnData.var_names)
     genes["symbols"] = list(AnnData.var["gene_symbols"])
-    
     
     panda = pd.DataFrame(AnnData.X) #obs*vars
     
@@ -317,11 +270,11 @@ if not args.plotsonly:
 
     
     # %% Train Test Split
-    print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split")
-    
-    for j in range(args.repeats):
+  
+    for j in range(args.n_splits):
         i = j+1
-        print("split", i)
+        print(datetime.now().strftime("%H:%M:%S>"), "Creating Train Test Split for split", i)
+  
         fold_dir = output_dir + "split_" + str(i) + "/"
         os.makedirs(fold_dir, exist_ok=True)
         
