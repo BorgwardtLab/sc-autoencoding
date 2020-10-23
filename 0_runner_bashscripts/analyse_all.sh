@@ -1,3 +1,5 @@
+rm -rf logs
+mkdir logs
 
 logfile=logs/0_timestamps.log
 logtext=logs/0_logtext.log
