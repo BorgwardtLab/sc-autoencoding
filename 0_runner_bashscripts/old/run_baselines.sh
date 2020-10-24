@@ -7,9 +7,12 @@ timestampname=logs/timestamps_baselines.log
 
 rm $filename
 
-source /home/sstreib/anaconda3/etc/profile.d/conda.sh |& tee -a $filename
+
+source /home/sstreib/anaconda3/etc/profile.d/conda.sh
 conda activate tf |& tee -a $filename
 conda env list
+
+
 
 
 

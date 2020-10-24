@@ -6,7 +6,6 @@ logtext=logs/0_logtext.log
 
 
 
-
 techname=run_preprocessing
 start=`date +%s`
 echo $techname |& tee -a $logfile

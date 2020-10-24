@@ -1,28 +1,9 @@
 
 
 
-
-
-
-
-
-condalog=logs/0_CONDALOG
-# this is not required for this scripts, but for the others, and it seems to fail spontanously, so I'm leaving it here to what might cause it
-source ~/anaconda3/etc/profile.d/conda.sh |& tee -a $condalog
-conda activate tf |& tee -a $condalog
-echo this is my baseline script |& tee -a $condalog
-conda env list |& tee -a $condalog
-
-
-
-
-
-
-
-
-sleep 60
-
-
+source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
+conda activate tf
+conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
 
 
 
