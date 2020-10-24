@@ -10,9 +10,10 @@ Created on Wed Jul  8 00:49:30 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "calculate ICAs")  #required
-parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 100)
+parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 30)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaICA_output/")
+parser.add_argument("-d","--input_dims", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaICA_output/")
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 args = parser.parse_args() #required
@@ -43,8 +44,12 @@ source_input_dir = args.input_dir
 source_output_dir = args.output_dir
 source_outputplot_dir = args.outputplot_dir
 
+
+
 component_name = "IC"
 num_components = args.num_components
+dims = args.input_dims
+
 
 
 if args.mode == "complete":
@@ -115,29 +120,34 @@ if split == True:
         matrix_file = input_dir + "matrix.tsv"
         data = np.loadtxt(open(matrix_file), delimiter="\t")
         
-        
         file = open(input_dir + "genes.tsv", "r")
         genes = file.read().split("\n")
         file.close()
         genes.remove("") 
         
-        
         barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
         labels = barcodes.iloc[:,1]
-        
         
         test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
         train_index = np.logical_not(test_index)
         
         
-        
-        
+        if dims > 0:
+            data = data[:,0:dims]
+            genes = genes[0:dims]
+        elif dims == 0:
+            dims = data.shape[1]
+             
+        if num_components > dims:
+            print("n_components is too large: it will be set to", dims)
+            num_components = dims
 
+            
+            
+            
         original_data = data.copy()
-        
         testdata = data[test_index]
         traindata = data[train_index]
-        
         
 
         # %% do ICA
@@ -312,8 +322,17 @@ if nosplit == True:
     barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
     labels = barcodes.iloc[:,1]
     
+    if dims > 0:
+        data = data[:,0:dims]
+        genes = genes[0:dims]
+    elif dims == 0:
+        dims = data.shape[1]
+            
+    if num_components > dims:
+        print("n_components is too large: it will be set to", dims)
+        num_components = dims
 
-    
+
     
     # %% do ICA
     

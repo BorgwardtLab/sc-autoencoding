@@ -13,7 +13,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "calculates a UMAP embedding")  #required
 parser.add_argument("-n","--num_components", help="the number of coordinates to calculate", type = int, default = 2)
-parser.add_argument("-d","--dimensions", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
+parser.add_argument("-d","--input_dims", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaUMAP_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaUMAP_output/")
@@ -30,7 +30,7 @@ source_outputplot_dir = args.outputplot_dir
 component_name = "UMAP"
 num_components = args.num_components
 
-dims = args.dimensions
+dims = args.input_dims
 
 
 
@@ -68,9 +68,6 @@ else:
 
 
     
-
-
-
 
 
 
@@ -138,17 +135,18 @@ if split == True:
         test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
         train_index = np.logical_not(test_index)
         
-        
-        
-        
-        # %%
-        
-        original_data = data
-        
+                
+        if dims > 0:
+            data = data[:,0:dims]
+            genes = genes[0:dims]
+        elif dims == 0:
+            dims = data.shape[1]
+                
+   
+
+        original_data = data.copy()
         testdata = data[test_index]
         traindata = data[train_index]
-        
-        
         
         
         
@@ -322,12 +320,12 @@ if nosplit == True:
     assert os.path.isfile(input_dir + "test_index.tsv") == False
 
 
-    
-    if dims < 0:
-        data = data[:,dims]
+    if dims > 0:
+        data = data[:,0:dims]
+        genes = genes[0:dims]
     elif dims == 0:
         dims = data.shape[1]
-    
+   
 
 
 

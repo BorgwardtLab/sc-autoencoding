@@ -14,7 +14,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "calculates a tSNE embedding")  #required
 parser.add_argument("-n","--num_components", default = 2, help="the number of coordinates to calculate (default = 2). For any number > 3, another algorithm (exact) is used, which hasn't been tested.", type = int)
-parser.add_argument("-d","--dimensions", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
+parser.add_argument("-d","--input_dims", type = int, default = 30, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaTSNE_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaTSNE_output/")
@@ -36,14 +36,10 @@ from sklearn.manifold import TSNE
 import sys
 
 
-
 try:
     os.chdir(os.path.dirname(sys.argv[0]))
 except:
     pass
-
-
-
 
 
 source_input_dir = args.input_dir
@@ -56,7 +52,7 @@ input_dir = source_input_dir + "no_split/"
 output_dir = source_output_dir + "no_split/"
 outputplot_dir = source_outputplot_dir + "no_split/"
 
-dims = args.dimensions
+dims = args.input_dims
 
 
 
@@ -91,13 +87,10 @@ labels = barcodes.iloc[:,1]
 
 
 
-# %%
-if dims < 0:
-    data = data[:,dims]
+if dims > 0:
+    data = data[:,0:dims]
 elif dims == 0:
     dims = data.shape[1]
-
-
 
 
 

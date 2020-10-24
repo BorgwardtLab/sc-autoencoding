@@ -92,7 +92,7 @@ if split == True:
         while True:
             num_splits += 1
             directory = source_input_dir + "split_" + str(num_splits + 1)
-            print(directory)
+            #print(directory)
             
             isdirectory = os.path.isdir(directory)
             
