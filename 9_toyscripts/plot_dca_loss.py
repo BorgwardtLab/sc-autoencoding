@@ -29,13 +29,13 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../0_runner_bashscripts/")
+parser.add_argument("-i","--input_file", help="input directory", default = "../0_runner_bashscripts/")
 parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/sca/dca/")
 
 args = parser.parse_args() #required
 
 
-input_dir = args.input_dir
+input_file = args.input_file
 outputplot_dir = args.outputplot_dir
 
 
@@ -60,7 +60,7 @@ def findall(target, string):
 
 
 
-with open(input_dir + "log_run_autoencoder_DCA.log", "r") as file:
+with open(input_file, "r") as file:
     content = file.read()
 
 indexes = findall(string = content, target = "ms/step - loss: ")

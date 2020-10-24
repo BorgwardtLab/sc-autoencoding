@@ -3,7 +3,7 @@
 mkdir logs
 
 
-logfile=logs/1_preprocessing.log
+logfile="logs/1_preprocessing.log"
 
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile

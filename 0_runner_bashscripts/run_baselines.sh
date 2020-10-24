@@ -15,11 +15,12 @@ lsalog=logs/2_baselines_LSA.log
 tsnelog=logs/2_baselines_tSNE.log
 umaplog=logs/2_baselines_UMAP.log
 
-
+#
 
 input="../inputs/data/preprocessed_data/"
 output="../inputs/baseline_data/"
 outputplot="../outputs/baselines/"
+
 
 
 
@@ -106,7 +107,7 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
-python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
+python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 3 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} &>> $logfile #|& tee -a $logfile
 
 
 printf "\n################### " &>> $logfile

@@ -223,6 +223,22 @@ barcodes.to_csv(complete_dir + "barcodes.tsv", sep = "\t", index = False, header
 
 
 
+### save in DCA format
+panda_trp = panda.copy()
+panda_trp = panda_trp.transpose()
+joined_barcodes = [x.replace("\t", "_") for x in barcodelist]
+panda_trp.columns = joined_barcodes
+panda_trp.index = genes.iloc[:,0]
+
+panda_trp.to_csv(complete_dir + "matrix_transposed.tsv", sep = "\t", index = True, header = True)
+  
+
+
+
+
+
+
+
 
 # %% Train Test Split
 
