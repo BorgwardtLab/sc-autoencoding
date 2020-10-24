@@ -10,14 +10,7 @@ Created on Mon Aug 17 16:41:26 2020
 import sys
 import os
 import argparse
-
-
-
 import matplotlib.pyplot as plt
-
-
-
-
 
 
 try:
@@ -27,17 +20,14 @@ except:
 
 
 
-
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_file", help="input directory", default = "../0_runner_bashscripts/")
 parser.add_argument("-p","--outputplot_dir", help="out directory", default = "../outputs/sca/dca/")
-
 args = parser.parse_args() #required
 
 
 input_file = args.input_file
 outputplot_dir = args.outputplot_dir
-
 
 
 def findall(target, string):
@@ -51,14 +41,7 @@ def findall(target, string):
 
 
 
-
-
-
-
-
 # %% Start of the program
-
-
 
 with open(input_file, "r") as file:
     content = file.read()
@@ -67,18 +50,11 @@ indexes = findall(string = content, target = "ms/step - loss: ")
 indexes = list(indexes)
 
 
-
-
-
-
 losses = []
 val_losses = []
 
 losses_str = []
 val_losses_str = []
-
-
-
 
 
 ################ interlude to find the very first
@@ -94,14 +70,9 @@ val_losses_str.append("None")
 
 # %%
 
-
-
 epoch_number_str = []
-
 epoch_number_str.append("0")
-
 e = 1
-
 for index in indexes:
     buffer1 = 16
     buffer2 = 35
@@ -119,12 +90,8 @@ for index in indexes:
     losses.append(loss)
     val_losses.append(val_loss)
     
-    
     epoch_number_str.append(str(e))
     e = e+1
-
-
-
 
 
 epochs = range(0, len(losses))
@@ -132,6 +99,7 @@ val_epochs = range(1, len(val_losses)+1)
 
 
 
+os.makedirs(outputplot_dir, exist_ok=True)
 
 # print
 with open(outputplot_dir + "losses.tsv", "w") as outfile:
@@ -140,10 +108,6 @@ with open(outputplot_dir + "losses.tsv", "w") as outfile:
     outfile.write("\t".join(losses_str))
     outfile.write("\n")
     outfile.write("\t".join(val_losses_str))
-
-
-    
-    
 
 
 # %%
@@ -164,10 +128,6 @@ plt.ylim(bottom = 0)
 
 plt.show()
 plt.savefig(outputplot_dir + "losses.png")
-
-
-
-
 
 
 

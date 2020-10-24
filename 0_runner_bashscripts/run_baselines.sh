@@ -29,7 +29,7 @@ outputplot="../outputs/baselines/"
 	foldername="scaPCA_output/"
 	PCA_output=${output}${foldername}	
 
-
+	printf "\n\n" #for the logtxt
 	printf "############################################################################\n################### " &>> $logfile
 	echo -n START: `date` &>> $logfile
 	printf " ###################\n############################################################################\n\n" &>> $logfile
@@ -50,7 +50,7 @@ outputplot="../outputs/baselines/"
 	(
 		logfile=$tsnelog
 		foldername="scaTSNE_output/"
-
+		printf "\n\n" #for the logtxt
 		printf "############################################################################\n################### " &>> $logfile
 		echo -n START: `date` &>> $logfile
 		printf " ###################\n############################################################################\n\n" &>> $logfile
@@ -72,7 +72,8 @@ outputplot="../outputs/baselines/"
 	(
 		logfile=$umaplog
 		foldername="scaUMAP_output/"
-
+		
+		printf "\n\n" #for the logtxt
 		printf "############################################################################\n################### " &>> $logfile
 		echo -n START: `date` &>> $logfile
 		printf " ###################\n############################################################################\n\n" &>> $logfile
@@ -95,7 +96,8 @@ outputplot="../outputs/baselines/"
 	(
 		logfile=$icalog
 		foldername="scaICA_output/"
-
+		
+		printf "\n\n" #for the logtxt
 		printf "############################################################################\n################### " &>> $logfile
 		echo -n START: `date` &>> $logfile
 		printf " ###################\n############################################################################\n\n" &>> $logfile
@@ -126,6 +128,7 @@ outputplot="../outputs/baselines/"
 logfile=$lsalog
 foldername="scaLSA_output/"
 
+printf "\n\n" #for the logtxt, not saved into logfile
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
