@@ -30,14 +30,16 @@ outputplot="../outputs/baselines/"
 logfile=$pcalog
 foldername="scaPCA_output/"
 
+
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
-
+start=`date +%s`
 
 python ../2_Baseline_Scripts/sca_PCA.py --mode complete --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
-
+end=`date +%s`
+printf "\nPCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -57,11 +59,16 @@ foldername="scaICA_output/"
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
-
+start=`date +%s`
 
 python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --mode complete --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
- 
 
+end=`date +%s`
+printf "\nPCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+
+
+end=`date +%s`
+printf "\nICA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -81,10 +88,13 @@ foldername="scaLSA_output/"
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
+start=`date +%s`
+
 
 python ../2_Baseline_Scripts/sca_LSA.py --mode complete --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
-
+end=`date +%s`
+printf "\nLSA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -105,11 +115,13 @@ foldername="scaTSNE_output/"
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
+start=`date +%s`
 
 
 python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --dimensions 30 --verbosity 3 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} &>> $logfile #|& tee -a $logfile
 
-
+end=`date +%s`
+printf "\ntSNE took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -129,13 +141,16 @@ foldername="scaUMAP_output/"
 printf "############################################################################\n################### " &>> $logfile
 echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
+start=`date +%s`
 
 
 python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --dimensions 30 --verbosity 0 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
+end=`date +%s`
+printf "\nUMAP took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-) 
+)
 

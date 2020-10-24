@@ -50,10 +50,14 @@ for i in $range; do
 
 	printf "############################################################################\n################### " &>> $logfile
 	echo -n START: `date` &>> $logfile
+	start=`date +%s`
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 
 	python ../4_Evaluation/sca_randforest.py --title ${titles[$i]} --n_trees $ntrees --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
+
+	end=`date +%s`
+	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 	printf "\n################### " &>> $logfile
 	echo -n DONE: `date` &>> $logfile
 	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -73,10 +77,13 @@ for i in $range; do
 
 	printf "############################################################################\n################### " &>> $logfile
 	echo -n START: `date` &>> $logfile
+	start=`date +%s`
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 
 	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k 10 --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
+	end=`date +%s`
+	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 	printf "\n################### " &>> $logfile
 	echo -n DONE: `date` &>> $logfile
 	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -105,10 +112,13 @@ if [ ${#minpts[@]} = ${#eps[@]} ] && [ ${#minpts[@]} = ${#titles[@]} ]; then
 
 		printf "############################################################################\n################### " &>> $logfile
 		echo -n START: `date` &>> $logfile
+		start=`date +%s`
 		printf " ###################\n############################################################################\n\n" &>> $logfile
 
 		python ../4_Evaluation/sca_dbscan.py  --title ${titles[$i]} --verbosity 3 --eps ${eps[$i]} --min_samples ${minpts[$i]} --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
-
+		
+		end=`date +%s`
+		printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 		printf "\n################### " &>> $logfile
 		echo -n DONE: `date` &>> $logfile
 		printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
@@ -118,6 +128,7 @@ if [ ${#minpts[@]} = ${#eps[@]} ] && [ ${#minpts[@]} = ${#titles[@]} ]; then
 else
 	echo `date` |& tee -a $errfile
 	echo "ERROR ERROR ERROR ERROR ERROR ERROR. ERROR ERROR ERROR ERROR" |& tee -a $errfile
+	echo `date`
 	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" |& tee -a $errfile
 	echo "" &>> $errfile
 fi

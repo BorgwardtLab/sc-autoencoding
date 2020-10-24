@@ -1,13 +1,14 @@
-
-
+start=`date +%s`
 
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate dicia2
-conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
+conda env list	|& tee -a $logfile 
 
 
 mkdir logs
 logfile=logs/3_autoencoder_DCA.log
+
+
 
 dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/" |& tee -a $logfile
 echo "DCA is done" |& tee -a $logfile
@@ -34,4 +35,10 @@ python ../9_toyscripts/plot_dca_loss.py --input_file "../0_runner_bashscripts/lo
 # restore original env
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
-conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
+conda env list |& tee -a $logfile	
+
+
+end=`date +%s`
+printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+
+
