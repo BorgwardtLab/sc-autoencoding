@@ -5,15 +5,19 @@ timestamps="logs/0_timestamps.log"
 logtext="logs/0_logtext.log"
 
 
-
+(
 techname=do_preprocessing.py
 start=`date +%s`
-echo $techname |& tee -a $timestamps
-printf "%s %s %s %s %s %s:> starting $techname\n" `date` &>> $timestamps
+startdate=`date`
+
 bash do_preprocessing.sh &>> $logtext
-printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $timestamps
+
 end=`date +%s`
+echo $techname |& tee -a $timestamps
+printf "%s %s %s %s %s %s:> starting $techname\n" $startdate &>> $timestamps
+printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $timestamps
 printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps
+)
 
 
 
@@ -78,6 +82,10 @@ printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $tim
 
 
 wait
+printf "\n\n###############################################################################\n" &>> $timestamps
+printf "tarting with Evaluations on %s %s %s %s %s %s\n" `date` &>> $timestamps
+printf "###############################################################################\n\n\n" &>> $timestamps
+
 
 
 techname=do_evaluation_baselines.py
