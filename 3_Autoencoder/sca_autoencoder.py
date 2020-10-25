@@ -8,36 +8,16 @@ Created on Sun Jul 19 17:22:21 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/sca/sca_preprocessed_data/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/sca/SCA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data_autoencoder/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/autoencoder_data/SCA_output/")
+parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/autoencoder_data/SCA/")
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
+parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 args = parser.parse_args()
 
 
-import os
-import pickle
-from datetime import datetime
-
-from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
-from keras.models import Model
-from keras.callbacks import EarlyStopping, ReduceLROnPlateau
-
-from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson#, cosine_proximity
-# from keras.objectives import cosine_proximity
-
-import numpy as np
-import anndata
-
-import tensorflow as tf
-
-import keras.optimizers as opt
 
 
-
-
-from keras import backend as K
-MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
-DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
 
 # In the implementations, I try to keep the function signature
 # similar to those of Keras objective functions so that
@@ -198,8 +178,6 @@ class Autoencoder():
         print(datetime.now().strftime("%H:%M:%S>"), "Building output with loss function: " + self.loss_name)
                 
         
-        
-        
 # Define Loss for the training
         if self.loss_name == "poisson_loss":
             self.loss = poisson_loss
@@ -350,10 +328,9 @@ class Autoencoder():
 
 
     def write_output_deprecated(self, adata, file_path, mode='full', colnames=None):
-        
+        print("PLEASE DON'T USE THIS FUNCTION")
         colnames = adata.var_names.values if colnames is None else colnames
         rownames = adata.obs_names.values
-        
         
 
         print(datetime.now().strftime("%H:%M:%S>"), 'Saving output(s)...')
@@ -387,7 +364,10 @@ class Autoencoder():
 
     def write_output(self, test_adata, train_adata, test_index, file_path, mode='full', colnames=None):
         
-        train_index = np.logical_not(test_index)
+        if test_adata is not None:
+            train_index = np.logical_not(test_index)
+        else:
+            train_index = None
         
         # to give the columns and rows names. I did it before, but why bother?
         # colnames = test_adata.var_names.values if colnames is None else colnames
@@ -399,50 +379,72 @@ class Autoencoder():
         os.makedirs(file_path, exist_ok=True)
         
         
+        
 
         
         if mode in ('denoise', 'full'):
             print(datetime.now().strftime("%H:%M:%S>"), 'Saving denoised expression...')
             
-            denoised_testdata = test_adata.X
-            denoised_traindata = train_adata.X
             
-            denoised_outdata = np.zeros(shape = (denoised_testdata.shape[0] + denoised_traindata.shape[0], denoised_testdata.shape[1]))
-            denoised_outdata[train_index] = denoised_traindata
-            denoised_outdata[test_index] = denoised_testdata       
-            
-            
-            pd.DataFrame(denoised_outdata).to_csv(file_path + "denoised_matrix.tsv",
-                                                                sep='\t',
-                                                                index=None,
-                                                                header=None,
-                                                                float_format='%.6f')
+            if test_adata is not None:
+                denoised_traindata = train_adata.X
+                denoised_testdata = test_adata.X
+                
+                denoised_outdata = np.zeros(shape = (denoised_testdata.shape[0] + denoised_traindata.shape[0], denoised_testdata.shape[1]))
+                denoised_outdata[train_index] = denoised_traindata
+                denoised_outdata[test_index] = denoised_testdata       
+                
+                pd.DataFrame(denoised_outdata).to_csv(file_path + "denoised_matrix.tsv",
+                                                                    sep='\t',
+                                                                    index=None,
+                                                                    header=None,
+                                                                    float_format='%.6f')
+            else:
+                denoised_traindata = train_adata.X
+                
+                pd.DataFrame(denoised_traindata).to_csv(file_path + "denoised_matrix.tsv",
+                                                    sep='\t',
+                                                    index=None,
+                                                    header=None,
+                                                    float_format='%.6f')
 
 
         if mode in ('latent', 'full'):
             print(datetime.now().strftime("%H:%M:%S>"), 'Saving latent representations...')
             
-            latent_testdata = test_adata.obsm['latent']
-            latent_traindata = train_adata.obsm['latent']
-    
-            latent_outdata = np.zeros(shape = (latent_testdata.shape[0] + latent_traindata.shape[0], latent_traindata.shape[1]))
-            latent_outdata[train_index] = latent_traindata
-            latent_outdata[test_index] = latent_testdata                
+            if test_adata is not None:
+                latent_testdata = test_adata.obsm['latent']
+                latent_traindata = train_adata.obsm['latent']
+        
+                latent_outdata = np.zeros(shape = (latent_testdata.shape[0] + latent_traindata.shape[0], latent_traindata.shape[1]))
+                latent_outdata[train_index] = latent_traindata
+                latent_outdata[test_index] = latent_testdata                
                 
-            
-            
-            pd.DataFrame(latent_outdata).to_csv(file_path + "latent_layer.tsv",
-                                                                sep='\t',
-                                                                index=None,
-                                                                header=None,
-                                                                float_format='%.6f')
-            
-            pd.DataFrame(latent_outdata).to_csv(file_path + "matrix.tsv",
-                                                                sep='\t',
-                                                                index=None,
-                                                                header=None,
-                                                                float_format='%.6f')
-
+                pd.DataFrame(latent_outdata).to_csv(file_path + "latent_layer.tsv",
+                                                                    sep='\t',
+                                                                    index=None,
+                                                                    header=None,
+                                                                    float_format='%.6f')
+                
+                pd.DataFrame(latent_outdata).to_csv(file_path + "matrix.tsv",
+                                                                    sep='\t',
+                                                                    index=None,
+                                                                    header=None,
+                                                                    float_format='%.6f')
+            else:
+                latent_data = train_adata.obsm['latent']
+                
+                pd.DataFrame(latent_data).to_csv(file_path + "latent_layer.tsv",
+                                                    sep='\t',
+                                                    index=None,
+                                                    header=None,
+                                                    float_format='%.6f')
+                
+                pd.DataFrame(latent_data).to_csv(file_path + "matrix.tsv",
+                                                    sep='\t',
+                                                    index=None,
+                                                    header=None,
+                                                    float_format='%.6f')
 # %%
 
 
@@ -511,11 +513,8 @@ def train(adata, network,
     if early_stop:
         es_cb = EarlyStopping(monitor='val_loss', patience=early_stop, verbose=verbose)
         callbacks.append(es_cb)
-
-
     if verbose:
         model.summary()
-
 
     # todo
     inputs = {'count': adata.X, 'size_factors': adata.obs.size_factors}      
@@ -545,7 +544,7 @@ def train(adata, network,
 
 
 
-def plot_history(adata, output_dir = "./"):
+def plot_history(adata, outputplot_dir = "./"):
     
     assert isinstance(adata, anndata.AnnData), 'adata must be an AnnData instance'
     
@@ -579,7 +578,8 @@ def plot_history(adata, output_dir = "./"):
 
     fig.show()
     
-    plt.savefig(output_dir + "training_history.png")
+    os.makedirs(outputplot_dir, exist_ok=True)
+    plt.savefig(outputplot_dir + "training_history.png")
 
 
 
@@ -592,6 +592,9 @@ def sca(adata_train,
         adata_test,
         loss_name,
         test_index,
+        
+        output_dir,
+        outputplot_dir,
         
         mode = "full",
         ae_type = "normal",
@@ -606,9 +609,7 @@ def sca(adata_train,
         learning_rate = None,
         random_state = 0,
         verbose = True,
-        threads = None,
-        
-        output_dir = ("./sca_output/")
+        threads = None
         ):
     
     
@@ -638,9 +639,6 @@ def sca(adata_train,
     ae.build()
 
 
-
-
-
     hist = train(adata_train[adata_train.obs.dca_split == 'train'], 
                  network = ae, 
                   epochs = epochs, 
@@ -652,8 +650,12 @@ def sca(adata_train,
                   learning_rate = learning_rate)
 
     denoised_train = ae.predict(adata = adata_train, mode = mode)
-    denoised_test = ae.predict(adata = adata_test, mode = mode)
-    #def predict(self, adata, mode='denoise', return_info=False, copy=False):
+    
+    if adata_test is not None:
+        denoised_test = ae.predict(adata = adata_test, mode = mode)
+    else:
+        denoised_test = None
+
     
     '''denoise now contains:
         n_obs:              (input), cells x dca_split x size_factors
@@ -673,7 +675,7 @@ def sca(adata_train,
     adata_train.uns['train_history'] = hist.history
     
     os.makedirs(output_dir, exist_ok=True)
-    plot_history(adata_train, output_dir)
+    plot_history(adata = adata_train, outputplot_dir = outputplot_dir)
     
     
     
@@ -682,6 +684,7 @@ def sca(adata_train,
     # ae.write_output_deprecated(adata = adata_test, file_path = output_dir + "train_dir/", mode = "full")
     
     ae.write_output(test_adata = adata_test, train_adata = adata_train, test_index = test_index, file_path = output_dir, mode = "full")
+
 
     return (adata_train, adata_test, ae)
 
@@ -692,13 +695,14 @@ def sca(adata_train,
 
 def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = True, logtrans = True, normalize = True):
     
-    if test_split:
-        train_idx, test_idx = train_test_split(np.arange(adata.n_obs), test_size=0.1, random_state=42)
-        spl = pd.Series(['train'] * adata.n_obs)        # first make all train, then overwrite the tests
-        spl.iloc[test_idx] = 'test'
-        adata.obs['dca_split'] = spl.values
-    else:
-        adata.obs['dca_split'] = 'train'
+    # if test_split:
+    #     train_idx, test_idx = train_test_split(np.arange(adata.n_obs), test_size=0.1, random_state=42)
+    #     spl = pd.Series(['train'] * adata.n_obs)        # first make all train, then overwrite the tests
+    #     spl.iloc[test_idx] = 'test'
+    #     adata.obs['dca_split'] = spl.values
+    # else:
+    #     adata.obs['dca_split'] = 'train'
+    adata.obs['dca_split'] = 'train'
 
     if filter_:
         # filter min coutns
@@ -725,47 +729,59 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
 
 
 
-def read_input(input_dir, output_dir):
+def read_input(input_dir, output_dir, split):
     
     data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
     genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
     barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
     
-    test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
-    train_index = np.logical_not(test_index)
+    if split:
+        test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
+        train_index = np.logical_not(test_index)
+        
+        
+        testdata = data[test_index]
+        traindata = data[train_index]
+        
+        adata_train = sc.AnnData(traindata)
+        adata_train.obs_names = barcodes.iloc[train_index,0] + "_" + barcodes.iloc[train_index,1]
+        adata_train.var_names = genes.iloc[:,0]
     
+        adata_test = sc.AnnData(testdata)
+        adata_test.obs_names = barcodes.iloc[test_index,0] + "_" + barcodes.iloc[test_index,1]
+        adata_test.var_names = genes.iloc[:,0]
+        
+
+        nonzero_genes, _ = sc.pp.filter_genes(adata_test.X, min_counts=1)
+        assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Test'
+        nonzero_genes, _ = sc.pp.filter_genes(adata_train.X, min_counts=1)
+        assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Train'
     
-    testdata = data[test_index]
-    traindata = data[train_index]
+        return adata_train, adata_test, genes, barcodes, test_index
+                
     
-    adata_train = sc.AnnData(traindata)
-    adata_train.obs_names = barcodes.iloc[train_index,0] + "_" + barcodes.iloc[train_index,1]
-    adata_train.var_names = genes.iloc[:,0]
-
-    adata_test = sc.AnnData(testdata)
-    adata_test.obs_names = barcodes.iloc[test_index,0] + "_" + barcodes.iloc[test_index,1]
-    adata_test.var_names = genes.iloc[:,0]
+    else:
+        test_index = None
+        train_index = None
     
+        adata_train = sc.AnnData(data)
+        adata_train.obs_names = barcodes.iloc[:,0] + "_" + barcodes.iloc[:,1]
+        adata_train.var_names = genes.iloc[:,0]
+
+        adata_test = None
+        
+        
+        nonzero_genes, _ = sc.pp.filter_genes(adata_train.X, min_counts=1)
+        assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Train'
     
-    
-    nonzero_genes, _ = sc.pp.filter_genes(adata_test.X, min_counts=1)
-    assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Test'
-    nonzero_genes, _ = sc.pp.filter_genes(adata_train.X, min_counts=1)
-    assert nonzero_genes.all(), 'Please remove all-zero genes before using DCA. Train'
-
-    return adata_train, adata_test, genes, barcodes, test_index
-    
+        return adata_train, adata_test, genes, barcodes, test_index        
 
 
 
-
-
-
-def sca_main(input_dir, output_dir, loss_name):
-    
+def sca_main(input_dir, output_dir, outputplot_dir, loss_name, split):
     
     # generate AnnData
-    adata_train, adata_test, genes, barcodes, test_index = read_input(input_dir = input_dir, output_dir = output_dir)    
+    adata_train, adata_test, genes, barcodes, test_index = read_input(input_dir = input_dir, output_dir = output_dir, split = split)    
 
 
     # check if observations are unnormalized using first 10
@@ -784,14 +800,17 @@ def sca_main(input_dir, output_dir, loss_name):
                    logtrans = True,
                    normalize = True
                    )
-    adata_test = sca_preprocess(adata_test, 
-                   test_split = False, 
-                   filter_ = True,
-                   size_factors = True,
-                   logtrans = True,
-                   normalize = True
-                   )
     
+    if split:
+        
+        adata_test = sca_preprocess(adata_test, 
+                       test_split = False, 
+                       filter_ = True,
+                       size_factors = True,
+                       logtrans = True,
+                       normalize = True
+                       )
+        
 
     
     adata_train, adata_test, net = sca(adata_train = adata_train,
@@ -814,11 +833,12 @@ def sca_main(input_dir, output_dir, loss_name):
                         verbose = True,
                         threads = None,
                         
-                        output_dir = (output_dir)
+                        output_dir = output_dir,
+                        outputplot_dir = outputplot_dir
                         )
     
+    
     net.save_model(output_dir)
-
 
     # transfer genes and barcodes
     # I trust this more, if I do it here, insted of reading the genes from the adata again in the write_output function.
@@ -826,7 +846,8 @@ def sca_main(input_dir, output_dir, loss_name):
     genes.to_csv(output_dir + "genes.tsv", sep = "\t", index = False, header = False)
     barcodes.to_csv(output_dir + "barcodes.tsv", sep = "\t", index = False, header = False)
 
-    np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
+    if split:
+        np.savetxt(output_dir + "test_index.tsv", test_index, fmt = "%d")
 
 
 
@@ -837,13 +858,114 @@ def sca_main(input_dir, output_dir, loss_name):
 # Call program
 #------------------------------------------------------------------------------
 
-import pandas as pd
-import scanpy as sc # import AnnData
-from sklearn.model_selection import train_test_split
-
 if __name__ == "__main__":
     
-    sca_main(input_dir = args.input_dir,  
-             output_dir = args.output_dir,
-             loss_name = args.loss)
- 
+    import pandas as pd
+    import scanpy as sc # import AnnData
+    #from sklearn.model_selection import train_test_split
+    
+    import os
+    import sys
+    import pickle
+    from datetime import datetime
+    from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
+    from keras.models import Model
+    from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+    from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson#, cosine_proximity
+    # from keras.objectives import cosine_proximity
+    import numpy as np
+    import anndata
+    import tensorflow as tf
+    import keras.optimizers as opt
+    
+
+    from keras import backend as K
+    MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
+    DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
+        
+    
+
+    source_input_dir = args.input_dir
+    source_output_dir = args.output_dir
+    source_outputplot_dir = args.outputplot_dir
+        
+    
+    
+    if args.mode == "complete":
+        nosplit = True
+        split = True
+    elif args.mode == "split":
+        nosplit = False
+        split = True
+    elif args.mode == "nosplit":
+        nosplit = True
+        split = False
+    else:
+        print("invalid mode")
+    
+    
+    
+    # %% NO SPLIT
+    if nosplit == True:
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_autoencoder.py (nosplit)")    
+     
+        input_dir = source_input_dir + "no_split/"
+        output_dir = source_output_dir + "no_split/"
+        outputplot_dir = source_outputplot_dir + "no_split/"
+        
+        
+        sca_main(input_dir = input_dir,  
+                  output_dir = output_dir,
+                  outputplot_dir = outputplot_dir,
+                  loss_name = args.loss,
+                  split = False)
+        
+        
+        
+        
+        
+            
+    # %% split = TRUE    
+        
+    if split == True:
+        print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_autoencoder.py")    
+     
+        # determine number of splits
+        num_splits = 0
+        cancel = False
+        directory = source_input_dir + "split_" + str(num_splits + 1)
+        if os.path.isdir(directory) == False:
+            #print("ERROR: NO SPLITS DETECTED")
+            sys.exit()
+        else:
+            while True:
+                num_splits += 1
+                directory = source_input_dir + "split_" + str(num_splits + 1)
+                # print(directory)
+                
+                isdirectory = os.path.isdir(directory)
+                
+                if isdirectory == False:
+                    print(datetime.now().strftime("%H:%M:%S>"), str(num_splits) + " splits detected\n")    
+                    break
+                 
+         
+        
+    # %% loop through splits
+    
+        for split in range(1, num_splits + 1):
+            
+            print(datetime.now().strftime("%H:%M:%S>"), "\nStarting split #" + str(split))      
+                
+            input_dir = source_input_dir + "split_" + str(split) + "/"
+            output_dir = source_output_dir + "split_" + str(split) + "/"
+            outputplot_dir = source_outputplot_dir + "split_" + str(split) + "/"
+    
+            sca_main(input_dir = input_dir,  
+                      output_dir = output_dir,
+                      outputplot_dir = outputplot_dir,
+                      loss_name = args.loss,
+                      split = True)
+                
+            

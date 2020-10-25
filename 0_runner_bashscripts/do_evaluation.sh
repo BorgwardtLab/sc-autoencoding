@@ -14,6 +14,7 @@ directories=(
 "../inputs/baseline_data/scaTSNE_output/"
 "../inputs/baseline_data/scaUMAP_output/"
 "../inputs/data/preprocessed_data/"
+"../inputs/autoencoder_data/DCA_output/"
 )
 
 titles=(
@@ -23,6 +24,7 @@ titles=(
 "tSNE"
 "UMAP"
 "original_data"
+"DCA"
 )
 
 
@@ -95,7 +97,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 
 (
-tech=kmcluster
+tech=dbscan
 output_dir=../outputs/$tech/
 
 # titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data" )

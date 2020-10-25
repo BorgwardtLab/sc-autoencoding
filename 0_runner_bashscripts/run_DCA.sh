@@ -5,12 +5,20 @@ logfile=logs/3_autoencoder_DCA.log
 
 
 
+printf "\n\n" #for the logtxt, not saved into logfile
+printf "############################################################################\n################### " &>> $logfile
+echo -n START: `date` &>> $logfile
+printf " ###################\n############################################################################\n\n" &>> $logfile
+
+
+
+
 ######## DCA
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate dicia2
 conda env list	|& tee -a $logfile 
 
-dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/" |& tee -a $logfile
+dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/no_split/" |& tee -a $logfile
 echo "DCA is done" |& tee -a $logfile
 
 # restore original env
@@ -28,9 +36,19 @@ python ../9_toyscripts/dca_output_to_matrix.py --input_dir "../inputs/autoencode
 
 ### Evaluate the loss history
 # not that the file loaded and the file appended are identical. But I think tee only ever writes after the process is done, so should probably be fine.
-python ../9_toyscripts/plot_dca_loss.py --input_file "../0_runner_bashscripts/logs/3_autoencoder_DCA.log" --outputplot_dir "../outputs/autoencoders/DCA/" |& tee -a $logfile
+python ../9_toyscripts/plot_dca_loss.py --input_file "../0_runner_bashscripts/logs/3_autoencoder_DCA.log" --outputplot_dir "../outputs/autoencoder_data/DCA/" |& tee -a $logfile
+
+
+
+
 
 end=`date +%s`
-printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+
+printf "\nDCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+printf "\n################### " &>> $logfile
+echo -n DONE: `date` &>> $logfile
+printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+
+
 
 
