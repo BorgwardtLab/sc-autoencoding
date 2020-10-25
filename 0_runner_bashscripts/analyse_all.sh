@@ -22,6 +22,13 @@ printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $tim
 
 
 
+wait
+printf "###############################################################################\n\n\n" &>> $timestamps
+
+
+
+
+
 	# techname=run_baselines.py
 	# start=`date +%s`
 	# echo $techname |& tee -a $timestamps
@@ -82,17 +89,17 @@ printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $tim
 
 
 wait
-printf "\n\n###############################################################################\n" &>> $timestamps
-printf "tarting with Evaluations on %s %s %s %s %s %s\n" `date` &>> $timestamps
+
 printf "###############################################################################\n\n\n" &>> $timestamps
 
 
 
-techname=do_evaluation_baselines.py
+
+techname=do_evaluation.py
 start=`date +%s`
 echo $techname |& tee -a $timestamps
 printf "%s %s %s %s %s %s:> starting $techname\n" `date` &>> $timestamps
-bash do_evaluation_baseliens.sh &>> $logtext
+bash do_evaluation.sh &>> $logtext
 printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $timestamps
 end=`date +%s`
 printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps

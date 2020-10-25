@@ -3,6 +3,7 @@
 
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
+printf "[run_baselines.sh] "
 conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
 
 
@@ -119,6 +120,7 @@ outputplot="../outputs/baselines/"
 ) & 
 
 
+python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --input_dims 30 --mode complete --input_dir "../inputs/baseline_data/scaPCA_output/" --output_dir "../inputs/baseline_data/scaICA_output/" --outputplot_dir "../outputs/baselines/scaICA_output/" |& tee -a $logfile
 
 
 

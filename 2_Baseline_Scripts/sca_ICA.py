@@ -72,7 +72,7 @@ else:
 # %% KFOLD == TRUE    
 
 if split == True:
-    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_PCA.py (split) with num_components = {numcom:d}".format(numcom = num_components))    
+    print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_ICA.py (split) with num_components = {numcom:d}".format(numcom = num_components))    
  
 
     # determine number of splits
