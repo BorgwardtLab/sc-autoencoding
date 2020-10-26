@@ -19,7 +19,7 @@ conda activate dicia2
 printf "[run_DCA, before] " |& tee -a $logfile 
 conda env list	|& tee -a $logfile 
 
-dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/no_split/" |& tee -a $logfile
+dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/no_split/" &>> $logfile
 echo "DCA is done" |& tee -a $logfile
 
 # restore original env

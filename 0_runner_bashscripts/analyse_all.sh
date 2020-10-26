@@ -58,7 +58,7 @@ printf "########################################################################
 
 	startdate=`date`
 	start=`date +%s`
-	bash run_baselines.sh &>> $logtext
+	bash run_DCA.sh &>> $logtext
 	end=`date +%s`
 
 	# write all at once, so it doesn't get into a conflict with the parallel running processes also accessing timestamps

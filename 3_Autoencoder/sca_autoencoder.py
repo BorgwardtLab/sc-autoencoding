@@ -13,9 +13,8 @@ parser.add_argument("-o","--output_dir", help="output directory", default = "../
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/autoencoder_data/SCA/")
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
+parser.add_argument("--splitnumber", help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
 args = parser.parse_args()
-
-
 
 
 
@@ -905,25 +904,7 @@ if __name__ == "__main__":
     
     
     
-    # %% NO SPLIT
-    if nosplit == True:
-        
-        print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_autoencoder.py (nosplit)")    
-     
-        input_dir = source_input_dir + "no_split/"
-        output_dir = source_output_dir + "no_split/"
-        outputplot_dir = source_outputplot_dir + "no_split/"
-        
-        
-        sca_main(input_dir = input_dir,  
-                  output_dir = output_dir,
-                  outputplot_dir = outputplot_dir,
-                  loss_name = args.loss,
-                  split = False)
-        
-        
-        
-        
+
         
             
     # %% split = TRUE    
@@ -936,7 +917,7 @@ if __name__ == "__main__":
         cancel = False
         directory = source_input_dir + "split_" + str(num_splits + 1)
         if os.path.isdir(directory) == False:
-            #print("ERROR: NO SPLITS DETECTED")
+            print("ERROR: NO SPLITS DETECTED")
             sys.exit()
         else:
             while True:
@@ -954,7 +935,22 @@ if __name__ == "__main__":
         
     # %% loop through splits
     
-        for split in range(1, num_splits + 1):
+        splits_to_do = range(1, num_splits + 1)
+        
+        
+        if args.splitnumber != None and args.mode == "split":
+            
+            print("custom split number detected")
+            
+            if args.splitnumber > 0 and args.splitnumber <= num_splits:
+                print("Script will only run on split", args.splitnumber)
+                splits_to_do = [args.splitnumber]
+            else:
+                print("illegal split number entered ({:d}). Please choose a number between 1 and {:d}".format(args.splitnumber, num_splits))
+                
+        
+        
+        for split in splits_to_do:
             
             print(datetime.now().strftime("%H:%M:%S>"), "\nStarting split #" + str(split))      
                 
@@ -968,4 +964,32 @@ if __name__ == "__main__":
                       loss_name = args.loss,
                       split = True)
                 
+            
+            
+            
+            
+            
+            
+            
+    # %% NO SPLIT
+    if nosplit == True:
+        
+        print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_autoencoder.py (nosplit)")    
+     
+        input_dir = source_input_dir + "no_split/"
+        output_dir = source_output_dir + "no_split/"
+        outputplot_dir = source_outputplot_dir + "no_split/"
+        
+        
+        sca_main(input_dir = input_dir,  
+                  output_dir = output_dir,
+                  outputplot_dir = outputplot_dir,
+                  loss_name = args.loss,
+                  split = False)
+        
+        
+
+            
+            
+            
             

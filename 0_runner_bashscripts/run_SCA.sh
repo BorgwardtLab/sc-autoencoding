@@ -16,12 +16,48 @@ conda activate tf
 printf "[run_SCA.sh ] " |& tee -a $logfile 
 conda env list	|& tee -a $logfile 
 
+
+
+
+
+# Slooooow
+######################
+#python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --mode complete --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
+
+
+
+# Faster and better
+###################### 
+# (
+# python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --mode nosplit --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
+# ) & (
+# python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --mode split --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
+# )
+
+
+
+
+# Fastest, but not dynamic so pay attention that all splits are taken care of
 (
-python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --mode nosplit --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" |& tee -a $logfile
+python ../3_Autoencoder/sca_autoencoder.py --mode nosplit --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
 ) & (
-python ../3_Autoencoder/sca_autoencoder.py --loss poisson_loss --mode split --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" |& tee -a $logfile
+python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 1 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
+) & (
+python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 2 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
+) & (
+python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 3 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" &>> $logfile
 )
+
+
+
+
+
+
+
+
+
 wait
+echo "SCA is done"
 
 end=`date +%s`
 printf "\nSCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile

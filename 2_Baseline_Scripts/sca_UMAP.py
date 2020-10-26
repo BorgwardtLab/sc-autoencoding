@@ -83,7 +83,6 @@ if split == True:
 
     directory = source_input_dir + "split_" + str(num_splits + 1)
     if os.path.isdir(directory) == False:
-        print("ERROR: NO SPLITS DETECTED")
         sys.exit()
         
         

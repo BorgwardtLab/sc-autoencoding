@@ -102,11 +102,11 @@ tech=dbscan
 output_dir=../outputs/$tech/
 
 # titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data" )
-minpts=(3 3 3 3 3 3)
-eps=(20 20 20 20 20 20)
+minpts=(3 3 3 3 3 3 3)
+eps=(20 20 20 20 20 20 20)
 
 # sanity check to see if we have the right number of parameters supplied.
-if [ ${#minpts[@]} = ${#eps[@]} ] && [ ${#minpts[@]} = ${#titles[@]} ]; then 
+if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 
 
 	for i in $range; do
 		(
