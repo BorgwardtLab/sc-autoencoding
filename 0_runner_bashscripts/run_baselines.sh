@@ -106,8 +106,6 @@ outputplot="../outputs/baselines/"
 
 		python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --input_dims 30 --mode complete --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
-		end=`date +%s`
-		printf "\nPCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 
 
 		end=`date +%s`
@@ -116,12 +114,10 @@ outputplot="../outputs/baselines/"
 		echo -n DONE: `date` &>> $logfile
 		printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 	)
+	
+wait
 
 ) & 
-
-
-python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --input_dims 30 --mode complete --input_dir "../inputs/baseline_data/scaPCA_output/" --output_dir "../inputs/baseline_data/scaICA_output/" --outputplot_dir "../outputs/baselines/scaICA_output/" |& tee -a $logfile
-
 
 
 
@@ -136,7 +132,6 @@ echo -n START: `date` &>> $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 start=`date +%s`
 
-
 python ../2_Baseline_Scripts/sca_LSA.py --mode complete --num_components 100 --input_dir $input --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 end=`date +%s`
@@ -145,10 +140,3 @@ printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 )
-
-
-
-
-
-
-

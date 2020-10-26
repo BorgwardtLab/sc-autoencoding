@@ -20,7 +20,9 @@ printf "[run_DCA, before] " |& tee -a $logfile
 conda env list	|& tee -a $logfile 
 
 dca "../inputs/data/preprocessed_data_autoencoder/no_split/matrix_transposed.tsv" "../inputs/autoencoder_data/DCA_output/no_split/" &>> $logfile
+
 echo "DCA is done" |& tee -a $logfile
+echo "(accept this as replacement for the actual stdout)" #to avoid cluttering the logtxt from analyse_all.sh
 
 # restore original env
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.

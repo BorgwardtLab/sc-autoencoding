@@ -16,6 +16,8 @@ directories=(
 "../inputs/baseline_data/scaUMAP_output/"
 "../inputs/data/preprocessed_data/"
 "../inputs/autoencoder_data/DCA_output/"
+"../inputs/autoencoder_data/BCA_output/"
+"../inputs/autoencoder_data/SCA_output/"
 )
 
 titles=(
@@ -26,6 +28,8 @@ titles=(
 "UMAP"
 "original_data"
 "DCA"
+"BCA"
+"SCA"
 )
 
 
@@ -101,9 +105,9 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 tech=dbscan
 output_dir=../outputs/$tech/
 
-# titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data" )
-minpts=(3 3 3 3 3 3 3)
-eps=(20 20 20 20 20 20 20)
+# titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data", DCA BCA SCA )
+minpts=(3 3 3 3 3 3 3 3 3)
+eps=(20 20 20 20 20 20 20 20 20)
 
 # sanity check to see if we have the right number of parameters supplied.
 if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 

@@ -52,6 +52,22 @@ printf "########################################################################
 	printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps
 	) & 
 
+	(
+	techname=run_BCA.py
+
+	startdate=`date`
+	start=`date +%s`
+	bash run_BCA.sh &>> $logtext
+	end=`date +%s`
+
+	# write all at once, so it doesn't get into a conflict with the parallel running processes also accessing timestamps
+	echo $techname |& tee -a $timestamps
+	printf "%s %s %s %s %s %s:> starting $techname\n" $startdate &>> $timestamps
+	printf "%s %s %s %s %s %s:> finished $techname\n" `date` &>> $timestamps
+	printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps
+	) &
+
+
 
 	(
 	techname=run_DCA.py

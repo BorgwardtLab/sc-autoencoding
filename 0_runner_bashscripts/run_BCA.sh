@@ -22,30 +22,43 @@ conda env list	|& tee -a $logfile
 
 # Slooooow
 ######################
-python ../3_Autoencoder/sca_autoencoder.py --mode complete --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/" &>> $logfile
-
+# python ../3_Autoencoder/bca_autoencoder.py --mode complete --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/" &>> $logfile
 
 
 # Faster and better
 ###################### 
+# (
+# python ../3_Autoencoder/bca_autoencoder.py --mode split --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/" &>> $logfile
+# ) & (
+# python ../3_Autoencoder/bca_autoencoder.py --mode nosplit --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/" &>> $logfile
+# )
+##### FIX OUTPUT IF YOU USE THIS
 
 
 
 
 # Fastest, but not dynamic so pay attention that all splits are taken care of
 (
-
-
-
-
-
-
-
-
-
+output1=$(python ../3_Autoencoder/bca_autoencoder.py --mode nosplit --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/")
+) & (
+output2=$(python ../3_Autoencoder/bca_autoencoder.py --mode split --splitnumber 1 --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/")
+) & (
+output3=$(python ../3_Autoencoder/bca_autoencoder.py --mode split --splitnumber 2 --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/")
+) & (
+output4=$(python ../3_Autoencoder/bca_autoencoder.py --mode split --splitnumber 3 --loss poisson --activation relu --optimizer Adam --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/BCA_output/" --outputplot_dir "../outputs/autoencoder_data/BCA/")
+)
 
 wait
-echo "BCA is done"
+
+printf "%s" "output1" &>> $logfile
+printf "%s" "output2" &>> $logfile
+printf "%s" "output3" &>> $logfile
+printf "%s" "output4" &>> $logfile
+
+echo "BCA is done" |& tee -a $logfile
+echo "(accept this as replacement for the actual stdout)" #to avoid cluttering the logtxt from analyse_all.sh
+
+
 
 end=`date +%s`
 printf "\nBCA took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
