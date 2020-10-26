@@ -682,7 +682,7 @@ def sca(adata_train,
     # ae.write_output_deprecated(adata = adata_train, file_path = output_dir + "test_dir/", mode = "full")
     # ae.write_output_deprecated(adata = adata_test, file_path = output_dir + "train_dir/", mode = "full")
     
-    ae.write_output(test_adata = adata_test, train_adata = adata_train, test_index = test_index, file_path = output_dir, mode = "full")
+    ae.write_output(test_adata = adata_test, train_adata = adata_train, test_index = test_index, file_path = output_dir, mode = mode)
 
 
     return (adata_train, adata_test, ae)
@@ -817,7 +817,7 @@ def sca_main(input_dir, output_dir, outputplot_dir, loss_name, split):
                         loss_name = loss_name,
                         test_index = test_index,
                         
-                        mode = "full",
+                        mode = "latent",
                         ae_type = "normal",
                         
                         # training args

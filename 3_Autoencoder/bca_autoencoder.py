@@ -346,11 +346,11 @@ if split == True:
         
         
         
-        pd.DataFrame(denoised_outdata).to_csv(output_dir + "denoised_matrix.tsv",
-                                                              sep='\t',
-                                                              index=None,
-                                                              header=None,
-                                                              float_format='%.6f')
+        # pd.DataFrame(denoised_outdata).to_csv(output_dir + "denoised_matrix.tsv",
+        #                                                       sep='\t',
+        #                                                       index=None,
+        #                                                       header=None,
+        #                                                       float_format='%.6f')
         
         pd.DataFrame(latent_outdata).to_csv(output_dir + "latent_layer.tsv",
                                                               sep='\t',
@@ -549,11 +549,11 @@ if nosplit == True:
     
     os.makedirs(output_dir, exist_ok=True)
     
-    pd.DataFrame(denoised).to_csv(output_dir + "denoised_matrix.tsv",
-                                                          sep='\t',
-                                                          index=None,
-                                                          header=None,
-                                                          float_format='%.6f')
+    # pd.DataFrame(denoised).to_csv(output_dir + "denoised_matrix.tsv",
+    #                                                       sep='\t',
+    #                                                       index=None,
+    #                                                       header=None,
+    #                                                       float_format='%.6f')
     
     pd.DataFrame(latent).to_csv(output_dir + "latent_layer.tsv",
                                                           sep='\t',

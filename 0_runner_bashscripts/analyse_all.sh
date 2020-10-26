@@ -52,6 +52,7 @@ printf "########################################################################
 	printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps
 	) & 
 
+
 	(
 	techname=run_BCA.py
 
