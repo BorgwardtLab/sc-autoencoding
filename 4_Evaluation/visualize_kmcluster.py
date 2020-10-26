@@ -47,8 +47,10 @@ import glob
 import re
 import numpy as np
 
-randfor_dir = "../outputs/random_forest/"
 
+
+#randfor_dir = "../outputs/random_forest/"
+kmclust_dir = "../outputs/kmcluster/"
 
 
 
@@ -129,61 +131,132 @@ else:
 # %%
 if not kmclust_dir == "skip":
     
-    with open(kmclust_dir + "km_clustering_results.txt", "r") as file:
-        string = file.read()
-    count = int(string.count("###############################")/2)
- 
-    purities = []
-    recalls = []
+    filelist = []
     names = []
+    dataframes = []
     
     
-    for i in range(count):
+    for filepath in glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv"):
+        filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
+        print(filepath)
         
-        pointer1 = string.find("###############################")
-        pointer2 = string.find("#", pointer1 + 39)
+        filelist.append(filepath)
         
         
-        name = string[pointer1 + 39:pointer2]
-        names.append(name)
-        print(name)
+        search = re.search("randomforest_(.*).tsv", filepath)
+        if search:
+            name = search.group(1) # to get only the matched charactesr
+            names.append(name)
+
+
+        accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+
     
-        # purity
-        pointer1 = string.find("Average Purity:")
-        pointer2 = string.find("(", pointer1)
-        
-        purity = float(string[pointer1+15:pointer2])
-        purities.append(purity)
-        print(purity)
-        
-        # recall
-        pointer1 = string.find("Average Recall:")
-        pointer2 = string.find("(", pointer1)
-        
-        recall = float(string[pointer1+15:pointer2])
-        recalls.append(recall)
-        print(recall)
-        
-        
-        # shorten string
-        string = string[pointer2:]
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # %%
+    
+    accuracies.T.plot.bar(rot = 0, color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"})
+    plt.title("Random Forests")
+    plt.ylabel("Accuracies")
+    
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(output_dir + "random_forest_result.png")
     
 
-    ### grouped barplot
-
-    # create pandas dataframe
-    data = {"Purity": purities,
-            "Recall": recalls}
-    panda = pd.DataFrame(data, index = names)
+ 
     
-    # plot barplot
-    panda.plot.bar(rot=0, ylim = [0,1])
-    plt.savefig(output_dir + title + "_km_clustering")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
 else: 
     print("kmclust was skipped")
     
+    
+    # with open(kmclust_dir + "km_clustering_results.txt", "r") as file:
+    #     string = file.read()
+    # count = int(string.count("###############################")/2)
+ 
+    # purities = []
+    # recalls = []
+    # names = []
+    
+    
+    # for i in range(count):
+        
+    #     pointer1 = string.find("###############################")
+    #     pointer2 = string.find("#", pointer1 + 39)
+        
+        
+    #     name = string[pointer1 + 39:pointer2]
+    #     names.append(name)
+    #     print(name)
+    
+    #     # purity
+    #     pointer1 = string.find("Average Purity:")
+    #     pointer2 = string.find("(", pointer1)
+        
+    #     purity = float(string[pointer1+15:pointer2])
+    #     purities.append(purity)
+    #     print(purity)
+        
+    #     # recall
+    #     pointer1 = string.find("Average Recall:")
+    #     pointer2 = string.find("(", pointer1)
+        
+    #     recall = float(string[pointer1+15:pointer2])
+    #     recalls.append(recall)
+    #     print(recall)
+        
+        
+    #     # shorten string
+    #     string = string[pointer2:]
+    
+
+    # ### grouped barplot
+
+    # # create pandas dataframe
+    # data = {"Purity": purities,
+    #         "Recall": recalls}
+    # panda = pd.DataFrame(data, index = names)
+    
+    # # plot barplot
+    # panda.plot.bar(rot=0, ylim = [0,1])
+    # plt.savefig(output_dir + title + "_km_clustering")
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     
     
@@ -217,8 +290,11 @@ if not randfor_dir == "skip":
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
 
-    
+
         accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+
+    
+    
     
     
     accuracies.T.plot.bar(rot = 0, color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"})
@@ -229,21 +305,12 @@ if not randfor_dir == "skip":
     plt.savefig(output_dir + "random_forest_result.png")
     
 
+
+
+
 else: 
     print("random_forest was skipped")
-    
-    
-
-
-
-
-
-
-
-
-
-
-
+     
 
 
 

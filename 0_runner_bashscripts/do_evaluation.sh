@@ -119,6 +119,7 @@ output_dir=../outputs/$tech/
 minpts=(3 3 3 3 3 3 3 3 3)
 eps=(20 20 20 20 20 20 20 20 20)
 
+
 # sanity check to see if we have the right number of parameters supplied.
 if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 
 

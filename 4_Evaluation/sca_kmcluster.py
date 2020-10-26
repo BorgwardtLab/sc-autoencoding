@@ -262,16 +262,24 @@ for idx in range(len(multiassigned)):
     if multiassigned[idx]:
         clusterlabels[idx] = clusterlabels[idx] + " (Cluster " + str(idx) + ")"
 
-purity_per_cluster = np.round(purity_per_cluster, 4)       
-recall_per_cluster = np.round(recall_per_cluster, 4)  
+
 
 
 
 # %% Construct dataframe
+
+
+purity_per_cluster = np.array(purity_per_cluster)
+recall_per_cluster = np.array(recall_per_cluster)
+f1score = 2*purity_per_cluster*recall_per_cluster/(purity_per_cluster + recall_per_cluster)
+
+
+
 panda = pd.DataFrame(index = range(k))
 panda["Purity"] = purity_per_cluster
 panda["Size"] = clustersizes
 panda["Recall"] = recall_per_cluster
+panda["F1-score"] = f1score
 panda["Most common label"] = clusterlabel_original
 
 
@@ -406,6 +414,11 @@ plt.savefig(outputplot_dir + title + "_cluster_histogram.png")
 
 # %% Saving result
 print(datetime.now().strftime("%H:%M:%S>"), "Saving Results...")
+
+
+purity_per_cluster = np.round(purity_per_cluster, 4)       
+recall_per_cluster = np.round(recall_per_cluster, 4)  
+
 
 
 if not os.path.exists(output_dir):

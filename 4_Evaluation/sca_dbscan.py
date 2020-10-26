@@ -179,12 +179,25 @@ for idx in range(len(multiassigned)):
 
 # %% create dataframe for machine export
 
+purity_per_cluster = np.array(purity_per_cluster)
+recall_per_cluster = np.array(recall_per_cluster)
+
+f1score = 2*purity_per_cluster*recall_per_cluster/(purity_per_cluster + recall_per_cluster)
+
+
+
+
+
 
 panda = pd.DataFrame(index = range(n_clusters))
 panda["Purity"] = purity_per_cluster
 panda["Size"] = clustersizes
 panda["Recall"] = recall_per_cluster
+panda["F1-score"] = f1score
 panda["Most common label"] = clusterlabel_original
+
+
+
 
 
 thing = panda.index
