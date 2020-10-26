@@ -52,6 +52,16 @@ ntrees=100
 
 for i in $range; do
 	(
+	
+	### exclude some:
+	if [ ${titles[$i]} = "tSNE" ] || [ ${titles[$i]} = DCA ] 
+	then	
+		echo ${titles[$i]} was skipped
+		continue      # Skip rest of this particular loop iteration.
+	fi
+	
+	
+	
 	input_dir=${directories[$i]}
 	logfile=logs/4_${tech}_${titles[$i]}.log
 
@@ -114,6 +124,15 @@ if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then
 
 	for i in $range; do
 		(
+		
+		### exclude some:
+		if [ ${titles[$i]} = "original_data" ] 
+		then	
+			echo ${titles[$i]} was skipped
+			continue      # Skip rest of this particular loop iteration.
+		fi
+		
+		
 		input_dir=${directories[$i]}
 		logfile=logs/4_${tech}_${titles[$i]}.log
 

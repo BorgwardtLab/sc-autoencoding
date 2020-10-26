@@ -18,7 +18,7 @@ parser.add_argument("--loss", default = "poisson", type = str, choices = ["poiss
 parser.add_argument("--activation", default = "relu", type = str, choices = ["relu", "sigmoid", "mixed1", "mixed2"])
 parser.add_argument("--optimizer", default = "Adam", type = str, choices = ["SGD", "RMSprop", "Adam", "Adadelta","Adagrad","Adamax","Nadam","Ftrl"])
 parser.add_argument("--mode", default = "complete", help="chose traintest-split, nosplit or both", choices=['complete','split','nosplit'])
-parser.add_argument("--splitnumber", help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
+parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
 args = parser.parse_args()
 
 

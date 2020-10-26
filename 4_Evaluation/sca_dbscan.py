@@ -430,7 +430,7 @@ else:
 
 # %%
 
-print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully\n")
+print(datetime.now().strftime("%H:%M:%S>"), "sca_dbscan.py terminated successfully\n")
 
 
 
