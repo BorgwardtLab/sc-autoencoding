@@ -15,7 +15,6 @@ icalog=logs/2_baselines_ICA.log
 lsalog=logs/2_baselines_LSA.log
 tsnelog=logs/2_baselines_tSNE.log
 umaplog=logs/2_baselines_UMAP.log
-
 #
 
 input="../inputs/data/preprocessed_data/"
@@ -145,4 +144,10 @@ printf " ####################\n#################################################
 
 
 wait
+
+
+
+
+
+
 

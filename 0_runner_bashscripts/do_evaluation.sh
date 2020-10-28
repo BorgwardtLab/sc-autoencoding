@@ -164,10 +164,39 @@ fi
 
 
 wait
+
+
+
+
+
+### Visualize
+logfile=logs/4_visualizer.log
+
+
+printf "\n\n" #for the logtxt, not saved into logfile
+printf "############################################################################\n################### " &>> $logfile
+echo -n START: `date` &>> $logfile
+printf " ###################\n############################################################################\n\n" &>> $logfile
+start=`date +%s`
+
+
+python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/" --output_dir "../outputs/visualized_results/"
+
+end=`date +%s`
+printf "\nVisualization took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+printf "\n################### " &>> $logfile
+echo -n DONE: `date` &>> $logfile
+printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+
+
+
+
+
+
+
+
+
+wait
 echo "All Done - " `date`
-
-
-
-
 
 

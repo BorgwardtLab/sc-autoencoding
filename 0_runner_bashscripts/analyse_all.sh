@@ -1,7 +1,7 @@
 rm -rf logs
 mkdir logs
 
-analysis_start=start=`date +%s`
+analysis_start=`date +%s`
 timestamps="logs/0_timestamps.log"
 logtext="logs/0_logtext.log"
 
@@ -126,7 +126,7 @@ printf "$techname took %d minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $tim
 
 
 echo "i'm done"
-printf "whole analysis took %s hours\n" `echo "($end-$start)/3600" | bc -l` &>> $timestamps
-printf "whole analysis took %s minutes\n\n\n" `echo "($end-$start)/60" | bc` &>> $timestamps
+printf "whole analysis took %s hours\n" `echo "($end-$analysis_start)/3600" | bc -l` &>> $timestamps
+printf "whole analysis took %s minutes\n\n\n" `echo "($end-$analysis_start)/60" | bc` &>> $timestamps
 
 

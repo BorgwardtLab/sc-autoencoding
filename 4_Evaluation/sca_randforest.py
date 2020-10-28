@@ -34,6 +34,7 @@ except:
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/random_forrest/")
+parser.add_argument("--limit_dims", default = 0, help="number of input dimensions to consider", type = int)
 #parser.add_argument("-o","--outputplot_dir", help="out directory", default = "../outputs/random_forrest/PCA/")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "placeholder")
 #parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended - call for the first run of the classifier", action="store_true")
@@ -145,6 +146,16 @@ if args.legacy == False:    # "normal mode"
         
         test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
         train_index = np.logical_not(test_index)
+        
+
+        if args.limit_dims > 0:
+            if args.limit_dims <= data.shape[1]:
+                data = data[:,0:args.limit_dims]
+                print("restricting input dimensions")
+            else:
+                print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
+                
+        
     
         
         # %% Handle Train Test Split
@@ -308,6 +319,14 @@ if args.legacy == True:
     
     test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
     train_index = np.logical_not(test_index)
+
+    if args.limit_dims > 0:
+        if args.limit_dims <= data.shape[1]:
+            data = data[:,0:args.limit_dims]
+            print("restricting input dimensions")
+        else:
+            print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
+            
 
     
     # %% Handle Train Test Split

@@ -35,9 +35,9 @@ except:
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 #parser.add_argument("-k","--k", default = 6, help="the number of clusters to find", type = int)
-parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/dbscan/")
+parser.add_argument("--limit_dims", default = 0, help="number of input dimensions to consider", type = int)
 #parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/dbscan/scaPCA_output/")
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title")
@@ -74,26 +74,24 @@ truelabels = barcodes.iloc[:,1]
 
 
 
+if args.limit_dims > 0:
+    if args.limit_dims <= data.shape[1]:
+        data = data[:,0:args.limit_dims]
+        print("restricting input dimensions")
+    else:
+        print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
 
-if args.dimensions == 0:
-    dims = data.shape[1]
-    #print("dims was set to {0:d}".format(dims))
-else:
-    dims = args.dimensions
-    #print("dims was set to {0:d}".format(dims))
-    
+
+
 
 
 # %% Clustering
 
 
-
 print(datetime.now().strftime("%H:%M:%S>"), "Clustering...")
 
 
-data = data[:,range(dims)]
 dbscanner = DBSCAN(eps=args.eps, min_samples=args.min_samples)
-
 
 
 predicted_labels = dbscanner.fit_predict(data)

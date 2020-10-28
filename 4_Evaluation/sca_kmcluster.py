@@ -13,10 +13,10 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 10, help="the number of clusters to find", type = int)
-parser.add_argument("-d","--dimensions", help="enter a value here to restrict the number of input dimensions to consider", type = int, default = 0)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
 #parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/kmcluster/")
+parser.add_argument("--limit_dims", default = 0, help="number of input dimensions to consider", type = int)
 parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
 parser.add_argument("--elbowrange", help="the elobow will try all k's from 1-elbowrange", type = int, default = 11)
@@ -60,7 +60,6 @@ data_dir = output_dir + "dataframes/"
 
 
 k = args.k
-dimensions = args.dimensions
 verbosity = args.verbosity
 elbow = args.elbow
 title = args.title
@@ -105,15 +104,15 @@ truelabels = barcodes.iloc[:,1]
 
 print(datetime.now().strftime("%H:%M:%S>"), "Clustering...")
 
-if dimensions == 0:
-    dims = data.shape[1]
-    #print("dims was set to {0:d}".format(dims))
-else:
-    dims = dimensions
-    #print("dims was set to {0:d}".format(dims))
-    
+if args.limit_dims > 0:
+    if args.limit_dims <= data.shape[1]:
+        data = data[:,0:args.limit_dims]
+        print("restricting input dimensions")
+    else:
+        print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
 
-data = data[:,range(dims)]
+
+
 
 
 

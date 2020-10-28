@@ -50,6 +50,7 @@ output4=$(python ../3_Autoencoder/bca_autoencoder.py --mode split --splitnumber 
 
 wait
 
+
 printf "%s" "$output1" &>> $logfile
 printf "%s" "$output2" &>> $logfile
 printf "%s" "$output3" &>> $logfile
