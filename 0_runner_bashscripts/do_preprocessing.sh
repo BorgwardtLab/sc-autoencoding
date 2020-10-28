@@ -76,7 +76,7 @@ printf " ####################\n#################################################
 
 
 wait
-print("do_preprocessor is done")
+echo "do_preprocessor is done"
 
 
 
