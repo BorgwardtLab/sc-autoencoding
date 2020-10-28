@@ -36,12 +36,17 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baselines/baseline_data/scaPCA_output/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
+parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/optimization/dbscan_epsearch/")
 args = parser.parse_args() #required
 
 
-input_path = args.input_dir
+
+
+
+
+input_path = args.input_dir + "no_split/"
 outputplot_dir = args.outputplot_dir
 
 
@@ -116,10 +121,9 @@ plt.xlabel("point")
 plt.ylabel("distance to the xth-nearest neighbour")
 
 
-plt.savefig(outputplot_dir + "epsplot.png")
-
 plt.legend(["average (1-9)", 'first', 'second', 'third', 'fifth'])
 
+plt.savefig(outputplot_dir + "epsplot_" + args.title + ".png")
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "dbscan_epssearch_knn finished successfully")

@@ -33,7 +33,7 @@ dbscan_dir = args.dbscan_results
 kmclust_dir = args.kmcluster_results
 randfor_dir = args.random_forest_results
 
-args.general_input = "../outputs/"
+
 
 if args.general_input != "skip":
     dbscan_dir = args.general_input + "dbscan/"
