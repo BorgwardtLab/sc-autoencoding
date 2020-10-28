@@ -115,9 +115,9 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 tech=dbscan
 output_dir=../outputs/$tech/
 
-# titles=("PCA" "ICA" "LSA" "tSNE" "UMAP" "original_data", DCA BCA SCA )
-minpts=(3 3 3 3 3 3 3 3 3)
-eps=(20 20 20 20 20 20 20 20 20)
+# 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
+minpts=(3 	3 	3 	3 	3 	3 	3 	3 	3)
+eps=(	20 	20 	20 	20 	20 	20 	20 	20 	20)
 
 
 # sanity check to see if we have the right number of parameters supplied.
@@ -180,19 +180,14 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
-python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/" --output_dir "../outputs/visualized_results/"
+python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/" --output_dir "../outputs/visualized_results/" |& tee -a $logfile
+
 
 end=`date +%s`
 printf "\nVisualization took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` &>> $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-
-
-
-
-
-
 
 
 
