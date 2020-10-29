@@ -609,6 +609,13 @@ if not randfor_dir == "skip":
         accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
     
     
+    
+    
+    try:
+        accuracies = accuracies.reindex(sorted(accuracies.columns, key = int), axis=1)
+    except:
+        pass
+    
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = pd.DataFrame()

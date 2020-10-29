@@ -32,6 +32,7 @@ titles=(
 )
 
 
+
 mkdir logs
 
 output_dir="../outputs/optimization/technique_evaluation/"
@@ -74,7 +75,7 @@ for i in $range; do
 
 		for limit in {1..200..5}; do
 		(
-		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}_trees" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
+		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
 		) &
 		done
 
@@ -84,11 +85,13 @@ wait
 
 for i in $range; do
 (
-python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --random_forest_results "${output_dir}random_forest/n_trees/${titles[$i]}/" --output_dir "${output_dir}random_forest/n_trees/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --random_forest_results "${output_dir}random_forest_ntrees/${titles[$i]}/" --output_dir "${output_dir}random_forest_ntrees/" |& tee -a $logfile
 ) &
 done
 
 wait
+
+
 
 
 dbs_end=`date +%s`
