@@ -2,7 +2,7 @@
 
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
-printf "[do evaluation.sh ] "
+printf "[optimize_rand_forest.sh ] "
 conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
 
 
@@ -72,7 +72,7 @@ for i in $range; do
 	fi
 
 
-		for limit in {1..200..5}; do;
+		for limit in {1..200..5}; do
 		(
 		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}_trees" --n_trees $ntrees --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
 		) &
