@@ -72,13 +72,14 @@ for i in $range; do
 		continue      # Skip rest of this particular loop iteration.
 	fi
 
-
+		(
 		for limit in {001..200..5}; do
 		(
 		python ../4_Evaluation/sca_randforest.py --title "${limit}_trees" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
 		) &
 		done
-
+		wait	# very weird construct, but i packed the whole loop into another brackets, with wait inside, and an & outside so that it was still parallel. Without it, it would immediately start visualizer. 
+		) &
 done
 
 wait
@@ -88,8 +89,8 @@ for i in $range; do
 python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --plottitle ${titles[$i]} --random_forest_results "${output_dir}random_forest_ntrees/${titles[$i]}/" --output_dir "${output_dir}random_forest_ntrees/" |& tee -a $logfile
 ) &
 done
-
 wait
+
 
 
 
