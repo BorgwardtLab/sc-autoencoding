@@ -63,6 +63,8 @@ import seaborn as sns
 #randfor_dir = "../outputs/random_forest/"
 #kmclust_dir = "../outputs/kmcluster/"
 #dbscan_dir = "../outputs/dbscan/"
+kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/kmcluster_k/PCA/"
+
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
 
@@ -244,8 +246,11 @@ if not dbscan_dir == "skip":
 
     # baprlot num_clusters
     #axs[2].set_yscale("log")
-    axs[2].bar(x = names, height = num_clusters_low, width = 0.45, color = "red")
-    axs[2].bar(x = names, height = (np.array(num_clusters)-np.array(num_clusters_low)), bottom = num_clusters_low, width = 0.45)
+    diff = np.array(num_clusters)-np.array(num_clusters_low)
+    axs[2].bar(x = names, height = diff, width = 0.45)    
+    axs[2].bar(x = names, height = num_clusters_low, bottom = diff, width = 0.45, color = "red") 
+    
+    
     #axs[2].axhline(10, alpha = 0.5, c = "red")
     axs[2].set_title("Number of clusters (red = cluster < 50 cells)")
     
@@ -361,21 +366,6 @@ else:
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 # %%
 if not kmclust_dir == "skip":
     
@@ -385,10 +375,11 @@ if not kmclust_dir == "skip":
     for filepath in glob.iglob(kmclust_dir + "dataframes/kmcluster_*.tsv"):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
         #print(filepath)
-        search = re.search("kmcluster_(.*).tsv", filepath)
+        search = re.search("dataframes/kmcluster_(.*?).tsv", filepath)
         if search:
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
+            print(name)
             
             newframe = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
             newframe["Technique"] = name
@@ -399,6 +390,11 @@ if not kmclust_dir == "skip":
             
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
+    
+
+
+
+
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = []
@@ -421,7 +417,7 @@ if not kmclust_dir == "skip":
                     idx = names.index(name)
                     ordered.append(dataframes[idx])
                     new_names.append(names[idx])
-                    print("please add {:s} to the custom order variable".format(name))
+                    #print("please add {:s} to the custom order variable".format(name))
 
         names = new_names
         dataframes = ordered
@@ -440,6 +436,7 @@ if not kmclust_dir == "skip":
     # num_celltypes
     num_ct = []
     num_ct_low = []
+    num_ct_total = []
 
 
 
@@ -475,7 +472,7 @@ if not kmclust_dir == "skip":
         num_ct.append(len(unique))
         sizes_2 = np.array(dataframes[i].loc[:,"Size"])
         num_ct_low.append(sum(sizes_2 < 50))
-        
+        num_ct_total.append(len(dataframes[i]))
         
         # pieplot
         sizes_pie.append(sizes)
@@ -514,8 +511,18 @@ if not kmclust_dir == "skip":
 
     # baprlot num_unique CT
     #axs[2].set_yscale("log")
-    axs[2].bar(x = names, height = num_ct_low, width = 0.45, color = "red")
-    axs[2].bar(x = names, height = (np.array(num_ct)-np.array(num_ct_low)), bottom = num_ct_low, width = 0.45)
+
+    diff = np.array(num_ct)-np.array(num_ct_low)
+    axs[2].bar(x = names, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1)
+    axs[2].bar(x = names, height = diff, width = 0.45)    
+    axs[2].bar(x = names, height = num_ct_low, bottom = diff, width = 0.45, color = "red")
+    
+    
+    #handl, leggy = axs[2].get_legend_handles_labels()
+    axs[2].legend(labels = ["k","unique clusters (>50)","unique clusters (<50)"])
+    
+    
+    
     #axs[2].axhline(10, alpha = 0.5, c = "red")
     axs[2].set_title("Unique cluster labels (red = cluster < 50 cells)")
     axs[2].set_ylabel("Number of unique cluster labels")
@@ -541,7 +548,6 @@ if not kmclust_dir == "skip":
         else:
             plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5))
     
-
 
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
@@ -717,7 +723,7 @@ else:
 
 
 
-
+print("Visualizer has finished successfully")
 
 
 

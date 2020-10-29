@@ -35,7 +35,7 @@ titles=(
 mkdir logs
 output_dir="../outputs/optimization/technique_evaluation/"
 logfile="logs/5_optimize_kmcluster.log"
-timestamps="logs/5_optimize_kmcluster.tmstmp"
+timestamps=$logfile
 
 
 dbs_start=`date +%s`
@@ -62,26 +62,28 @@ fi
 
 ########################### Random_forest
 ###############################################################################################################################
-
+(
 for i in $range; do
 
 
-	for k in {2..20}; do
+	for k in {02..20}; do
 	(
 	python ../4_Evaluation/sca_kmcluster.py --title "${k}-PCAs" --k $k --limit_dims 0 --input_dir ${directories[$i]} --output_dir "${output_dir}kmcluster_k/${titles[$i]}/" |& tee -a $logfile
 	) &
 	done
 
 done
+wait
+)
+
+echo "starting visualization"
 
 for i in $range; do
-
-python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --general_input "${output_dir}random_forest/n_trees/${titles[$i]}/" --output_dir "${output_dir}random_forest/n_trees/" |& tee -a $logfile
-
+	echo "${output_dir}kmcluster_k/${titles[$i]}/"
+	python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --plottitle ${titles[$i]} --kmcluster_results "${output_dir}kmcluster_k/${titles[$i]}/" --output_dir "${output_dir}random_forest/kmcluster_k/" |& tee -a $logfile
 done
 
 wait
-
 
 dbs_end=`date +%s`
 

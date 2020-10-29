@@ -22,7 +22,7 @@ go=`date`
 echo "Evaluate nPCA" |& tee -a $timestamps
 echo Starting: $go |& tee -a $timestamps
 
-
+(
 for limit in {002..100}; do
 	(
 	python ../4_Evaluation/sca_randforest.py --title "${limit}-PCAs" --limit_dims $limit --input_dir $pcadir --output_dir "${output_dir}random_forest/" |& tee -a $logfile
@@ -35,10 +35,8 @@ for limit in {002..100}; do
 	#) &
 done
 
-
-
 wait 
-
+)
 
 python ../4_Evaluation/visualize.py  --title "nPCA results"  --output_dir "../outputs/optimization/nPCA/" --random_forest_results "${output_dir}random_forest/" --kmcluster_results "${output_dir}kmcluster/" |& tee -a $logfile
 # --general_input "../outputs/optimization/nPCA/"
