@@ -102,7 +102,6 @@ fifth = np.sort(fifth, axis=0)
 matplotlib_colours = {'b': 'blue', 'g': 'green', 'r': 'red', 'c': "cyan", 'm': "magenta", 'y': "yellow", 'k': "black", 'w': "white"}
 
 
-
 print(datetime.now().strftime("%H:%M:%S>"), "Drawing Knee...")
 
 plt.figure()
@@ -113,9 +112,13 @@ plt.plot(sec, 'b')
 plt.plot(third, 'r')
 plt.plot(fifth, 'g')
 
-plt.yticks(np.arange(0,200,5))
+ticks = np.linspace(0, max(avgdistances)*1.1, num = 40) 
+# for i in range(len(ticks)):
+#    ticks[i] = np.format_float_positional(x = ticks[i], precision = 3, fractional = False, trim = "-") # round to 2 "significant" digits (not decimals) -> because we know nothing about the scale of the data, and still want the plot to look nice
 
-plt.grid(which = "both", axis = "y")
+plt.yticks(ticks)
+
+plt.grid(which = "both", axis = "x")
 plt.title("distances to the xth-nearest neighbour \n(individually ordered in ascending order)")
 plt.xlabel("point")
 plt.ylabel("distance to the xth-nearest neighbour")
