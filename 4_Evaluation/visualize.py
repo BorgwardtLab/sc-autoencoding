@@ -60,9 +60,9 @@ import numpy as np
 import seaborn as sns
 
 
-# randfor_dir = "../outputs/random_forest/"
-# kmclust_dir = "../outputs/kmcluster/"
-# dbscan_dir = "../outputs/dbscan/"
+#randfor_dir = "../outputs/random_forest/"
+#kmclust_dir = "../outputs/kmcluster/"
+#dbscan_dir = "../outputs/dbscan/"
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
 
@@ -70,7 +70,8 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-
+#randfor_dir = "../outputs/optimization/nPCA/random_forest/"
+#kmclust_dir = "../outputs/optimization/nPCA/kmcluster/"
 #../outputs/optimization/nPCA/random_forest/: Is a directory
 
 
@@ -160,6 +161,7 @@ if not dbscan_dir == "skip":
     
     # num_cluster bar plot
     num_clusters = []
+    num_clusters_low = []
     
     # outliers pie plot
     sum_sizes_arr = []
@@ -198,6 +200,8 @@ if not dbscan_dir == "skip":
         
         # num clusters bar plot
         num_clusters.append(len(dataframes[i]))
+        sizes_2 = np.array(dataframes[i].loc[:,"Size"])
+        num_clusters_low.append(sum(sizes_2 < 50))
         
         # outlier pie
         sum_sizes_arr.append(sum_sizes)
@@ -214,7 +218,7 @@ if not dbscan_dir == "skip":
     plotnumber=5 # number of the cluster pie charts
     
         
-    fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows])
+    fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows], sharex = True)
     fig.subplots_adjust(hspace=0.5) 
 
     fig.suptitle("DBScan_Clustering result"  + titleext, size = "xx-large", weight = "black")
@@ -229,20 +233,25 @@ if not dbscan_dir == "skip":
     axs[0].set_xlabel("")
     axs[0].legend(handles = handles[0:2], labels = ["Purity", "Recall"], loc = "lower right")
     axs[0].set_title("Purity and Recall Boxplots")
+    axs[0].tick_params(labelbottom = True)
+    
     
     # lineplot
     axs[1].plot(names, f1weight, "b")
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
-
+    axs[1].tick_params(labelbottom = True)
 
     # baprlot num_clusters
     #axs[2].set_yscale("log")
-    axs[2].bar(x = names, height = num_clusters)
+    axs[2].bar(x = names, height = num_clusters_low, width = 0.45, color = "red")
+    axs[2].bar(x = names, height = (np.array(num_clusters)-np.array(num_clusters_low)), bottom = num_clusters_low, width = 0.45)
+    #axs[2].axhline(10, alpha = 0.5, c = "red")
+    axs[2].set_title("Number of clusters (red = cluster < 50 cells)")
+    
     axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Number of clusters")
     axs[2].set_ylabel("number of clusters")
-
+    axs[2].tick_params(labelbottom = True)
 
     # outulier fraction:
     axs[3].axis("off")
@@ -341,6 +350,32 @@ else:
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 # %%
 if not kmclust_dir == "skip":
     
@@ -404,6 +439,8 @@ if not kmclust_dir == "skip":
 
     # num_celltypes
     num_ct = []
+    num_ct_low = []
+
 
 
     for i in range(len(dataframes)):
@@ -432,14 +469,19 @@ if not kmclust_dir == "skip":
         weighted_F1 = weighted_F1/sum_sizes
         f1weight.append(weighted_F1)
         
-        # pieplot
-        sizes_pie.append(sizes)
-        names_pie.append(np.array(dataframes[i].loc[:,"Most common label"]))
-        
         # barplot numct
         celltypes = np.array(dataframes[i].loc[:,"Most common label"])
         unique = np.unique(celltypes, return_counts=False)
         num_ct.append(len(unique))
+        sizes_2 = np.array(dataframes[i].loc[:,"Size"])
+        num_ct_low.append(sum(sizes_2 < 50))
+        
+        
+        # pieplot
+        sizes_pie.append(sizes)
+        names_pie.append(np.array(dataframes[i].loc[:,"Most common label"]))
+
+
         
 
     
@@ -448,9 +490,9 @@ if not kmclust_dir == "skip":
     plotnumber=4
     
 
-    fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows])
+    fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows], sharex=True)
     fig.subplots_adjust(hspace=0.5) 
-    fig.suptitle("km-Clustering result with k = {:d} ".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
+    fig.suptitle("km-Clustering result of {:d} clusterings".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
     
     # boxplots
     sns.set_style("whitegrid")
@@ -462,18 +504,22 @@ if not kmclust_dir == "skip":
     axs[0].set_xlabel("")
     axs[0].legend(handles = handles[0:2], labels = ["Purity", "Recall"], loc = "lower right")
     axs[0].set_title("Purity and Recall Boxplots")
+    axs[0].tick_params(labelbottom = True)
     
     # lineplot
     axs[1].plot(names, f1weight, "b")
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
+    axs[1].tick_params(labelbottom = True)
 
     # baprlot num_unique CT
     #axs[2].set_yscale("log")
-    axs[2].bar(x = names, height = num_ct, width = 0.45)
+    axs[2].bar(x = names, height = num_ct_low, width = 0.45, color = "red")
+    axs[2].bar(x = names, height = (np.array(num_ct)-np.array(num_ct_low)), bottom = num_ct_low, width = 0.45)
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Unique cluster labels")
+    axs[2].set_title("Unique cluster labels (red = cluster < 50 cells)")
     axs[2].set_ylabel("Number of unique cluster labels")
+    axs[2].tick_params(labelbottom = True)
 
 
 

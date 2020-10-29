@@ -8,8 +8,8 @@ conda env list	# it should be visible in the log-textfile. I'm not saving it to 
 
 mkdir logs
 
-logfile="logs/5_optimize_techniques_evaluation.log"
-timestamps="logs/5_optimize_techniques_evaluation.tmstmp"
+logfile="logs/5_optimize_nPCA.log"
+timestamps="logs/5_optimize_nPCA.tmstmp"
 
 pcadir="../inputs/baseline_data/scaPCA_output/"
 output_dir="../outputs/optimization/nPCA/"
@@ -23,7 +23,7 @@ echo "Evaluate nPCA" |& tee -a $timestamps
 echo Starting: $go |& tee -a $timestamps
 
 
-for limit in {2..100}; do
+for limit in {002..100}; do
 	(
 	python ../4_Evaluation/sca_randforest.py --title "${limit}-PCAs" --limit_dims $limit --input_dir $pcadir --output_dir "${output_dir}random_forest/" |& tee -a $logfile
 	) &
