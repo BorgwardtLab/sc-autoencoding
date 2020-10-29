@@ -66,7 +66,7 @@ fi
 for i in $range; do
 
 
-	for k in {2..20}; do;
+	for k in {2..20}; do
 	(
 	python ../4_Evaluation/sca_kmcluster.py --title "${limit}-PCAs" --k $k --limit_dims 0 --input_dir $pcadir --output_dir "${output_dir}kmcluster_k/${titles[$i]}/"
 	) &
