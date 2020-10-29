@@ -64,7 +64,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/random_forest_ntrees/LSA/"
+randfor_dir = "../outputs/optimization/technique_evaluation/random_forest_ntrees/PCA/"
 
 
 
@@ -594,7 +594,7 @@ if not randfor_dir == "skip":
     #filelist = []
     names = []
     accuracies = pd.DataFrame(index = ["Split_1", "Split_2", "Split_3"])
-
+    print("randfor_dir = {:s}".format(randfor_dir + "dataframes/randomforest_*.tsv"))
     
     for filepath in glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv"):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
