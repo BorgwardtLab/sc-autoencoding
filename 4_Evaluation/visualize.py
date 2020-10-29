@@ -71,7 +71,8 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-randfor_dir = "../outputs/optimization/technique_evaluation/random_forest_ntrees/PCA/"
+#../outputs/optimization/nPCA/random_forest/: Is a directory
+
 
 
 
