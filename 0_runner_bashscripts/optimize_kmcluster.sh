@@ -3,7 +3,7 @@
 
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
-printf "[optimize_nPCA.sh ] "
+printf "[optimize_kmcluster.sh ] "
 conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
 
 

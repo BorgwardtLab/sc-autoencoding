@@ -74,7 +74,7 @@ for i in $range; do
 
 		for limit in {1..200..5}; do
 		(
-		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}_trees" --n_trees $ntrees --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
+		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}_trees" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
 		) &
 		done
 
