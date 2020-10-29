@@ -10,7 +10,8 @@ Created on Tue Oct 13 14:20:07 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "program to preprocess the raw singlecell data")  
-parser.add_argument("--title", default = "placeholder", type = str, help = "the overlying name of the analysis (e.g. baseline, autoencoder, SCA, BCA...). This will change the names of the output plots, and their folder")
+parser.add_argument("--title", default = "placeholder", type = str, help = "prefix for filenames")
+parser.add_argument("--plottitle", default = "placeholder", type = str, help = "prefix for plottitles")
 
 parser.add_argument("--dbscan_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
 parser.add_argument("--kmcluster_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
@@ -27,6 +28,12 @@ if args.title == "placeholder":
     fileext = ""
 else:
     fileext = "_" + args.title
+
+if args.plottitle == "placeholder":
+    titleext = ""
+else:
+    titleext = " " + args.plottitle
+
 
 
 dbscan_dir = args.dbscan_results
@@ -209,7 +216,7 @@ if not dbscan_dir == "skip":
     fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows])
     fig.subplots_adjust(hspace=0.5) 
 
-    fig.suptitle("DBScan_Clustering result", size = "xx-large", weight = "black")
+    fig.suptitle("DBScan_Clustering result"  + titleext, size = "xx-large", weight = "black")
     
     # boxplots
     sns.set_style("whitegrid")
@@ -442,7 +449,7 @@ if not kmclust_dir == "skip":
 
     fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows])
     fig.subplots_adjust(hspace=0.5) 
-    fig.suptitle("km-Clustering result with k = {:d}".format(len(dataframes)), size = "xx-large", weight = "black")
+    fig.suptitle("km-Clustering result with k = {:d} ".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
     
     # boxplots
     sns.set_style("whitegrid")
@@ -611,11 +618,10 @@ if not randfor_dir == "skip":
     
     
     
-    try:
-        accuracies = accuracies.reindex(sorted(accuracies.columns, key = int), axis=1)
-    except:
-        pass
-    
+    accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
+
+
+
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = pd.DataFrame()
@@ -643,11 +649,12 @@ if not randfor_dir == "skip":
     
     
     #plt.figure(figsize = [1*accuracies.shape[1], 6.4])
-    accuracies.T.plot.bar(rot = 0, figsize = [1*accuracies.shape[1], 6.4]) # , color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"}
-    plt.title("Random Forests")
+    accuracies.T.plot.bar(rot = 45, figsize = [1*accuracies.shape[1], 6.4]) # , color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"}
+    plt.title("Random Forests" + titleext)
     plt.ylabel("Accuracies")
     plt.grid(which = "both", axis = "y")
     plt.legend(loc = "lower right")
+    plt.subplots_adjust(bottom=0.15)
     
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "random_forest_result" + fileext + ".png")

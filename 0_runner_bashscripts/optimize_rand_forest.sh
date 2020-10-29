@@ -73,9 +73,9 @@ for i in $range; do
 	fi
 
 
-		for limit in {1..200..5}; do
+		for limit in {001..200..5}; do
 		(
-		python ../4_Evaluation/sca_randforest.py --title "${titles[$i]}_${limit}" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
+		python ../4_Evaluation/sca_randforest.py --title "${limit}_trees" --n_trees $limit --input_dir ${directories[$i]} --output_dir "${output_dir}random_forest_ntrees/${titles[$i]}/" |& tee -a $logfile
 		) &
 		done
 
@@ -85,7 +85,7 @@ wait
 
 for i in $range; do
 (
-python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --random_forest_results "${output_dir}random_forest_ntrees/${titles[$i]}/" --output_dir "${output_dir}random_forest_ntrees/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --plottitle ${titles[$i]} --random_forest_results "${output_dir}random_forest_ntrees/${titles[$i]}/" --output_dir "${output_dir}random_forest_ntrees/" |& tee -a $logfile
 ) &
 done
 
