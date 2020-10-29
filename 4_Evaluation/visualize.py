@@ -64,7 +64,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/random_forest_ntrees/LSA/"
 
 
 
@@ -598,7 +598,7 @@ if not randfor_dir == "skip":
     
     for filepath in glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv"):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
-        #print(filepath)
+        print(filepath)
         #filelist.append(filepath)
         
         search = re.search("randomforest_(.*).tsv", filepath)
@@ -635,8 +635,8 @@ if not randfor_dir == "skip":
     
     
     
-    
-    accuracies.T.plot.bar(rot = 0, color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"})
+    #plt.figure(figsize = [1*accuracies.shape[1], 6.4])
+    accuracies.T.plot.bar(rot = 0, figsize = [1*accuracies.shape[1], 6.4]) # , color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"}
     plt.title("Random Forests")
     plt.ylabel("Accuracies")
     plt.grid(which = "both", axis = "y")

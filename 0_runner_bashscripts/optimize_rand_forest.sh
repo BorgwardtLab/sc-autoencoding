@@ -80,10 +80,12 @@ for i in $range; do
 
 done
 
+wait
+
 for i in $range; do
-
-python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --general_input "${output_dir}random_forest/n_trees/${titles[$i]}/" --output_dir "${output_dir}random_forest/n_trees/" |& tee -a $logfile
-
+(
+python ../4_Evaluation/visualize.py  --title "${titles[$i]}" --random_forest_results "${output_dir}random_forest/n_trees/${titles[$i]}/" --output_dir "${output_dir}random_forest/n_trees/" |& tee -a $logfile
+) &
 done
 
 wait
