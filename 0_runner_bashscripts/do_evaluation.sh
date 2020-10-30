@@ -83,6 +83,14 @@ done
 wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands
 ) &
 
+
+
+
+
+
+# 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
+k_array=(9 	6 	8 	8 	7 	10 	8 	8 	8)
+
 (
 tech=kmcluster
 output_dir=../outputs/$tech/
@@ -97,7 +105,7 @@ for i in $range; do
 	start=`date +%s`
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 
-	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k 10 --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k ${k_array[$i]} --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
 	end=`date +%s`
 	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
@@ -118,7 +126,6 @@ output_dir=../outputs/$tech/
 # 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
 minpts=(3 	3 	3 	3 	3 	3 	3 	3 	3)
 eps=(	20 	20 	20 	20 	20 	20 	20 	20 	20)
-
 
 # sanity check to see if we have the right number of parameters supplied.
 if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 

@@ -231,8 +231,10 @@ if split == True:
         
         
         # Loading scores for PC1
-        
         how_many = 10
+        if how_many > dims:
+            how_many = dims
+    
         
         #generate index
         index = []
@@ -389,7 +391,8 @@ if nosplit == True:
     # Loading scores for PC1
     
     how_many = 10
-    
+    if how_many > dims:
+        how_many = dims
     #generate index
     index = []
     for i in range(len(ica.components_[0,:])):

@@ -379,7 +379,7 @@ if not kmclust_dir == "skip":
         if search:
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
-            print(name)
+            #print(name)
             
             newframe = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
             newframe["Technique"] = name
@@ -654,11 +654,11 @@ if not randfor_dir == "skip":
     #filelist = []
     names = []
     accuracies = pd.DataFrame(index = ["Split_1", "Split_2", "Split_3"])
-    print("randfor_dir = {:s}".format(randfor_dir + "dataframes/randomforest_*.tsv"))
+    #print("randfor_dir = {:s}".format(randfor_dir + "dataframes/randomforest_*.tsv"))
     
     for filepath in sorted(glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
-        print(filepath)
+        #print(filepath)
         #filelist.append(filepath)
         
         search = re.search("randomforest_(.*).tsv", filepath)
@@ -699,17 +699,55 @@ if not randfor_dir == "skip":
     
     
     
-    #plt.figure(figsize = [1*accuracies.shape[1], 6.4])
-    accuracies.T.plot.bar(rot = 45, figsize = [1*accuracies.shape[1], 6.4]) # , color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"}
+    
+    # %% GROUPED BARPLOT
+    
+    # accuracies.T.plot.bar(rot = 45, figsize = [1*accuracies.shape[1], 6.4]) # , color={"Split_1": "crimson", "Split_2": "firebrick", "Split_3": "lightcoral"}
+    # plt.title("Random Forests" + titleext)
+    # plt.ylabel("Accuracies")
+    # plt.grid(which = "both", axis = "y")
+    # plt.legend(loc = "lower right")
+    # plt.subplots_adjust(bottom=0.15)
+    
+    # os.makedirs(output_dir, exist_ok=True)
+    # plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
+
+
+
+
+
+
+
+# %%
+
+    avgs = []
+    stde = []
+
+    for i in range(accuracies.shape[1]):
+        values = np.array(accuracies.iloc[:,i])
+
+
+        avgs.append(np.mean(values))
+        stde.append(np.std(values, ddof = 1))
+                    
+     
+    plt.figure(figsize = [1*accuracies.shape[1], 6.4])
+    plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
+    plt.xticks(rotation = 45)
     plt.title("Random Forests" + titleext)
     plt.ylabel("Accuracies")
-    plt.grid(which = "both", axis = "y")
-    plt.legend(loc = "lower right")
+    plt.grid(which = "both", axis = "x")
+    #plt.legend(loc = "lower right")
     plt.subplots_adjust(bottom=0.15)
     
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
     
+    
+
+
+
+
 
 
 
