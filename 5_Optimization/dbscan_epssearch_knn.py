@@ -112,7 +112,7 @@ plt.plot(sec, 'b')
 plt.plot(third, 'r')
 plt.plot(fifth, 'g')
 
-ticks = np.linspace(0, max(avgdistances)*1.1, num = 40) 
+ticks = np.linspace(0, max(avgdistances)*1.1, num = 30) 
 # for i in range(len(ticks)):
 #    ticks[i] = np.format_float_positional(x = ticks[i], precision = 3, fractional = False, trim = "-") # round to 2 "significant" digits (not decimals) -> because we know nothing about the scale of the data, and still want the plot to look nice
 

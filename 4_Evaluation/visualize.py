@@ -63,7 +63,7 @@ import seaborn as sns
 #randfor_dir = "../outputs/random_forest/"
 #kmclust_dir = "../outputs/kmcluster/"
 #dbscan_dir = "../outputs/dbscan/"
-kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/kmcluster_k/PCA/"
+#kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/kmcluster_k/PCA/"
 
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
