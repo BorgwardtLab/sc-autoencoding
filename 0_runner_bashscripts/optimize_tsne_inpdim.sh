@@ -15,10 +15,10 @@ PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
 
-numbers=[2 3 4 5 6 7 8 9 10 12 14 16 18 20 24 28 32 36 40 45 50 55 60 65 70 75 80 85 90 95 100]
+numbers=(2 10 100)
+#numbers=(2 3 4 5 6 7 8 9 10 12 14 16 18 20 24 28 32 36 40 45 50 55 60 65 70 75 80 85 90 95 100)
 
-
-logfile="logs/5_optimize_sec_tSNE.log"
+logfile="logs/5_optimize_tSNE_inDs.log"
 
 foldername="tsne_nimput/"
 folderdata="tsne_tsne_data/"
@@ -37,7 +37,7 @@ for limit in $numbers; do
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 	start=`date +%s`
 
-	python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --input_dims $limit --verbosity 0 --input_dir $PCA_output --output_dir ${output}${foldername}${folderdata}${limit} --outputplot_dir ${output}${foldername}${folderdata}${limit} &>> $logfile #|& tee -a $logfile
+	python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --input_dims $limit --verbosity 0 --input_dir $PCA_output --output_dir ${output}${foldername}${folderdata}${limit} --outputplot_dir ${output}${foldername}${folderdata}${limit}  |& tee -a $logfile 
 
 
 	printf "\n\nDimension reduction done, now proceding with evaluation\n\n" |& tee -a $logfile
@@ -55,6 +55,7 @@ done
 wait
 )
 
+echo "I got here"
 
 (
 python ../4_Evaluation/visualize.py  --title "tSNE optimization results"  --output_dir ${output}${foldername} --random_forest_results ${output}${foldername}${foldertree} |& tee -a $logfile
