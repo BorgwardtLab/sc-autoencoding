@@ -10,14 +10,15 @@ Created on Wed Jul  8 00:49:30 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "calculate ICAs")  #required
-parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 30)
+parser.add_argument("-n","--num_components", help="the number of ICAs to calculate", type = int, default = 100)
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/baseline_data/scaICA_output/")
-parser.add_argument("-d","--input_dims", type = int, default = 0, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
+parser.add_argument("-d","--input_dims", type = int, default = 100, help="enter a value here to restrict the number of input dimensions to consider, otherwise all available PC's will be used")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/baseline_data/scaICA_output/")
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 args = parser.parse_args() #required
 
+args.input_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/baseline_data/scaICA_output/"
 
 
 import numpy as np
@@ -142,7 +143,7 @@ if split == True:
             print("n_components is too large: it will be set to", dims)
             num_components = dims
 
-            
+        asfdasdf
             
             
         original_data = data.copy()
@@ -158,7 +159,7 @@ if split == True:
         traindata =  myscaler.fit_transform(traindata)
         testdata = myscaler.transform(testdata)
         
-        
+        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", num_components)
         print(datetime.now().strftime("%H:%M:%S>"), "calculating independant components...")
         ica = FastICA(n_components=num_components)
         train_ICs = ica.fit_transform(traindata)

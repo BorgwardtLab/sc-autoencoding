@@ -33,8 +33,11 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
+
+ntrees=100
+
 (
-for limit in $numbers; do
+for limit in ${numbers[@]}; do
 
 	(
 	python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --input_dims $limit --verbosity 0 --input_dir $PCA_output --output_dir "${output}${foldername}${folderdata}${limit}/" --outputplot_dir "${output}${foldername}${folderdata}${limit}/" |& tee -a $logfile 
@@ -49,7 +52,7 @@ for limit in $numbers; do
 	# wait
 	) &
 
-	
+
 done
 wait
 )

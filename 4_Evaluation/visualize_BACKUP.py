@@ -60,9 +60,10 @@ import numpy as np
 import seaborn as sns
 
 
-#randfor_dir = "../outputs/random_forest/"
-#kmclust_dir = "../outputs/kmcluster/"
-#dbscan_dir = "../outputs/dbscan/"
+
+# randfor_dir = "../outputs/random_forest/"
+kmclust_dir = "../outputs/kmcluster/"
+dbscan_dir = "../outputs/dbscan/"
 
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
@@ -74,7 +75,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/kmcluster/"
-randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 
 
 
@@ -427,21 +428,22 @@ if not kmclust_dir == "skip":
 
     # boxplot
     redundancy_frame = pd.DataFrame()
+
+    # lineplots
     f1weight = []
+    nmi_scores = []
     
     # pieplot
     sizes_pie = []
     names_pie = []
 
-    # num_celltypes
+    # num_celltypes barplot
     num_ct = []
     num_ct_low = []
     num_ct_total = []
 
 
-
-    for i in range(len(dataframes)):
-        
+    for i in range(len(dataframes)):        
         # boxplot
         purities = dataframes[i].loc[:,"Purity"]
         recalls = dataframes[i].loc[:,"Recall"]
@@ -455,7 +457,8 @@ if not kmclust_dir == "skip":
         new_df = pd.concat([df1, df2])
         redundancy_frame = pd.concat([redundancy_frame, new_df])
         
-        # F1 weighted
+        # lienplots
+        nmi_scores.append(dataframes[i].loc[:,"NMI"][0])
         fscores = np.array(dataframes[i].loc[:,"F1-score"])
         sizes = np.array(dataframes[i].loc[:,"Size"])
         sum_sizes = sum(dataframes[i].loc[:,"Size"])
@@ -508,6 +511,15 @@ if not kmclust_dir == "skip":
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
+    try:
+        axs[1].plot(names, nmi_scores, "r")
+        axs[1].legend(labels = ["F1-score","NMI"])
+    except:
+        print("no NMI info available")
+        pass
+
+    axs[1].plot(names, nmi_scores, "r")
+    axs[1].legend(labels = ["F1-score","NMI"])
 
     # baprlot num_unique CT
     #axs[2].set_yscale("log")

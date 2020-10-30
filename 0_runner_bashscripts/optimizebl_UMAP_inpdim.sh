@@ -11,7 +11,7 @@ mkdir logs
 
 
 
-PCA_output="../inputs/baseline_data/scaUMAP_output/"
+PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
 
@@ -33,8 +33,11 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
+
+ntrees=100
+
 (
-for limit in $numbers; do
+for limit in ${numbers[@]}; do
 
 	(
 	

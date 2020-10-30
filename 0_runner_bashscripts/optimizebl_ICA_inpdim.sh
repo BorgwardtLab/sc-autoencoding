@@ -10,7 +10,7 @@ mkdir logs
 
 
 
-PCA_output="../inputs/baseline_data/scaICA_output/"
+PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
 
@@ -32,8 +32,11 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
+
+ntrees=100
+
 (
-for limit in $numbers; do
+for limit in ${numbers[@]}; do
 
 	(
 	python ../2_Baseline_Scripts/sca_ICA.py --mode complete --num_components 100 --input_dims $limit --input_dir $PCA_output --output_dir "${output}${foldername}${folderdata}${limit}/" --outputplot_dir "${output}${foldername}${folderdata}${limit}/" |& tee -a $logfile
