@@ -105,7 +105,7 @@ for i in $range; do
 	start=`date +%s`
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 
-	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k ${k_array[$i]} --dimensions 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k ${k_array[$i]} --limit_dims 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
 	end=`date +%s`
 	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
