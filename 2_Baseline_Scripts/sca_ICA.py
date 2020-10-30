@@ -18,8 +18,6 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 args = parser.parse_args() #required
 
-args.input_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/baseline_data/scaICA_output/"
-
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
