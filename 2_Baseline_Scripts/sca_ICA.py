@@ -141,7 +141,6 @@ if split == True:
             print("n_components is too large: it will be set to", dims)
             num_components = dims
 
-        asfdasdf
             
             
         original_data = data.copy()

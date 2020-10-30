@@ -42,6 +42,22 @@ randfor_dir = args.random_forest_results
 
 
 
+
+
+args.general_input = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/"
+
+
+
+# randfor_dir = "../outputs/random_forest/"
+#kmclust_dir = "../outputs/kmcluster/"
+#dbscan_dir = "../outputs/dbscan/"
+
+# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
+
+
+
+
 if args.general_input != "skip":
     dbscan_dir = args.general_input + "dbscan/"
     kmclust_dir = args.general_input + "kmcluster/"
@@ -61,21 +77,7 @@ import seaborn as sns
 
 
 
-# randfor_dir = "../outputs/random_forest/"
-kmclust_dir = "../outputs/kmcluster/"
-dbscan_dir = "../outputs/dbscan/"
-
-# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
-
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
-
-
-
-
-
-# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/kmcluster/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 
 
 
