@@ -32,8 +32,8 @@ conda env list |& tee -a $logfile
 
 
 # bring the data into "my" format (no headers etc)
-cp "../inputs/data/preprocessed_data_autoencoder/no_split/barcodes.tsv" "../inputs/autoencoder_data/DCA_output/barcodes.tsv" |& tee -a $logfile
-cp "../inputs/data/preprocessed_data_autoencoder/no_split/genes.tsv" "../inputs/autoencoder_data/DCA_output/genes.tsv" |& tee -a $logfile
+cp "../inputs/data/preprocessed_data_autoencoder/no_split/barcodes.tsv" "../inputs/autoencoder_data/DCA_output/no_split/barcodes.tsv" |& tee -a $logfile
+cp "../inputs/data/preprocessed_data_autoencoder/no_split/genes.tsv" "../inputs/autoencoder_data/DCA_output/no_split/genes.tsv" |& tee -a $logfile
 # cp "../inputs/data/preprocessed_data_autoencoder/no_split/test_index.tsv" "../inputs/autoencoder_data/DCA_output/test_index.tsv" |& tee -a $logfile
 
 python ../9_toyscripts/dca_output_to_matrix.py --input_dir "../inputs/autoencoder_data/DCA_output/" |& tee -a $logfile

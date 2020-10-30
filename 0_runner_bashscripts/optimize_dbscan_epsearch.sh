@@ -33,7 +33,7 @@ mkdir logs
 output_dir="../outputs/optimization/technique_evaluation/"
 
 logfile="logs/5_optimize_dbscan_epsearch.log"
-timestamps="logs/5_optimize_dbscan_epsearch.tmstp"
+timestamps=$logfile
 
 
 

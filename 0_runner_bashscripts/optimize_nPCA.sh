@@ -9,7 +9,7 @@ conda env list	# it should be visible in the log-textfile. I'm not saving it to 
 mkdir logs
 
 logfile="logs/5_optimize_nPCA.log"
-timestamps="logs/5_optimize_nPCA.tmstmp"
+timestamps=$logfile
 
 pcadir="../inputs/baseline_data/scaPCA_output/"
 output_dir="../outputs/optimization/nPCA/"

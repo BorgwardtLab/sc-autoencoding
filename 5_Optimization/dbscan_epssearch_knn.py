@@ -52,7 +52,7 @@ outputplot_dir = args.outputplot_dir
 
 if not os.path.exists(outputplot_dir):
     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-    os.makedirs(outputplot_dir)
+    os.makedirs(outputplot_dir, exist_ok=True)
 
 
 
