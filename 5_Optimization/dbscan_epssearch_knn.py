@@ -117,15 +117,18 @@ ticks = np.linspace(0, max(avgdistances)*1.1, num = 30)
 #    ticks[i] = np.format_float_positional(x = ticks[i], precision = 3, fractional = False, trim = "-") # round to 2 "significant" digits (not decimals) -> because we know nothing about the scale of the data, and still want the plot to look nice
 
 plt.yticks(ticks)
+plt.grid(b = True, which = "both", axis = "y")      #activate ygrid
+plt.tick_params(axis = "y", labelleft=True, labelright=True)
 
-plt.grid(which = "both", axis = "x")
 plt.title("distances to the xth-nearest neighbour \n(individually ordered in ascending order)")
 plt.xlabel("point")
 plt.ylabel("distance to the xth-nearest neighbour")
 
-
 plt.legend(["average (1-9)", 'first', 'second', 'third', 'fifth'])
 
+
+
+os.makedirs(outputplot_dir, exist_ok=True)
 plt.savefig(outputplot_dir + "epsplot_" + args.title + ".png")
 
 
