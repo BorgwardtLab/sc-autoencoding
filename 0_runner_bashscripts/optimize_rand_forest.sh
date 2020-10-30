@@ -37,7 +37,7 @@ mkdir logs
 
 output_dir="../outputs/optimization/technique_evaluation/"
 
-logfile="logs/5_optimize_rand_forest.log"
+logfile="logs/5_optimize_rand_forest_ntrees.log"
 timestamps=$logfile
 
 

@@ -50,7 +50,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import statistics
-
+from sklearn.metrics.cluster import normalized_mutual_info_score
 
 input_dir = args.input_dir + "no_split/"
 output_dir = args.output_dir
@@ -262,7 +262,13 @@ for idx in range(len(multiassigned)):
         clusterlabels[idx] = clusterlabels[idx] + " (Cluster " + str(idx) + ")"
 
 
+predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_cluster]
 
+
+# %%
+
+
+nmi = normalized_mutual_info_score(labels_true = list(truelabels), labels_pred = predicted_labels_text)
 
 
 # %% Construct dataframe
@@ -279,6 +285,7 @@ panda["Purity"] = purity_per_cluster
 panda["Size"] = clustersizes
 panda["Recall"] = recall_per_cluster
 panda["F1-score"] = f1score
+panda["NMI"] = nmi
 panda["Most common label"] = clusterlabel_original
 
 
@@ -351,7 +358,6 @@ plt.savefig(outputplot_dir + title + "_truelabel_plot.png")
 
 # replot truefalse plot
 
-predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_cluster]
 
 # has not worked always???
 #correct_indexes = np.array(predicted_labels_text) != np.array(truelabels).all()

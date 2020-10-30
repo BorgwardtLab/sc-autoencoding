@@ -18,7 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
 import statistics
-
+from sklearn.metrics.cluster import normalized_mutual_info_score
 
 
 
@@ -176,6 +176,15 @@ for idx in range(len(multiassigned)):
 
 
 # %% create dataframe for machine export
+# plot errors
+if -1 in set(predicted_labels):
+    clusterlabels_dictionary[-1] = "Outlier"
+predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
+
+
+nmi = normalized_mutual_info_score(labels_true = list(truelabels), labels_pred = predicted_labels_text)
+
+
 
 purity_per_cluster = np.array(purity_per_cluster)
 recall_per_cluster = np.array(recall_per_cluster)
@@ -192,6 +201,7 @@ panda["Purity"] = purity_per_cluster
 panda["Size"] = clustersizes
 panda["Recall"] = recall_per_cluster
 panda["F1-score"] = f1score
+panda["NMI"] = nmi
 panda["Most common label"] = clusterlabel_original
 
 
@@ -220,12 +230,6 @@ if n_clusters < n_labels:
 # Machine Output
 os.makedirs(data_dir, exist_ok=True)
 panda.to_csv(data_dir + "dbscan_" + args.title + ".tsv", sep = "\t", index = True, header = True)
-
-
-
-
-
-
 
 
 
@@ -302,11 +306,7 @@ plt.savefig(outputplot_dir + "clusterplot_prediction.png")
     
 
 
-# plot errors
-if -1 in set(predicted_labels):
-    clusterlabels_dictionary[-1] = "Outlier"
 
-predicted_labels_text = [clusterlabels_dictionary[i] for i in predicted_labels]
 
 correct_indexes = np.zeros(len(predicted_labels_text), dtype = bool)
 for i in range(len(predicted_labels_text)):
