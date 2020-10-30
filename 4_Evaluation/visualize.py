@@ -49,7 +49,7 @@ if args.general_input != "skip":
     randfor_dir = args.general_input + "random_forest/"
 
 
-output_dir = args.output_dir + args.title + "/"
+output_dir = args.output_dir # + args.title + "/"
 
 import os
 import matplotlib.pyplot as plt
@@ -63,8 +63,9 @@ import seaborn as sns
 #randfor_dir = "../outputs/random_forest/"
 #kmclust_dir = "../outputs/kmcluster/"
 #dbscan_dir = "../outputs/dbscan/"
-#kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/kmcluster_k/PCA/"
 
+kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
 
