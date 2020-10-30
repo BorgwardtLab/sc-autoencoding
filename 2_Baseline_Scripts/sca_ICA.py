@@ -156,7 +156,8 @@ if split == True:
         traindata =  myscaler.fit_transform(traindata)
         testdata = myscaler.transform(testdata)
         
-        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", num_components)
+        
+        
         print(datetime.now().strftime("%H:%M:%S>"), "calculating independant components...")
         ica = FastICA(n_components=num_components)
         train_ICs = ica.fit_transform(traindata)

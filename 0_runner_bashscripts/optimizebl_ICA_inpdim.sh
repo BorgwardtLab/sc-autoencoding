@@ -66,8 +66,8 @@ python ../4_Evaluation/visualize.py  --title "ICA"  --output_dir ${output}${fold
 wait
 
 end=`date +%s`
-printf "\ntSNE optimization took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
-printf "\n################### " &>> $logfile
-echo -n DONE: `date` &>> $logfile
-printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+printf "\ntSNE optimization took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
+printf "\n################### " |& tee -a $logfile
+echo -n DONE: `date` |& tee -a $logfile
+printf " ####################\n############################################################################\n\n\n\n\n\n" |& tee -a $logfile
 
