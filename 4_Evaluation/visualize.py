@@ -73,9 +73,8 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-#randfor_dir = "../outputs/optimization/nPCA/random_forest/"
-#kmclust_dir = "../outputs/optimization/nPCA/kmcluster/"
-#../outputs/optimization/nPCA/random_forest/: Is a directory
+# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/kmcluster/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 
 
 
@@ -87,7 +86,7 @@ if not dbscan_dir == "skip":
     names = []
     dataframes = []
     
-    for filepath in glob.iglob(dbscan_dir + "dataframes/dbscan_*.tsv"):
+    for filepath in sorted(glob.iglob(dbscan_dir + "dataframes/dbscan_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
         search = re.search("dbscan_(.*).tsv", filepath)
         if search:
@@ -373,7 +372,7 @@ if not kmclust_dir == "skip":
     names = []
     dataframes = []
     
-    for filepath in glob.iglob(kmclust_dir + "dataframes/kmcluster_*.tsv"):
+    for filepath in sorted(glob.iglob(kmclust_dir + "dataframes/kmcluster_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
         #print(filepath)
         search = re.search("dataframes/kmcluster_(.*?).tsv", filepath)
@@ -657,7 +656,7 @@ if not randfor_dir == "skip":
     accuracies = pd.DataFrame(index = ["Split_1", "Split_2", "Split_3"])
     print("randfor_dir = {:s}".format(randfor_dir + "dataframes/randomforest_*.tsv"))
     
-    for filepath in glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv"):
+    for filepath in sorted(glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
         print(filepath)
         #filelist.append(filepath)
