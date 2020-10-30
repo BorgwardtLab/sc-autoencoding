@@ -14,15 +14,18 @@ PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
 
-numbers=(2 10 100)
+numbers=(3 5 8 12 15 20 30 40 50 60 85 100)
+#numbers=(2 10 100)
 #numbers=(2 3 4 5 6 7 8 9 10 12 14 16 18 20 24 28 32 36 40 45 50 55 60 65 70 75 80 85 90 95 100)
+
+
 
 logfile="logs/5_optimize_ICA_inDs.log"
 
 foldername="ica_nimput/"
 folderdata="ica_data/"
 folderclust="ica_kmclresult/"
-foldertree="ica_result/"
+foldertree="ica_treeresult/"
 
 
 printf "\n\n" #for the logtxt
