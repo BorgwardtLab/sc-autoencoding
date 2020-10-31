@@ -51,9 +51,9 @@ for limit in ${numbers[@]}; do
 	python ../4_Evaluation/sca_randforest.py --title "${limit[$i]}inDs" --n_trees $ntrees --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${foldertree} |& tee -a $logfile
 	)
 	wait
-	) &
+	)
 
-	
+
 done
 wait
 )

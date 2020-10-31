@@ -116,7 +116,7 @@ data = StandardScaler(with_mean= False).fit_transform(data) # Standardizing the 
 
 
 print(datetime.now().strftime("%H:%M:%S>"), "Calculating tSNE...")
-tsne = TSNE(n_components=num_components, verbose = args.verbosity, method= mymethod)
+tsne = TSNE(n_components=num_components, verbose = args.verbosity, method= mymethod, n_jobs = 1)
 tsnedata = tsne.fit_transform(data)
 
 

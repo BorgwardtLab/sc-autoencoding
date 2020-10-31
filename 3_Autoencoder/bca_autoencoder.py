@@ -269,7 +269,8 @@ if split == True:
                         shuffle=True,
                         callbacks = callbacks,
                         #validation_data=(testdata, testdata))
-                        validation_split = 0.1) # remember to change the other one too if you change this one
+                        validation_split = 0.1,
+                        verbose=0) # remember to change the other one too if you change this one
         
         history = autoencoder.history
         
@@ -493,7 +494,8 @@ if nosplit == True:
                     shuffle=True,
                     callbacks = callbacks,
                     #validation_data=(testdata, testdata))
-                    validation_split = 0.1)     # remember to change the other one too if you change this one
+                    validation_split = 0.1,
+                    verbose=0)     # remember to change the other one too if you change this one
     
     history = autoencoder.history
     
