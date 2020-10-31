@@ -44,6 +44,29 @@ except:
 
 
 
+import tensorflow as tf
+def _nan2zero(x):
+    return tf.where(tf.math.is_nan(x), tf.zeros_like(x), x)
+def _nelem(x):
+    nelem = tf.reduce_sum(tf.cast(~tf.math.is_nan(x), tf.float32))   # just summing all the elements of a tensor
+    return tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype)
+def poisson_loss(y_true, y_pred):
+    y_pred = tf.cast(y_pred, tf.float32)
+    y_true = tf.cast(y_true, tf.float32)
+    # we can use the Possion PMF from TensorFlow as well
+    # dist = tf.math.contrib.distributions
+    # return -tf.reduce_mean(dist.Poisson(y_pred).log_pmf(y_true))
+    nelem = _nelem(y_true)
+    y_true = _nan2zero(y_true)
+    # last term can be avoided since it doesn't depend on y_pred
+    # however keeping it gives a nice lower bound to zero
+    ret = y_pred - y_true*tf.math.log(y_pred+1e-10) + tf.math.lgamma(y_true+1.0)
+    print("ret = {}".format(ret))
+    print("nelem = {}".format(nelem))
+    result = tf.math.divide(tf.math.reduce_sum(ret), nelem)
+    return result
+
+
 
 source_input_dir = args.input_dir
 source_output_dir = args.output_dir
@@ -52,8 +75,8 @@ source_outputplot_dir = args.outputplot_dir
 
 
 # Define Loss for the training
-# if args.loss == "poisson_loss":
-#     loss = poisson_loss
+if args.loss == "poisson_loss":
+    loss = poisson_loss
 if args.loss == "poisson":
     loss = poisson              
 elif args.loss == "mse":
