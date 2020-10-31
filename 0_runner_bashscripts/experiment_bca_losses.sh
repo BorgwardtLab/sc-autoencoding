@@ -56,11 +56,11 @@ python ../4_Evaluation/visualize.py  --title "BCAloss"  --output_dir ${outdir} -
 
 
 end=`date +%s`
-printf "\nPreprocessing took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
+printf "\nExperiment losses took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` |& tee -a $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-)
+
 
 
 

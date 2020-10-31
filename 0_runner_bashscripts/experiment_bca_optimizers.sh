@@ -53,7 +53,7 @@ printf "\nBCA experiment optimizer took %d minutes\n" `echo "($end-$start)/60" |
 printf "\n################### " &>> $logfile
 echo -n DONE: `date` |& tee -a $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-)
+
 
 
 

@@ -668,7 +668,7 @@ if not randfor_dir == "skip":
         #print(filepath)
         #filelist.append(filepath)
         
-        search = re.search("randomforest_(.*).tsv", filepath)
+        search = re.search("randomforest_(.*?).tsv", filepath)
         if search:
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
