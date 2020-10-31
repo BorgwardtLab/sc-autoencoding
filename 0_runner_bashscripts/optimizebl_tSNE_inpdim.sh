@@ -46,11 +46,11 @@ for limit in ${numbers[@]}; do
 	printf "\n\nDimension reduction done, now proceding with evaluation\n\n" |& tee -a $logfile
 
 	(
-	python ../4_Evaluation/sca_kmcluster.py --title "${limit[$i]}inDs" --k 10 --dimensions 0 --verbosity 0 --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${folderclust} |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title "${limit[$i]}inDs" --k 10 --limit_dims 0 --verbosity 0 --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${folderclust} |& tee -a $logfile
 	) # & (
-	# python ../4_Evaluation/sca_randforest.py --title "${limit[$i]}inDs" --n_trees $ntrees --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${foldertree} |& tee -a $logfile
-	# )
-	# wait
+	#python ../4_Evaluation/sca_randforest.py --title "${limit[$i]}inDs" --n_trees $ntrees --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${foldertree} |& tee -a $logfile
+	#)
+	wait
 	) &
 
 
