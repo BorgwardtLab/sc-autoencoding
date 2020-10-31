@@ -39,11 +39,11 @@ echo $loss
 	(
 	python ../4_Evaluation/sca_kmcluster.py --title ${loss} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${loss}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
-	python ../4_Evaluation/sca_randforest.py --title ${loss} --n_trees $ntrees --input_dir "${outdir}bca_data/${loss}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_randforest.py --title ${loss} --n_trees 100 --input_dir "${outdir}bca_data/${loss}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	)
 	
 	
-	) &
+	)
 
 
 done
