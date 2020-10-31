@@ -62,16 +62,18 @@ from datetime import datetime
 
 
 
-randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
+
 
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
 
+# dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/dbscan/"
 
-# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/kmcluster/"
+kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
+
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
-
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
 
 # %%
@@ -125,9 +127,10 @@ if not dbscan_dir == "skip":
         names = new_names
         dataframes = ordered
         
-        
-        
     outliers = []
+    
+    
+
     
 ##### remove outlier line
     dataframes_outliers = dataframes.copy()
@@ -237,6 +240,32 @@ if not dbscan_dir == "skip":
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
+
+
+
+
+
+    try:
+        axs[1].plot(names, nmi_scores, color = "b", linestyle ="-", marker = "o")
+        axs[1].legend(labels = ["F1-score","NMI"])
+    except:
+        print("no NMI info available")
+        pass
+
+    axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D")
+    axs[1].legend(labels = ["F1-score","NMI"])
+
+
+
+
+
+
+
+
+
+
+
+
 
     # baprlot num_clusters
     #axs[2].set_yscale("log")
@@ -500,27 +529,25 @@ if not kmclust_dir == "skip":
     axs[0].tick_params(labelbottom = True)
     
     # lineplot
-    axs[1].plot(names, f1weight, "b")
+    axs[1].plot(names, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
-        axs[1].plot(names, nmi_scores, "r")
+        axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
         axs[1].legend(labels = ["F1-score","NMI"])
     except:
         print("no NMI info available")
         pass
 
-    axs[1].plot(names, nmi_scores, "r")
-    axs[1].legend(labels = ["F1-score","NMI"])
 
     # baprlot num_unique CT
     #axs[2].set_yscale("log")
 
     diff = np.array(num_ct)-np.array(num_ct_low)
-    axs[2].bar(x = names, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1)
-    axs[2].bar(x = names, height = diff, width = 0.45)    
-    axs[2].bar(x = names, height = num_ct_low, bottom = diff, width = 0.45, color = "red")
+    axs[2].bar(x = names, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
+    axs[2].bar(x = names, height = diff, width = 0.45)                                      # the non-low ones
+    axs[2].bar(x = names, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
     
     
     #handl, leggy = axs[2].get_legend_handles_labels()

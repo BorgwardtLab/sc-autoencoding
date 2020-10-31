@@ -67,7 +67,7 @@ python ../4_Evaluation/visualize.py  --title "UMAP"  --output_dir ${output}${fol
 wait
 
 end=`date +%s`
-printf "\ntSNE optimization took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
+printf "\nUMAP optimization took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
 printf "\n################### " |& tee -a $logfile
 echo -n DONE: `date` |& tee -a $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" |& tee -a $logfile

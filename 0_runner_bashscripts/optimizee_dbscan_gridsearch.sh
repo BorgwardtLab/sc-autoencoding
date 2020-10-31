@@ -6,10 +6,10 @@ rm $filename
 
 
 
-#for epsearch
-#python ../5_Optimization/dbscan_epssearch_knn.py --input_dir "../inputs/data/preprocessed_data/" --outputplot_dir "../outputs/optimization/dbscan_epsearch/" |& tee -a $filename
-date
-echo "finished the epsearch"
+# for epsearch
+# python ../5_Optimization/dbscan_epssearch_knn.py --input_dir "../inputs/data/preprocessed_data/" --outputplot_dir "../outputs/optimization/dbscan_epsearch/" |& tee -a $filename
+# date
+# echo "finished the epsearch"
 
 
 #gridsearch

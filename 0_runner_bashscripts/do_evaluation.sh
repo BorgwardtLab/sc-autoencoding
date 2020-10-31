@@ -123,9 +123,9 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 tech=dbscan
 output_dir=../outputs/$tech/
 
-# 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
-minpts=(3 	3 	3 	3 	3 	3 	3 	3 	3)
-eps=(	20 	20 	20 	20 	20 	20 	20 	20 	20)
+# 		PCA		ICA		LSA		tSE		UMP		ori		DCA		BCA		SCA )
+minpts=(3 		3 		3 		3 		3 		3 		3 		3 		3)
+eps=(	30 		0.03 	28 		0.45 	0.07 	35 		4.6 	17 		2.1)
 
 # sanity check to see if we have the right number of parameters supplied.
 if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 
@@ -166,7 +166,7 @@ else
 	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" |& tee -a $errfile
 	echo "" &>> $errfile
 fi
-) &
+)
 
 
 
