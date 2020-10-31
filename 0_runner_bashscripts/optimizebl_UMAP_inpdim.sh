@@ -14,7 +14,8 @@ mkdir logs
 PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
-numbers=(003 005 010 020 030 045 060 080 100)
+numbers=(015 016 017 018 019 021 022 023 024 025 028 035)
+#numbers=(003 005 010 020 030 045 060 080 100)
 #numbers=(2 3 4 5 6 7 8 9 10 12 14 16 18 20 24 28 32 36 40 45 50 55 60 65 70 75 80 85 90 95 100)
 
 logfile="logs/5_optimize_UMAP_inDs.log"
