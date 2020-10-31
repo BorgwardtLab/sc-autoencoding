@@ -42,22 +42,6 @@ randfor_dir = args.random_forest_results
 
 
 
-
-
-args.general_input = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/"
-
-
-
-# randfor_dir = "../outputs/random_forest/"
-#kmclust_dir = "../outputs/kmcluster/"
-#dbscan_dir = "../outputs/dbscan/"
-
-# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
-
-
-
-
 if args.general_input != "skip":
     dbscan_dir = args.general_input + "dbscan/"
     kmclust_dir = args.general_input + "kmcluster/"
@@ -74,24 +58,31 @@ import glob
 import re
 import numpy as np
 import seaborn as sns
+from datetime import datetime
 
+
+
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
 
 custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "original_data"]
 
 
-
+# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/kmcluster/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 
 
 
 # %%
 if not dbscan_dir == "skip":
+    print(datetime.now().strftime("%H:%M:%S>"), "Visualizing DBScan...")
     names = []
     dataframes = []
     
     for filepath in sorted(glob.iglob(dbscan_dir + "dataframes/dbscan_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
-        search = re.search("dbscan_(.*).tsv", filepath)
+        search = re.search("dataframes/dbscan_(.*?).tsv", filepath)
         if search:
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
@@ -371,7 +362,7 @@ else:
     
 # %%
 if not kmclust_dir == "skip":
-    
+    print(datetime.now().strftime("%H:%M:%S>"), "Visualizing kmcluster...")
     names = []
     dataframes = []
     
@@ -664,7 +655,7 @@ else:
 
 # %%
 if not randfor_dir == "skip":
-    
+    print(datetime.now().strftime("%H:%M:%S>"), "Visualizing Random Forest...")
     #filelist = []
     names = []
     accuracies = pd.DataFrame(index = ["Split_1", "Split_2", "Split_3"])
@@ -675,7 +666,7 @@ if not randfor_dir == "skip":
         #print(filepath)
         #filelist.append(filepath)
         
-        search = re.search("randomforest_(.*).tsv", filepath)
+        search = re.search("dataframes/randomforest_(.*?).tsv", filepath)
         if search:
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
@@ -745,7 +736,7 @@ if not randfor_dir == "skip":
         stde.append(np.std(values, ddof = 1))
                     
      
-    plt.figure(figsize = [1*accuracies.shape[1], 6.4])
+    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.2])
     plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
     plt.xticks(rotation = 45)
     plt.title("Random Forests" + titleext)
@@ -760,12 +751,6 @@ if not randfor_dir == "skip":
     
 
 
-
-
-
-
-
-
 else: 
     print("random_forest was skipped")
      
@@ -774,27 +759,7 @@ else:
 
 
 
-
-print("Visualizer has finished successfully")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(datetime.now().strftime("%H:%M:%S>"), "Visualizer has finished successfully")
 
 
 
