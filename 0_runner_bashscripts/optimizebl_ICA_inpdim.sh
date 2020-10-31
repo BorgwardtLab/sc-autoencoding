@@ -14,7 +14,7 @@ PCA_output="../inputs/baseline_data/scaPCA_output/"
 output="../outputs/optimization/"
 
 
-numbers=(3 5 8 12 15 20 30 40 50 60 85 100)
+numbers=(003 005 008 012 015 020 030 040 050 060 085 100)
 #numbers=(2 10 100)
 #numbers=(2 3 4 5 6 7 8 9 10 12 14 16 18 20 24 28 32 36 40 45 50 55 60 65 70 75 80 85 90 95 100)
 

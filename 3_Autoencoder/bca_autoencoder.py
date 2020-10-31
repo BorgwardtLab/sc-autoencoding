@@ -264,7 +264,7 @@ if split == True:
         
         
         autoencoder.fit(traindata, traindata,
-                        epochs=1000,
+                        epochs=500,
                         batch_size=256,
                         shuffle=True,
                         callbacks = callbacks,
@@ -488,7 +488,7 @@ if nosplit == True:
     
     
     autoencoder.fit(data, data,
-                    epochs=1000,
+                    epochs=500,
                     batch_size=256,
                     shuffle=True,
                     callbacks = callbacks,
