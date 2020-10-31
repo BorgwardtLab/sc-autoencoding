@@ -42,9 +42,7 @@ echo $loss
 	python ../4_Evaluation/sca_randforest.py --title ${loss} --n_trees 100 --input_dir "${outdir}bca_data/${loss}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	)
 	
-	
 	)
-
 
 done
 wait

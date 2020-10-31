@@ -27,8 +27,7 @@ printf " ###################\n##################################################
 
 (
 for optimizer in ${optimizers[@]}; do
-echo $loss
-
+echo $optimizer
 	(
 	python ../3_Autoencoder/bca_autoencoder.py --mode complete --loss poisson --activation relu --optimizer $optimizer --input_dir $preprocessed_ctdata --output_dir "${outdir}bca_data/${loss}/" --outputplot_dir "${outdir}bca_data/${loss}/"  |& tee -a $logfile
 	
@@ -37,11 +36,7 @@ echo $loss
 	) & (
 	python ../4_Evaluation/sca_randforest.py --title ${loss} --n_trees 100 --input_dir "${outdir}bca_data/${loss}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	)
-	
-	
 	)
-
-
 done
 wait
 )
