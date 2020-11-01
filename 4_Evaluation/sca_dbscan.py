@@ -203,6 +203,8 @@ panda["Recall"] = recall_per_cluster
 panda["F1-score"] = f1score
 panda["NMI"] = nmi
 panda["Most common label"] = clusterlabel_original
+panda["eps"] = args.eps
+panda["minpts"] = args.min_samples
 
 
 
