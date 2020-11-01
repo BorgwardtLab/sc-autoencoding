@@ -28,7 +28,7 @@ foldername="tsne_nimput/"
 folderdata="tsne_data/"
 folderclust="tsne_kmclresult/"
 foldertree="tsne_result/"
-
+folderdbs="ica_dbscanresults/"
 
 printf "\n\n" #for the logtxt
 printf "############################################################################\n################### " &>> $logfile
@@ -50,7 +50,9 @@ for limit in ${numbers[@]}; do
 
 	(
 	python ../4_Evaluation/sca_kmcluster.py --title "${limit[$i]}inDs" --k 10 --limit_dims 0 --verbosity 0 --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${folderclust} |& tee -a $logfile
-	) # & (
+	)  & (
+	python ../4_Evaluation/sca_dbscan.py  --title "${limit[$i]}inDs" --verbosity 0 --eps 17 --min_samples 3 --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${folderdbs} |& tee -a $logfile
+	)# & (
 	#python ../4_Evaluation/sca_randforest.py --title "${limit[$i]}inDs" --n_trees $ntrees --input_dir "${output}${foldername}${folderdata}${limit}/" --output_dir ${output}${foldername}${foldertree} |& tee -a $logfile
 	#)
 	wait
@@ -67,9 +69,8 @@ echo "I got here"
 # python ../4_Evaluation/visualize.py  --title "tSNE"  --output_dir ${output}${foldername} --random_forest_results ${output}${foldername}${foldertree} |& tee -a $logfile
 # ) & 
 (
-python ../4_Evaluation/visualize.py  --title "tSNE"  --output_dir ${output}${foldername} --kmcluster_results ${output}${foldername}${folderclust} |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title "ICA"  --output_dir ${output}${foldername} --kmcluster_results ${output}${foldername}${folderclust} --dbscan_results ${output}${foldername}${folderdbs} |& tee -a $logfile
 )
-
 wait
 
 end=`date +%s`
