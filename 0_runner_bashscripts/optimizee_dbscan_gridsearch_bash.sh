@@ -7,7 +7,7 @@ timestamps=$logfile
 
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
-printf "[optimize_nPCA.sh ] "
+printf "[dbscan_gridsearch_bash.sh ] "
 conda env list	# it should be visible in the log-textfile. I'm not saving it to anything else. 
 
 
@@ -44,13 +44,16 @@ for mp in ${minpts[@]}; do
 		(
 		python ../4_Evaluation/sca_dbscan.py  --title "mp${mp}_ep${ep}" --verbosity 0 --eps $ep --min_samples $mp --input_dir $pcadir --output_dir $output_dir |& tee -a $logfile
 		) &
-	)
+	done
+	wait
+	) &
 done
 
 wait 
 )
 
-
+echo "now i should stop the other shit" |& tee -a $logfile
+echo `date` |& tee -a $logfile
 
 
 end=`date +%s`
