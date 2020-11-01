@@ -258,7 +258,7 @@ if split == True:
         
         
         # Compile
-        autoencoder.compile(optimizer=args.optimizer, loss = "poisson")
+        autoencoder.compile(optimizer=args.optimizer, loss = loss)
         
         
         
@@ -472,7 +472,7 @@ if nosplit == True:
     
     
     # Compile
-    autoencoder.compile(optimizer=args.optimizer, loss = "poisson")
+    autoencoder.compile(optimizer=args.optimizer, loss = loss)
     
     
     
