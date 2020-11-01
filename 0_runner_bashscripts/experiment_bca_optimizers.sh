@@ -30,12 +30,12 @@ for optimizer in ${optimizers[@]}; do
 #remember to change filenames as well
 echo $optimizer
 	(
-	python ../3_Autoencoder/bca_autoencoder.py --mode complete --loss poisson --activation relu --optimizer $optimizer --input_dir $preprocessed_ctdata --output_dir "${outdir}bca_data/${optimizers}/" --outputplot_dir "${outdir}bca_data/${optimizers}/"  |& tee -a $logfile
+	python ../3_Autoencoder/bca_autoencoder.py --mode complete --loss poisson --activation relu --optimizer $optimizer --input_dir $preprocessed_ctdata --output_dir "${outdir}bca_data/${optimizer}/" --outputplot_dir "${outdir}bca_data/${optimizer}/"  |& tee -a $logfile
 	
 	(
-	python ../4_Evaluation/sca_kmcluster.py --title ${optimizers} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${optimizers}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${optimizer} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
-	python ../4_Evaluation/sca_randforest.py --title ${optimizers} --n_trees 100 --input_dir "${outdir}bca_data/${optimizers}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_randforest.py --title ${optimizer} --n_trees 100 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	)
 	wait
 	)
