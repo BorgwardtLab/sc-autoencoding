@@ -14,7 +14,7 @@ outdir="../outputs/experiments/activation/"
 
 
 activations=("relu" "sigmoid" "mixed1" "mixed2")
-activations=("relu" "sigmoid")
+#activations=("relu" "sigmoid")
 
 
 
