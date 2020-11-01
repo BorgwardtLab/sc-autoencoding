@@ -13,8 +13,8 @@ preprocessed_ctdata="../inputs/data/preprocessed_data_autoencoder/"
 outdir="../outputs/experiments/activation/"
 
 
-activations=("relu", "sigmoid", "mixed1", "mixed2")
-activations=("relu", "sigmoid")
+activations=("relu" "sigmoid" "mixed1" "mixed2")
+activations=("relu" "sigmoid")
 
 
 

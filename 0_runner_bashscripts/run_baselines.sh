@@ -57,7 +57,7 @@ outputplot="../outputs/baselines/"
 		start=`date +%s`
 
 
-		python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --input_dims 30 --verbosity 3 --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} &>> $logfile #|& tee -a $logfile
+		python ../2_Baseline_Scripts/sca_tSNE.py --mode nosplit --num_components 2 --input_dims 17 --verbosity 3 --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} &>> $logfile #|& tee -a $logfile
 
 		end=`date +%s`
 		printf "\ntSNE took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
@@ -80,7 +80,7 @@ outputplot="../outputs/baselines/"
 		start=`date +%s`
 
 
-		python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --input_dims 30 --verbosity 0 --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
+		python ../2_Baseline_Scripts/sca_UMAP.py --mode complete --num_components 2 --input_dims 20 --verbosity 0 --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
 		end=`date +%s`
