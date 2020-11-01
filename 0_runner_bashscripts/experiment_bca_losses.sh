@@ -16,7 +16,7 @@ outdir="../outputs/experiments/losses/"
 
 #losses=("poisson_loss" "poisson" "mse" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld" "cosine_proximity")
 #losses=("poisson" "mse" "poisson_loss")
-losses=("mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld" "cosine_proximity")
+losses=("poisson" "mse" "poisson_loss" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld" "cosine_proximity")
 
 
 
