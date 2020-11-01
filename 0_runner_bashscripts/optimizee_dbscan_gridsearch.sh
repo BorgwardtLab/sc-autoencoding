@@ -1,6 +1,6 @@
 
 mkdir logs
-filename=logs/log_optimize_DBScan_gridsearch.log
+filename=logs/5_optimize_DBScan_gridsearch.log
 
 rm $filename
 
