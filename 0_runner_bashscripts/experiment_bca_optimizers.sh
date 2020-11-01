@@ -14,7 +14,7 @@ outdir="../outputs/experiments/optimizer/"
 
 
 optimizers=("SGD" "RMSprop" "Adam" "Adadelta" "Adagrad" "Adamax" "Nadam" "Ftrl")
-optimizers=("SGD" "RMSprop" "Adam")
+#optimizers=("SGD" "RMSprop" "Adam")
 
 
 
