@@ -11,13 +11,14 @@ Created on Wed Oct  7 17:54:20 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "a very simple autoencoder")  
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data_autoencoder/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../../inputs/data/preprocessed_data_autoencoder/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/autoencoder_data/BCA_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/autoencoder_data/BCA/")
 parser.add_argument("--loss", default = "poisson", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--activation", default = "relu", type = str, choices = ["relu", "sigmoid", "mixed1", "mixed2"])
 parser.add_argument("--optimizer", default = "Adam", type = str, choices = ["SGD", "RMSprop", "Adam", "Adadelta","Adagrad","Adamax","Nadam","Ftrl"])
 parser.add_argument("--mode", default = "complete", help="chose traintest-split, nosplit or both", choices=['complete','split','nosplit'])
+parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch")
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
 args = parser.parse_args()
 
@@ -234,9 +235,10 @@ if split == True:
         
         
         # layers [IF YOU EXPERIMENT WITH THIS, REMEMBER THERE IS A SECOND ONE IN THIS SCRIPT]
-        encoded = layers.Dense(64, activation=act1)(input_data)
-        encoded = layers.Dense(32, activation=act2)(encoded)
-        decoded = layers.Dense(64, activation=act2)(encoded)
+        encoded = layers.Dense(88, activation=act1)(input_data)
+        encoded = layers.Dense(51, activation=act1)(encoded)
+        encoded = layers.Dense(32, activation=act1)(encoded)
+        decoded = layers.Dense(45, activation=act1)(encoded)
         decoded = layers.Dense(numfeatures[0], activation=act1)(decoded)
         
         
@@ -258,7 +260,7 @@ if split == True:
         
         
         # Compile
-        autoencoder.compile(optimizer=args.optimizer, loss = "poisson")
+        autoencoder.compile(optimizer=args.optimizer, loss = loss)
         
         
         
@@ -293,7 +295,7 @@ if split == True:
                         callbacks = callbacks,
                         #validation_data=(testdata, testdata))
                         validation_split = 0.1,
-                        verbose=0) # remember to change the other one too if you change this one
+                        verbose=args.verbose) # remember to change the other one too if you change this one
         
         history = autoencoder.history
         
@@ -452,9 +454,10 @@ if nosplit == True:
     
     
     # layers [IF YOU EXPERIMENT WITH THIS, REMEMBER THERE IS A SECOND ONE IN THIS SCRIPT]
-    encoded = layers.Dense(64, activation=act1)(input_data)
-    encoded = layers.Dense(32, activation=act2)(encoded)
-    decoded = layers.Dense(64, activation=act2)(encoded)
+    encoded = layers.Dense(88, activation=act1)(input_data)
+    encoded = layers.Dense(51, activation=act1)(encoded)
+    encoded = layers.Dense(32, activation=act1)(encoded)
+    decoded = layers.Dense(45, activation=act1)(encoded)
     decoded = layers.Dense(numfeatures[0], activation=act1)(decoded)
     
     
@@ -472,7 +475,7 @@ if nosplit == True:
     
     
     # Compile
-    autoencoder.compile(optimizer=args.optimizer, loss = "poisson")
+    autoencoder.compile(optimizer=args.optimizer, loss = loss)
     
     
     
@@ -518,7 +521,7 @@ if nosplit == True:
                     callbacks = callbacks,
                     #validation_data=(testdata, testdata))
                     validation_split = 0.1,
-                    verbose=0)     # remember to change the other one too if you change this one
+                    verbose=args.verbose)     # remember to change the other one too if you change this one
     
     history = autoencoder.history
     

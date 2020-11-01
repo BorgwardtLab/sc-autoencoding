@@ -51,10 +51,10 @@ output4=$(python ../3_Autoencoder/bca_autoencoder.py --mode split --splitnumber 
 wait
 
 
-printf "%s" "$output1" &>> $logfile
-printf "%s" "$output2" &>> $logfile
-printf "%s" "$output3" &>> $logfile
-printf "%s" "$output4" &>> $logfile
+printf "%s" "$output1" |& tee -a $logfile 
+printf "%s" "$output2" |& tee -a $logfile 
+printf "%s" "$output3" |& tee -a $logfile 
+printf "%s" "$output4" |& tee -a $logfile 
 
 echo "BCA is done" |& tee -a $logfile
 echo "(accept this as replacement for the actual stdout)" #to avoid cluttering the logtxt from analyse_all.sh

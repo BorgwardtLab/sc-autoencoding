@@ -11,7 +11,7 @@ Created on Wed Oct  7 17:54:20 2020
 import argparse
 
 parser = argparse.ArgumentParser(description = "a very simple autoencoder")  
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/preprocessed_data_autoencoder/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../../inputs/data/preprocessed_data_autoencoder/")
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/autoencoder_data/BCA_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/autoencoder_data/BCA/")
 parser.add_argument("--loss", default = "poisson", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
@@ -159,6 +159,7 @@ if split == True:
     num_splits = 0
     cancel = False
     directory = source_input_dir + "split_" + str(num_splits + 1)
+    print(directory)
     if os.path.isdir(directory) == False:
         print("ERROR: NO SPLITS DETECTED")
         sys.exit()
@@ -235,9 +236,9 @@ if split == True:
         
         
         # layers [IF YOU EXPERIMENT WITH THIS, REMEMBER THERE IS A SECOND ONE IN THIS SCRIPT]
-        encoded = layers.Dense(64, activation=act1)(input_data)
+        encoded = layers.Dense(256, activation=act1)(input_data)
         encoded = layers.Dense(32, activation=act2)(encoded)
-        decoded = layers.Dense(64, activation=act2)(encoded)
+        decoded = layers.Dense(256, activation=act2)(encoded)
         decoded = layers.Dense(numfeatures[0], activation=act1)(decoded)
         
         
@@ -453,11 +454,11 @@ if nosplit == True:
     
     
     # layers [IF YOU EXPERIMENT WITH THIS, REMEMBER THERE IS A SECOND ONE IN THIS SCRIPT]
-    encoded = layers.Dense(64, activation=act1)(input_data)
+    encoded = layers.Dense(256, activation=act1)(input_data)
     encoded = layers.Dense(32, activation=act2)(encoded)
-    decoded = layers.Dense(64, activation=act2)(encoded)
+    decoded = layers.Dense(256, activation=act2)(encoded)
     decoded = layers.Dense(numfeatures[0], activation=act1)(decoded)
-    
+
     
     
     # models

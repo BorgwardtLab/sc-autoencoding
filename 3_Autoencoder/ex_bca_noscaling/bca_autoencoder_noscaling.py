@@ -281,10 +281,11 @@ if split == True:
         
         # normalize and scale the data. 
         
-        scaler = StandardScaler()
-        scaler.fit(traindata)
-        traindata = scaler.transform(traindata)
-        testdata = scaler.transform(testdata)
+        
+        # scaler = StandardScaler()
+        # scaler.fit(traindata)
+        # traindata = scaler.transform(traindata)
+        # testdata = scaler.transform(testdata)
         
         
         autoencoder.fit(traindata, traindata,
@@ -506,9 +507,9 @@ if nosplit == True:
     idk what makes sense here lmao lmao
     '''
     
-    scaler = StandardScaler()
-    scaler.fit(data)
-    data = scaler.transform(data)
+    # scaler = StandardScaler()
+    # scaler.fit(data)
+    # data = scaler.transform(data)
     
     
     

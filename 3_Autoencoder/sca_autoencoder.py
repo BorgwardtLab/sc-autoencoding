@@ -14,6 +14,9 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
+#parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
+# whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
+
 args = parser.parse_args()
 
 
@@ -463,7 +466,8 @@ def train(adata, network,
           batch_size=32, 
           clip_grad=5.,                 # todo find out effect on optimizer
           validation_split=0.1,     # the fraction of data, that is validation data (on which the loss and model metrics are calculated)
-          verbose=False, 
+          verbose=False,
+          verbosity = 2,    # added by me later, to hide progres bar
           ):
     
     
@@ -534,7 +538,7 @@ def train(adata, network,
                       shuffle=True,      # shuffle training data before each epoch
                       callbacks=callbacks, # for early stopping / reduce lr
                       validation_split=validation_split, # the fraction of data, that is validation data (on which the loss and model metrics are calculated)
-                      verbose=verbose,
+                      verbose=verbosity,
                       #**kwds
                       )
 

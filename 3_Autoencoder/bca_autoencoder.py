@@ -19,6 +19,8 @@ parser.add_argument("--activation", default = "relu", type = str, choices = ["re
 parser.add_argument("--optimizer", default = "Adam", type = str, choices = ["SGD", "RMSprop", "Adam", "Adadelta","Adagrad","Adamax","Nadam","Ftrl"])
 parser.add_argument("--mode", default = "complete", help="chose traintest-split, nosplit or both", choices=['complete','split','nosplit'])
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
+parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch")
+
 args = parser.parse_args()
 
 
@@ -293,7 +295,7 @@ if split == True:
                         callbacks = callbacks,
                         #validation_data=(testdata, testdata))
                         validation_split = 0.1,
-                        verbose=0) # remember to change the other one too if you change this one
+                        verbose=args.verbose) # remember to change the other one too if you change this one
         
         history = autoencoder.history
         
@@ -518,7 +520,7 @@ if nosplit == True:
                     callbacks = callbacks,
                     #validation_data=(testdata, testdata))
                     validation_split = 0.1,
-                    verbose=0)     # remember to change the other one too if you change this one
+                    verbose=args.verbose)     # remember to change the other one too if you change this one
     
     history = autoencoder.history
     
