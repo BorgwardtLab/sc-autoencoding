@@ -36,6 +36,8 @@ echo $optimizer
 	python ../4_Evaluation/sca_kmcluster.py --title ${optimizer} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
 	python ../4_Evaluation/sca_randforest.py --title ${optimizer} --n_trees 100 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
+	) & (
+	python ../4_Evaluation/sca_dbscan.py  --title ${optimizer} --verbosity 0 --eps 17 --min_samples 3 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}dbscan_result/" |& tee -a $logfile
 	)
 	wait
 	)
@@ -45,7 +47,7 @@ wait
 
 
 (
-python ../4_Evaluation/visualize.py  --title "BCAopti"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title "BCAopti"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
 )
 
 
