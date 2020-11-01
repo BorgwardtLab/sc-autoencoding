@@ -23,7 +23,7 @@ from sklearn.metrics.cluster import normalized_mutual_info_score
 
 
 
-print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_dbscan.py")
+
 
 
 try:
@@ -46,6 +46,11 @@ parser.add_argument("-t","--title", help="title that will be written into the ou
 parser.add_argument("-e","--eps", default = 7, help="The maximum distance between two samples for one to be considered as in the neighborhood of the other.", type = float)
 parser.add_argument("-m","--min_samples", default = 5, help="The number of samples (or total weight) in a neighborhood for a point to be considered as a core point. This includes the point itself.", type = int)
 args = parser.parse_args() #required
+
+
+
+
+print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_dbscan.py with ep{:f} & minpts {:d}".format(args.eps, args.min_samples))
 
 
 
