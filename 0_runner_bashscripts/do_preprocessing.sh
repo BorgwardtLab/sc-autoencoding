@@ -30,8 +30,6 @@ printf " ####################\n#################################################
 
 
 
-
-
 (
 logfile="logs/1_preprocessing.log"
 start=`date +%s`
