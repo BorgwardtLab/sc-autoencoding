@@ -5,6 +5,11 @@ Created on Tue Oct 13 14:20:07 2020
 @author: Mike Toreno II
 """
 
+try:
+    os.chdir(os.path.dirname(sys.argv[0]))
+except:
+    pass
+
 
 
 import argparse
@@ -69,7 +74,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 # dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/dbscan/"
 
-kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
+# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
@@ -152,7 +157,10 @@ if not dbscan_dir == "skip":
 
     # boxplot
     redundancy_frame = pd.DataFrame()
+    
+    # lineplots
     f1weight = []
+    nmi_scores = []
     
     # pieplot
     sizes_pie = []
@@ -181,7 +189,15 @@ if not dbscan_dir == "skip":
         new_df = pd.concat([df1, df2])
         redundancy_frame = pd.concat([redundancy_frame, new_df])
         
-        # F1 weighted
+        # lineplots
+        try:
+            nmiscore = dataframes[i].loc[:,"NMI"][0]
+            nmiscore = nmiscore[~np.isnan(nmiscore)]
+            nmi_scores.append(nmiscore)
+        except:
+            pass
+    
+    
         fscores = np.array(dataframes[i].loc[:,"F1-score"])
         fscores = fscores[~np.isnan(fscores)]               # filter out Nan
         sizes = np.array(dataframes[i].loc[:,"Size"])
@@ -236,34 +252,16 @@ if not dbscan_dir == "skip":
     
     
     # lineplot
-    axs[1].plot(names, f1weight, "b")
+    axs[1].plot(names, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
-
-
-
-
-
     try:
-        axs[1].plot(names, nmi_scores, color = "b", linestyle ="-", marker = "o")
+        axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
         axs[1].legend(labels = ["F1-score","NMI"])
     except:
         print("no NMI info available")
         pass
-
-    axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D")
-    axs[1].legend(labels = ["F1-score","NMI"])
-
-
-
-
-
-
-
-
-
-
 
 
 

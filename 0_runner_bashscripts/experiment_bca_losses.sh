@@ -13,10 +13,10 @@ preprocessed_ctdata="../inputs/data/preprocessed_data_autoencoder/"
 outdir="../outputs/experiments/losses/"
 
 
-
-#losses=("poisson_loss" "poisson" "mse" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld" "cosine_proximity")
+"cosine_proximity" "categorical_crossentropy"
+#losses=("poisson_loss" "poisson" "mse" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld")
 #losses=("poisson" "mse" "poisson_loss")
-losses=("poisson" "mse" "poisson_loss" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy" "categorical_crossentropy" "kld" "cosine_proximity")
+losses=("poisson" "mse" "poisson_loss" "mae" "mape" "msle" "squared_hinge" "hinge" "binary_crossentropy"  "kld")
 
 
 
