@@ -7,7 +7,6 @@ Created on Wed Oct  7 17:54:20 2020
 
 
 
-
 import argparse
 
 parser = argparse.ArgumentParser(description = "a very simple autoencoder")  
