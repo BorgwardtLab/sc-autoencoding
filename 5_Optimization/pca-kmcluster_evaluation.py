@@ -5,9 +5,6 @@ Created on Sat Jul 18 20:03:52 2020
 @author: Mike Toreno II
 """
 
-
-
-
 import argparse
 
 
@@ -19,11 +16,6 @@ parser.add_argument("-k", "--num_kmclusters", default = 5, help= "number of k fo
 parser.add_argument("--reps", default = 100, help= "how many times you want kmcluster to be repeated for each value of num_components", type = int)
 
 args = parser.parse_args() #required
-
-
-
-
-
 
 
 
