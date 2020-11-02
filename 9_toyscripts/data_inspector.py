@@ -86,16 +86,20 @@ bin_cells = data.getnnz(axis = 1) # stores the number of genes detected in each 
 
 
 
-plt.figure(figsize = [8,6])
-plt.title("Number of cells in which a gene was detected. (Total: " + str(len(bin_genes) - np.count_nonzero(bin_genes)) + " zero-genes)")
+plt.figure()
+plt.title("Histogram: How many cells express each gene?\n (Total: " + str(len(bin_genes) - np.count_nonzero(bin_genes)) + " zero-genes)")
 plt.hist(bin_genes, log = True, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of cells cells a gene is expressed by")
 plt.show()
 plt.savefig(outputplot_dir + "/genesplot.png")
 
 
-plt.figure(figsize = [8,6])
-plt.title("Number of genes that were detected per cell. (Total: " + str(len(bin_cells) - np.count_nonzero(bin_cells)) + " zero-cells)")
+plt.figure()
+plt.title("Histogram: How many genes  were detected per cell\n (Total: " + str(len(bin_cells) - np.count_nonzero(bin_cells)) + " zero-cells)")
 plt.hist(bin_cells, log = True, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of genes detected per cell")
 plt.show()
 plt.savefig(outputplot_dir + "/cellplot.png")
 
