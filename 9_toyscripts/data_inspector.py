@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 import sys
 import argparse
-
+import pandas as pd
 
 
 try:
@@ -22,7 +22,7 @@ except:
 
 
 parser = argparse.ArgumentParser(description = "analyses the input data")  #required
-parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/raw_input_combined/filtered_matrices_mex/hg19/")
+parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/data/raw_input_combined/filtered_matrices_mex/hg19/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/inspect_data")
 args = parser.parse_args() #required
 
@@ -43,13 +43,13 @@ coomatrix = scipy.io.mmread(mtx_file)
 data = np.transpose(coomatrix)
 
 
-### Get Labels
-print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
-lbl_file = input_path + "celltype_labels.tsv"
-file = open(lbl_file, "r")
-labels = file.read().split("\n")
-file.close()
-labels.remove("") #last, empty line is also removed
+# ### Get Labels
+# print(datetime.now().strftime("%H:%M:%S>"), "reading labels...")
+# lbl_file = input_path + "celltype_labels.tsv"
+# file = open(lbl_file, "r")
+# labels = file.read().split("\n")
+# file.close()
+# labels.remove("") #last, empty line is also removed
 
 
 # load genes (for last task, finding most important genes)
@@ -104,14 +104,19 @@ plt.savefig(outputplot_dir + "/cellplot.png")
 
 # %%
 
+print(data.shape)
 
 
 
+# %% reread barcodes in order to count count per celltypes lmao
 
 
+barcodes2 = pd.read_csv(input_path + "barcodes.tsv", delimiter = "\t", header = None)
+celltype_counts = np.array(barcodes2.iloc[:,1])
+unique, counts = np.unique(celltype_counts, return_counts=True)
 
-
-
-
-
-
+for i in range(len(unique)):
+    print(unique[i])
+    print(counts[i])
+    print()
+    
