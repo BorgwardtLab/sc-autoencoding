@@ -21,8 +21,8 @@ output_dir="../outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/
 minpts=(002 003 004 005 008 010 020 060 200)
 eps=(005 010 015 020 025 030 035 040 050 100 300)
 
-minpts=(002 003)
-eps=(018 019)
+#minpts=(002 003)
+#eps=(018 019)
 
 
 
@@ -54,6 +54,17 @@ wait
 
 echo "now i should stop the other shit" |& tee -a $logfile
 echo `date` |& tee -a $logfile
+
+
+
+
+python ../5_Optimization/dbscan_gridsearch_visualizer.py --input_dir $output_dir --output_dir $output_dir |& tee -a $logfile
+
+
+
+
+
+
 
 
 end=`date +%s`

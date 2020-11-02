@@ -186,7 +186,7 @@ plt.savefig(output_dir + "F1_scores.png")
 fig, ax = plt.subplots(1,1)
 
 plt.title("Outlier Fractions per combination\n(axis NOT evenly spaced)")
-img = ax.imshow(outlier_fractions, interpolation = "bilinear", origin = "lower", cmap = "jet")
+img = ax.imshow(outlier_fractions, interpolation = "bilinear", origin = "lower", cmap = "RdYlGn_r")
 fig.colorbar(img)
 
 ax.set_xlabel("minpts")
