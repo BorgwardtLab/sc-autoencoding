@@ -10,7 +10,7 @@ mkdir logs
 logfile="logs/6_exBCA_layerstructures.log"
 
 preprocessed_ctdata="../../inputs/data/preprocessed_data_autoencoder/"
-outdir="../../outputs/experiment/layerstructure/"
+outdir="../../outputs/experiments/layerstructure/"
 
 
 autoencoders=(asymmetric default extraconstant inverted large larger short smaller)

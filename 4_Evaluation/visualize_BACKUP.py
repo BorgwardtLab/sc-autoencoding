@@ -5,10 +5,6 @@ Created on Tue Oct 13 14:20:07 2020
 @author: Mike Toreno II
 """
 
-try:
-    os.chdir(os.path.dirname(sys.argv[0]))
-except:
-    pass
 
 
 
@@ -47,6 +43,7 @@ randfor_dir = args.random_forest_results
 
 
 
+
 if args.general_input != "skip":
     dbscan_dir = args.general_input + "dbscan/"
     kmclust_dir = args.general_input + "kmcluster/"
@@ -81,11 +78,24 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
 
+
+kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/cluster_result/"
+dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/dbscan_result/"
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/randomforest_result/"
+
+
+
+output_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/"
+
+
+
 # %%
 if not dbscan_dir == "skip":
     print(datetime.now().strftime("%H:%M:%S>"), "Visualizing DBScan...")
     names = []
     dataframes = []
+
+    os.listdir(dbscan_dir)
     
     for filepath in sorted(glob.iglob(dbscan_dir + "dataframes/dbscan_*.tsv")):
         filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash

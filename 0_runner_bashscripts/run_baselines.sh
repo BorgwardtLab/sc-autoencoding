@@ -103,7 +103,7 @@ outputplot="../outputs/baselines/"
 		printf " ###################\n############################################################################\n\n" &>> $logfile
 		start=`date +%s`
 
-		python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --input_dims 30 --mode complete --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
+		python ../2_Baseline_Scripts/sca_ICA.py --num_components 100 --input_dims 20 --mode complete --input_dir $PCA_output --output_dir ${output}${foldername} --outputplot_dir ${outputplot}${foldername} |& tee -a $logfile
 
 
 

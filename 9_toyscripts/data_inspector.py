@@ -5,6 +5,7 @@ Created on Sat Jul  4 16:13:54 2020
 @author: Mike Toreno II
 """
 
+
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,10 +29,15 @@ args = parser.parse_args() #required
 
 
 
+
+
+
 input_path = args.input_dir
 outputplot_dir = args.outputplot_dir
 
 
+
+input_path = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/data/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 # %% Read Input data
