@@ -112,6 +112,30 @@ plt.savefig(outputplot_dir + "/cellplot.png")
 
 
 
+# plt.figure()
+# plt.title("Histogram: How many cells express each gene?\n (Total: " + str(len(bin_genes) - np.count_nonzero(bin_genes)) + " zero-genes)")
+# plt.hist(bin_genes, log = True, bins = 100, density = True, label = "Log", alpha = 0.5)
+# plt.hist(bin_genes, log = False, bins = 100, density = True, label = "normal"alpha = 0.5)
+# plt.ylabel("Frequency")
+# plt.xlabel("Number of cells cells a gene is expressed by")
+# plt.legend()
+# plt.show()
+# plt.savefig(outputplot_dir + "/genesplot.png")
+
+
+# plt.figure()
+# plt.title("Histogram: How many genes  were detected per cell\n (Total: " + str(len(bin_cells) - np.count_nonzero(bin_cells)) + " zero-cells)")
+# plt.hist(bin_cells, log = True, bins = 100, density = True, label = "Log")
+# plt.hist(bin_cells, log = False, bins = 100, density = True, label = "normal")
+# plt.ylabel("log(Frequency)")
+# plt.xlabel("Number of genes detected per cell")
+# plt.legend()
+# plt.show()
+# plt.savefig(outputplot_dir + "/cellplot.png")
+
+
+
+
 # %%
 
 print(data.shape)

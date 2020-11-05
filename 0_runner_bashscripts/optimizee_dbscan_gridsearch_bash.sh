@@ -36,30 +36,31 @@ printf "########################################################################
 echo -n START: `date` |& tee -a $logfile
 printf " ###################\n############################################################################\n\n" &>> $logfile
 start=`date +%s`
-
+echo ""
 
 (
 for mp in ${minpts[@]}; do
 	(
 	for ep in ${eps[@]}; do
 		(
-		python ../4_Evaluation/sca_dbscan.py  --title "mp${mp}_ep${ep}" --verbosity 0 --eps $ep --min_samples $mp --input_dir $pcadir --output_dir $output_dir |& tee -a $logfile
-		) &
+		python ../4_Evaluation/sca_dbscan.py  --title "mp${mp}_ep${ep}" --verbosity 0 --eps $ep --min_samples $mp --input_dir $pcadir --output_dir $output_dir &>> $logfile
+		echo I just did ep $ep and mp $mp: `date` |& tee -a $logfile
+		) #&
 	done
 	wait
-	) &
+	) #&
 done
 
 wait 
 )
 
-echo "now i should stop the other shit" |& tee -a $logfile
+echo "I'm done with all the gridpoints" |& tee -a $logfile
 echo `date` |& tee -a $logfile
 
 
 
 
-python ../5_Optimization/dbscan_gridsearch_visualizer.py --input_dir $output_dir --output_dir $output_dir |& tee -a $logfile
+python ../5_Optimization/dbscan_gridsearch_visualizer.py --input_dir $output_dir --output_dir $output_dir &>> $logfile
 
 
 
@@ -70,7 +71,7 @@ python ../5_Optimization/dbscan_gridsearch_visualizer.py --input_dir $output_dir
 
 end=`date +%s`
 printf "\ndbscan_gridsearch took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
-printf "\n################### " |& tee -a $logfile
+printf "\n################### " &>> $logfile
 echo -n DONE: `date` |& tee -a $logfile
-printf " ####################\n############################################################################\n\n\n\n\n\n" |& tee -a $logfile
+printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 

@@ -79,13 +79,13 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 
 
-kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/cluster_result/"
-dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/dbscan_result/"
-randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/randomforest_result/"
+kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/kmcluster/"
+#dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/n/"
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
 
 
-output_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/optimizer/"
+output_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/"
 
 
 
