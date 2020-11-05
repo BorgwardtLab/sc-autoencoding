@@ -18,8 +18,8 @@ output_dir="../outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/
 
 
 
-#minpts=(002 003 004 005 008 010 020 060 200)
-minpts=(002 003 004)
+minpts=(002 003 004 005 008 010 020 060 200)
+#minpts=(002 003 004)
 eps=(005 010 015 020 025 030 035 040 050 100 300)
 
 #minpts=(002 003)
