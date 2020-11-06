@@ -40,7 +40,7 @@ echo $optimizer
 	python ../4_Evaluation/sca_dbscan.py  --title ${optimizer} --verbosity 0 --eps 17 --min_samples 3 --input_dir "${outdir}bca_data/${optimizer}/" --output_dir "${outdir}dbscan_result/" |& tee -a $logfile
 	)
 	wait
-	)
+	) #&
 done
 wait
 )

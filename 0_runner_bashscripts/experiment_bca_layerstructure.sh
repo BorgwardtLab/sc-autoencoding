@@ -59,7 +59,7 @@ done
 
 
 
-# python ../4_Evaluation/visualize.py  --title "BCAlayers"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title "BCAlayers"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
 
 
 
