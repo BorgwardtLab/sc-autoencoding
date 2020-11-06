@@ -109,7 +109,7 @@ superpanda = pd.DataFrame()
 for fold in range(1,args.num_reps+1):
     print(datetime.now().strftime("%H:%M:%S>"), "Starting Fold Nr {:d}...".format(fold))
     
-        
+    plt.close("all")
         
         
         
