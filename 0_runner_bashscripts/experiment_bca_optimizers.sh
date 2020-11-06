@@ -13,9 +13,9 @@ preprocessed_ctdata="../inputs/data/preprocessed_data_autoencoder/"
 outdir="../outputs/experiments/optimizer/"
 
 
-#optimizers=("SGD" "RMSprop" "Adam" "Adadelta" "Adagrad" "Adamax" "Nadam" "Ftrl")
+optimizers=("SGD" "RMSprop" "Adam" "Adadelta" "Adagrad" "Adamax" "Nadam" "Ftrl")
 #optimizers=("SGD" "RMSprop" "Adam")
-optimizers=("Nadam" "Ftrl" "Adamax")
+#optimizers=("Nadam" "Ftrl" "Adamax")
 
 
 

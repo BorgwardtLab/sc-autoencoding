@@ -25,7 +25,6 @@ printf " ###################\n##################################################
 
 
 
-
 for aename in ${autoencoders[@]}; do
 	(
 	echo START: `date` |& tee -a $logfile

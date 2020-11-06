@@ -3,6 +3,15 @@
 Created on Tue Oct 13 14:20:07 2020
 
 @author: Mike Toreno II
+
+
+
+
+THIS IS THE VERSION OF VISUALIZE BEFORE INTRODUCING "FOLD" INTO KM CLUSTERING.
+
+IT IS SAVED TO VISUALIZE CLUSTERINGS DONE WITHOUT THE FOLDS. 
+
+
 """
 
 
@@ -61,7 +70,7 @@ import re
 import numpy as np
 import seaborn as sns
 from datetime import datetime
-import statistics
+
 
 
 
@@ -71,7 +80,6 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/dbscan/"
 
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
-kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
@@ -410,6 +418,9 @@ if not kmclust_dir == "skip":
     
     
 
+
+
+
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = []
@@ -445,10 +456,7 @@ if not kmclust_dir == "skip":
 
     # lineplots
     f1weight = []
-    f1weight_stdv = []    
     nmi_scores = []
-    nmi_scores_stdv = []
-    
     
     # pieplot
     sizes_pie = []
@@ -474,72 +482,38 @@ if not kmclust_dir == "skip":
         new_df = pd.concat([df1, df2])
         redundancy_frame = pd.concat([redundancy_frame, new_df])
         
-        # # pieplot
-        # sizes_pie.append(sizes)
-        # names_pie.append(np.array(dataframes[i].loc[:,"Most common label"]))
-
-
-        df = dataframes[i]
-        nfolds = max(df.loc[:,"Fold"])
-            
         # lienplots
-        nmis_per_fold = []
-        f1weight_per_fold = []
-        for fold in range(1,nfolds):
-            is_myfold = df["Fold"]==fold
-            dffold = df[is_myfold]
-
-            nmis_per_fold.append(dffold.loc[:,"NMI"][0])
-            fscores = np.array(dffold.loc[:,"F1-score"])
-            sizes = np.array(dffold.loc[:,"Size"])
-            sum_sizes = sum(dffold.loc[:,"Size"])
-            weighted_F1 = 0
-            for j in range(len(sizes)):
-                curr = fscores[j] * sizes[j]
-                weighted_F1 += curr
-            weighted_F1 = weighted_F1/sum_sizes
-            f1weight_per_fold.append(weighted_F1)
-            
-        mean = statistics.mean(np.array(nmis_per_fold))
-        stdv = statistics.pstdev(np.array(nmis_per_fold))
-        nmi_scores.append(mean)
-        nmi_scores_stdv.append(stdv)
+        nmi_scores.append(dataframes[i].loc[:,"NMI"][0])
+        fscores = np.array(dataframes[i].loc[:,"F1-score"])
+        sizes = np.array(dataframes[i].loc[:,"Size"])
+        sum_sizes = sum(dataframes[i].loc[:,"Size"])
+        weighted_F1 = 0
+        for j in range(len(sizes)):
+            curr = fscores[j] * sizes[j]
+            weighted_F1 += curr
+        weighted_F1 = weighted_F1/sum_sizes
+        f1weight.append(weighted_F1)
         
-        mean = statistics.mean(np.array(f1weight_per_fold))
-        stdv = statistics.pstdev(np.array(f1weight_per_fold))
-        f1weight.append(mean)
-        f1weight_stdv.append(stdv)
-    
-           
-    
         # barplot numct
-        sum_k = 0
-        sum_uniques = 0
-        sum_lows = 0
+        celltypes = np.array(dataframes[i].loc[:,"Most common label"])
+        unique = np.unique(celltypes, return_counts=False)
+        num_ct.append(len(unique))
+        sizes_2 = np.array(dataframes[i].loc[:,"Size"])
+        num_ct_low.append(sum(sizes_2 < 50))
+        num_ct_total.append(len(dataframes[i]))
         
-        for fold in range(1,nfolds):
-            is_myfold = df["Fold"]==fold
-            dffold = df[is_myfold]
-            
-            sum_k += len(dffold)
-            
-            celltypes = np.array(dffold.loc[:,"Most common label"])
-            unique = np.unique(celltypes, return_counts=False)
-            sum_uniques += len(unique)
+        # pieplot
+        sizes_pie.append(sizes)
+        names_pie.append(np.array(dataframes[i].loc[:,"Most common label"]))
+
+
         
-            sizes_2 = np.array(dataframes[i].loc[:,"Size"])
-            sum_lows += sum(sizes_2 < 50)         
+
     
-        num_ct.append(sum_uniques)
-        num_ct_low.append(sum_lows)
-        num_ct_total.append(sum_k)
-
-
-
-
-    # %% first_figure
-
-    n_rows = 3
+    # %%
+    n_rows = 4
+    plotnumber=4
+    
 
     fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows], sharex=True)
     fig.subplots_adjust(hspace=0.5) 
@@ -557,32 +531,23 @@ if not kmclust_dir == "skip":
     axs[0].set_title("Purity and Recall Boxplots")
     axs[0].tick_params(labelbottom = True)
     
-    
-    
     # lineplot
     axs[1].plot(names, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
-    axs[1].errorbar(x = names, y = f1weight, yerr = f1weight_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
         axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
-        axs[1].errorbar(x = names, y = nmi_scores, yerr = nmi_scores_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
         axs[1].legend(labels = ["F1-score","NMI"])
     except:
         print("no NMI info available")
         pass
 
 
-
     # baprlot num_unique CT
     #axs[2].set_yscale("log")
 
     diff = np.array(num_ct)-np.array(num_ct_low)
-    # avoid negatives in diffs
-    zeros = len(diff)*[0]
-    diff = np.maximum(diff, zeros)
-    
     axs[2].bar(x = names, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
     axs[2].bar(x = names, height = diff, width = 0.45)                                      # the non-low ones
     axs[2].bar(x = names, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
@@ -602,38 +567,25 @@ if not kmclust_dir == "skip":
 
 
 
-    
-    # %% Pieplots no longer supported :(
+    # pieplot
+    axs[plotnumber-1].axis("off")
+    axs[plotnumber-1].set_title("Cells per cluster [Total: {:d}]".format(sum_sizes), pad = 30)
+    axs[plotnumber-1].set_xlabel("Sizes of the found clusters. \n(watch out for very small clusters)")
+    for j in range(len(sizes_pie)):
+        fig.add_subplot(n_rows*3, len(sizes_pie),(((plotnumber - 1)*3 +1)*len(sizes_pie)+j+1)) # note, i do double the slpits, that are actually there.
+        #fig.add_subplot(n_rows, len(sizes_pie),((plotnumber-1)*len(sizes_pie)+j+1))         
+        plt.pie(x = sizes_pie[j], explode = np.ones(len(sizes_pie[j])) * 0.01, labels = None, radius = 1.2, shadow = False)
+        plt.title(names[j])
+        if len(names_pie[j]) > 30:
+               names_pie[j] = names_pie[j][:30]
+               plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5), facecolor = "gray", edgecolor = "red")
 
-    # n_rows = 2
-    # plotnumber= 2   # number of the pieplots
-    
-    
-    # fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes), 4.0 * n_rows], sharex=True)
-    # fig.subplots_adjust(hspace=0.5) 
-    # fig.suptitle("km-Clustering result of {:d} clusterings".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
-    
-    
-
-    # # pieplot
-    # axs[plotnumber-1].axis("off")
-    # axs[plotnumber-1].set_title("Cells per cluster [Total: {:d}]".format(sum_sizes), pad = 30)
-    # axs[plotnumber-1].set_xlabel("Sizes of the found clusters. \n(watch out for very small clusters)")
-    # for j in range(len(sizes_pie)):
-    #     fig.add_subplot(n_rows*3, len(sizes_pie),(((plotnumber - 1)*3 +1)*len(sizes_pie)+j+1)) # note, i do double the slpits, that are actually there.
-    #     #fig.add_subplot(n_rows, len(sizes_pie),((plotnumber-1)*len(sizes_pie)+j+1))         
-    #     plt.pie(x = sizes_pie[j], explode = np.ones(len(sizes_pie[j])) * 0.01, labels = None, radius = 1.2, shadow = False)
-    #     plt.title(names[j])
-    #     if len(names_pie[j]) > 30:
-    #            names_pie[j] = names_pie[j][:30]
-    #            plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5), facecolor = "gray", edgecolor = "red")
-
-    #     else:
-    #         plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5))
+        else:
+            plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5))
     
 
-    # os.makedirs(output_dir, exist_ok=True)
-    # plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
     
     
 # %%    
@@ -642,7 +594,7 @@ if not kmclust_dir == "skip":
     
     
     
-# %%
+    
     
     
     
@@ -705,6 +657,27 @@ else:
     # panda.plot.bar(rot=0, ylim = [0,1])
     # plt.savefig(output_dir + title + "_km_clustering")
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+
+
+
 
 
 
