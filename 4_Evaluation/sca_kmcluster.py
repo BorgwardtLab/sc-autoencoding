@@ -106,7 +106,7 @@ technique_name = input_dir[tech_start + 4 : tech_end]
 superpanda = pd.DataFrame()
 
 
-for fold in range(1,args.num_rep+1):
+for fold in range(1,args.num_reps+1):
     print(datetime.now().strftime("%H:%M:%S>"), "Starting Fold Nr {:d}...".format(fold))
     
         
