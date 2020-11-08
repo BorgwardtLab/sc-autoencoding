@@ -21,7 +21,7 @@ parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, 
 parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
 parser.add_argument("--elbowrange", help="the elobow will try all k's from 1-elbowrange", type = int, default = 11)
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title")
-parser.add_argument("--num_reps", type = int, default = 100, help="how many repetitions it should do")
+parser.add_argument("--num_reps", type = int, default = 25, help="how many repetitions it should do")
 #parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
 args = parser.parse_args() #required
 

@@ -22,7 +22,7 @@ parser.add_argument("--general_input", default = "skip", help="instead of enteri
 parser.add_argument("--unsorted", action='store_true', help="to avoid the internal ordering according to the custom order")
 parser.add_argument("--dbscan_loose", action = "store_true")
 
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/visualized_results/")
+parser.add_argument("-o","--output_dir", help="output directory", default = "D:/Dropbox/Internship/gitrepo/outputs/visualized_results/")
 args = parser.parse_args()
 
 
@@ -440,6 +440,8 @@ if not kmclust_dir == "skip":
     
 # %% Prepare DF for seaborn boxplots
 
+    names_fold = []
+
     # boxplot
     redundancy_frame = pd.DataFrame()
 
@@ -461,6 +463,13 @@ if not kmclust_dir == "skip":
 
 
     for i in range(len(dataframes)):        
+        print("Sanity Check: {:s} / {:s}".format(np.array(dataframes[i].loc[:,"Technique"])[0], names[i]))
+        
+        # extract num_reps
+        highest_fold = max(np.array(dataframes[i].loc[:,"Fold"]))
+        newname = names[i] + "\n({:d}reps)".format(highest_fold)
+        names_fold.append(newname)        
+        
         # boxplot
         purities = dataframes[i].loc[:,"Purity"]
         recalls = dataframes[i].loc[:,"Recall"]
@@ -560,14 +569,14 @@ if not kmclust_dir == "skip":
     
     
     # lineplot
-    axs[1].plot(names, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
-    axs[1].errorbar(x = names, y = f1weight, yerr = f1weight_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
+    axs[1].plot(names_fold, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
+    axs[1].errorbar(x = names_fold, y = f1weight, yerr = f1weight_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
     axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
     axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
-        axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
-        axs[1].errorbar(x = names, y = nmi_scores, yerr = nmi_scores_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
+        axs[1].plot(names_fold, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
+        axs[1].errorbar(x = names_fold, y = nmi_scores, yerr = nmi_scores_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
         axs[1].legend(labels = ["F1-score","NMI"])
     except:
         print("no NMI info available")
@@ -583,9 +592,9 @@ if not kmclust_dir == "skip":
     zeros = len(diff)*[0]
     diff = np.maximum(diff, zeros)
     
-    axs[2].bar(x = names, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
-    axs[2].bar(x = names, height = diff, width = 0.45)                                      # the non-low ones
-    axs[2].bar(x = names, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
+    axs[2].bar(x = names_fold, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
+    axs[2].bar(x = names_fold, height = diff, width = 0.45)                                      # the non-low ones
+    axs[2].bar(x = names_fold, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
     
     
     #handl, leggy = axs[2].get_legend_handles_labels()
@@ -632,8 +641,8 @@ if not kmclust_dir == "skip":
     #         plt.legend(names_pie[j], prop={'size': 8}, loc = "center", bbox_to_anchor = (0.5, -1.5))
     
 
-    # os.makedirs(output_dir, exist_ok=True)
-    # plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
     
     
 # %%    
