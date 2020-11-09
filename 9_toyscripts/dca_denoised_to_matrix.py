@@ -17,7 +17,7 @@ args = parser.parse_args() #required
 
 
 
-
+print("starting denoised to matrix")
 
 pandas = pd.read_csv(args.full_input_file, delimiter = "\t", header = 0, index_col = 0)
 # pandas = pandas.transpose()

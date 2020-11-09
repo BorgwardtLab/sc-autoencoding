@@ -10,7 +10,8 @@ mkdir logs
 logfile="logs/6_exBCA_layerstructures.log"
 
 preprocessed_ctdata="../../inputs/data/preprocessed_data_autoencoder/" #if you change this, there is another one below
-outdir="../../outputs/experiments/layerstructure/"
+outdir="../../outputs/experiments/layerstructure/" 
+# note: another outdir defined downstairs
 
 
 autoencoders=(asymmetric default extraconstant inverted large larger short smaller)
@@ -59,7 +60,9 @@ wait
 
 
 
+outdir="../outputs/experiments/layerstructure/" # need to only jump one directory up I guess
 python ../4_Evaluation/visualize.py  --title "BCAlayers"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
+
 
 
 

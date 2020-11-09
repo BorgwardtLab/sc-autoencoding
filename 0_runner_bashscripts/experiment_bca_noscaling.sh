@@ -58,7 +58,7 @@ wait
 )
 
 
-
+outdir="../outputs/experiment/no_scaling/"
 python ../4_Evaluation/visualize.py  --title "BCAnoscale"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
 
 

@@ -48,6 +48,8 @@ wait
 )
 
 
+
+
 (
 python ../4_Evaluation/visualize.py  --title "BCAopti"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/" --kmcluster_results "${outdir}cluster_result/" --dbscan_results "${outdir}dbscan_result/" |& tee -a $logfile
 )

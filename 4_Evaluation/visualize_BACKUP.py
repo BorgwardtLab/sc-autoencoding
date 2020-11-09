@@ -73,10 +73,8 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
-randfor_dir = "../outputs/random_forest/"
 
 
 # %%
@@ -738,11 +736,11 @@ if not randfor_dir == "skip":
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
 
-        accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0).loc[:,"Accuracy"]
+        accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
     
     
     
-    ### first sort alphabetically
+    
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
@@ -790,8 +788,7 @@ if not randfor_dir == "skip":
 
 
 
-# %%
-
+# %% Plot
     avgs = []
     stde = []
 
@@ -814,6 +811,26 @@ if not randfor_dir == "skip":
     
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# %% output_table
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 
