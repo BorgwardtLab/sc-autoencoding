@@ -33,7 +33,7 @@ except:
 
 parser = argparse.ArgumentParser(description = "calculate PCAs")  #required
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/random_forrest/")
+parser.add_argument("-p","--output_dir", help="out directory", default = "../outputs/random_forest/")
 parser.add_argument("--limit_dims", default = 0, help="number of input dimensions to consider", type = int)
 #parser.add_argument("-o","--outputplot_dir", help="out directory", default = "../outputs/random_forrest/PCA/")
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "placeholder")
@@ -198,6 +198,28 @@ if args.legacy == False:    # "normal mode"
         
         
         
+        
+        
+        # %%        
+        # evaluate per celltype
+        test_labels = np.array(test_labels)
+        
+        for celltype in np.unique(test_labels):
+            
+            current_set_indexes = np.where(test_labels == celltype)
+            current_labels = test_labels[current_set_indexes]
+            current_prediction = prediction[current_set_indexes]
+        
+            current_accuracy = sum(current_labels == current_prediction)/len(current_labels)
+        
+        
+            # now this is the tricky part lmao
+            pandas.loc["Split_"+str(split),celltype] = current_accuracy
+            
+        
+        
+        
+        
     
         # %% NOTE: THIS WAY OF PLOTTING IS very SLOW. AVOID IT IN THE FUTURE
         figurename_appendix = "_{:s}_split{:d}".format(args.title, split)
@@ -277,134 +299,145 @@ if args.legacy == False:    # "normal mode"
         
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# %% legacy function
-if args.legacy == True:
-    
-    input_dir = source_input_dir
-    output_dir = source_output_dir
-    outputplot_dir = source_outputplot_dir
-    
-
-    
-    print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_randforrest.py")
-    print(input_dir)
-    
-    
-    
-    # %% Read Input data
-    
-    print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
-    print(input_dir)
-    
-    data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
-    genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
-    barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
-    
-    test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
-    train_index = np.logical_not(test_index)
-
-    if args.limit_dims > 0:
-        if args.limit_dims <= data.shape[1]:
-            data = data[:,0:args.limit_dims]
-            print("restricting input dimensions")
-        else:
-            print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
-            
-
-    
-    # %% Handle Train Test Split
-    complete_data = data
-    test_data = data[test_index]
-    train_data = data[train_index]    
-    
-    labels = barcodes.iloc[:,1]
-    test_labels = labels[test_index]
-    train_labels = labels[train_index]  
-
-    
-    # %%
-    print(datetime.now().strftime("%H:%M:%S>"), "starting classification...")
-
-    forest = RandomForestClassifier(n_estimators = n_trees,
-                                    criterion = "gini",
-                                    max_depth = max_depth,
-                                    min_samples_split = min_samples_split,
-                                    min_samples_leaf = min_samples_leaf,
-                                    max_features = max_features
-                                    )
-    
-    forest.fit(train_data, train_labels)
-    prediction = forest.predict(test_data)
- 
-    # %%
-
-    num_correct = sum(test_labels == prediction)
-    accuracy = num_correct/len(prediction)
-
-    # %% NOTE: THIS WAY OF PLOTTING IS very SLOW. AVOID IT IN THE FUTURE
-    
-    if not os.path.exists(outputplot_dir):
-        print(datetime.now().strftime("%H:%M:%S>"), "Creating Outputplot Directory...")
-        os.makedirs(outputplot_dir)
-    
-    truth = np.array(test_labels == prediction)
-    
-    
+# second plot: accuracy per celltype
+    # I wanted to make a fancy barplot here, but I decided that I don't care for now. 
     plt.figure()
-    for i in range(len(prediction)):
-        if(truth[i]):
-            plt.scatter(test_data[i,0], test_data[i,1], c = "k", s = 20, marker = ".", alpha = 0.5, label = "tru")
-        else:
-            plt.scatter(test_data[i,0], test_data[i,1], c = "r", s = 40, marker = "x", label = "fa")
+    pandas.iloc[:,1:].plot()
+    plt.title(args.title)
+    plt.ylabel("Accuracies")
+    plt.savefig(outputplot_dir + "celltype_accuracies_" + args.title)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # %% legacy function
+# if args.legacy == True:
+    
+#     input_dir = source_input_dir
+#     output_dir = source_output_dir
+#     outputplot_dir = source_outputplot_dir
+    
+
+    
+#     print(datetime.now().strftime("\n\n%d. %b %Y, %H:%M:%S>"), "Starting sca_randforrest.py")
+#     print(input_dir)
+    
+    
+    
+#     # %% Read Input data
+    
+#     print(datetime.now().strftime("%H:%M:%S>"), "reading input data...")
+#     print(input_dir)
+    
+#     data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
+#     genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
+#     barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
+    
+#     test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
+#     train_index = np.logical_not(test_index)
+
+#     if args.limit_dims > 0:
+#         if args.limit_dims <= data.shape[1]:
+#             data = data[:,0:args.limit_dims]
+#             print("restricting input dimensions")
+#         else:
+#             print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
             
-    #plt.legend(["correct","incorrect"])
-    #plt.legend(labels = ["tru", "fa"])
-    plt.show()
-    plt.savefig(outputplot_dir + "correct_assignments.png")
 
     
-    # %% Output
+#     # %% Handle Train Test Split
+#     complete_data = data
+#     test_data = data[test_index]
+#     train_data = data[train_index]    
+    
+#     labels = barcodes.iloc[:,1]
+#     test_labels = labels[test_index]
+#     train_labels = labels[train_index]  
 
-    if not os.path.exists(output_dir):
-        print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-        os.makedirs(output_dir)
+    
+#     # %%
+#     print(datetime.now().strftime("%H:%M:%S>"), "starting classification...")
+
+#     forest = RandomForestClassifier(n_estimators = n_trees,
+#                                     criterion = "gini",
+#                                     max_depth = max_depth,
+#                                     min_samples_split = min_samples_split,
+#                                     min_samples_leaf = min_samples_leaf,
+#                                     max_features = max_features
+#                                     )
+    
+#     forest.fit(train_data, train_labels)
+#     prediction = forest.predict(test_data)
+ 
+#     # %%
+
+#     num_correct = sum(test_labels == prediction)
+#     accuracy = num_correct/len(prediction)
+
+#     # %% NOTE: THIS WAY OF PLOTTING IS very SLOW. AVOID IT IN THE FUTURE
+    
+#     if not os.path.exists(outputplot_dir):
+#         print(datetime.now().strftime("%H:%M:%S>"), "Creating Outputplot Directory...")
+#         os.makedirs(outputplot_dir)
+    
+#     truth = np.array(test_labels == prediction)
+    
+    
+#     plt.figure()
+#     for i in range(len(prediction)):
+#         if(truth[i]):
+#             plt.scatter(test_data[i,0], test_data[i,1], c = "k", s = 20, marker = ".", alpha = 0.5, label = "tru")
+#         else:
+#             plt.scatter(test_data[i,0], test_data[i,1], c = "r", s = 40, marker = "x", label = "fa")
+            
+#     #plt.legend(["correct","incorrect"])
+#     #plt.legend(labels = ["tru", "fa"])
+#     plt.show()
+#     plt.savefig(outputplot_dir + "correct_assignments.png")
+
+    
+#     # %% Output
+
+#     if not os.path.exists(output_dir):
+#         print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+#         os.makedirs(output_dir)
         
-    print(datetime.now().strftime("%H:%M:%S>"), "writing data to output file...")
+#     print(datetime.now().strftime("%H:%M:%S>"), "writing data to output file...")
     
-    if firstrun:
-        file = open(output_dir + "random_forest_mult.txt", "w")
-    else:
-        file = open(output_dir + "random_forest_mult.txt", "a")
-        file.write("\n")
-        file.write("\n")
-        file.write("\n")
-        file.write("\n")
-        file.write("\n")    
+#     if firstrun:
+#         file = open(output_dir + "random_forest_mult.txt", "w")
+#     else:
+#         file = open(output_dir + "random_forest_mult.txt", "a")
+#         file.write("\n")
+#         file.write("\n")
+#         file.write("\n")
+#         file.write("\n")
+#         file.write("\n")    
     
-    file.write("######" + args.title + "######\n")
-    file.write("input_data from " + input_dir + "\n")
-    file.write("Accuracy = " + str(accuracy) + "\t(" + str(num_correct) + "/" + str(len(prediction)) + ")\n")
-    file.close()
+#     file.write("######" + args.title + "######\n")
+#     file.write("input_data from " + input_dir + "\n")
+#     file.write("Accuracy = " + str(accuracy) + "\t(" + str(num_correct) + "/" + str(len(prediction)) + ")\n")
+#     file.close()
 
-    # %% 
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully")
+#     # %% 
+#     print(datetime.now().strftime("%H:%M:%S>"), "sca_randforest.py terminated successfully")
     
     
 
