@@ -50,10 +50,7 @@ cp "../inputs/data/preprocessed_data_autoencoder/no_split/barcodes.tsv" "../inpu
 cp "../inputs/data/preprocessed_data_autoencoder/no_split/genes.tsv" "../inputs/autoencoder_data/DCA_output/no_split/genes.tsv" |& tee -a $logfile
 
 
-python ../9_toyscripts/dca_denoised_to_matrix.py --full_input_file "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/autoencoder_data/DCA_output/no_split/mean.tsv" --full_output_file "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/autoencoder_data/DCA_output/denoised_reconstruction/matrix.txv"  |& tee -a $logfile
-
- |& tee -a $logfile
-
+python ../9_toyscripts/dca_denoised_to_matrix.py --full_input_file "../inputs/autoencoder_data/DCA_output/no_split/mean.tsv" --full_output_file "../inputs/autoencoder_data/DCA_output/denoised_reconstruction/matrix.txv"  |& tee -a $logfile
 
 
 

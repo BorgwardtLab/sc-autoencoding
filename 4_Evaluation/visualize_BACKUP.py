@@ -821,19 +821,30 @@ if not randfor_dir == "skip":
     
     
 # %% output_table
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
+# 2dlist:
+    
+    avgs2 = np.array(avgs)
+    avgs2 = avgs.reshape()
+
+    
+    the_table = plt.table(cellText=avgs,
+                          #rowLabels=["test"],
+                         # colLabels=names,
+#                          loc='bottom'
+                            )    
+        
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+# %%
 
 else: 
     print("random_forest was skipped")
