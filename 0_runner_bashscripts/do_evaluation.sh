@@ -90,6 +90,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 # 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
 k_array=(9 	6 	8 	8 	7 	10 	8 	8 	8)
+k_array=(10 10 	10 	10 	10 	10 	10 	10 	10)
 
 (
 tech=kmcluster

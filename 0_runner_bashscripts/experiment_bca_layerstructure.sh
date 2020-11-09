@@ -46,7 +46,7 @@ outdir="../outputs/experiments/layerstructure/"
 (
 for aename in ${autoencoders[@]}; do
 	(
-	python ../4_Evaluation/sca_kmcluster.py --title ${aename} --k 8 --num_reps 100 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${aename}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${aename} --num_reps 50 --k 8 --num_reps 100 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${aename}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
 	python ../4_Evaluation/sca_randforest.py --title ${aename} --n_trees 100 --input_dir "${outdir}bca_data/${aename}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	) & (

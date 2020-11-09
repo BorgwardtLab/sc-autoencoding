@@ -33,6 +33,10 @@ import re
 
 
 
+args.input_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/"
+args.output_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/"
+
+
 input_dir = args.input_dir + "dataframes/"
 output_dir = args.output_dir
 
@@ -148,8 +152,8 @@ ax.set_xlabel("minpts")
 ax.set_ylabel("eps")
 ax.set_title("NMI Score")
 
-plt.xticks(np.arange(len(eps)), eps)   
-plt.yticks(np.arange(len(minpts)), minpts)
+plt.yticks(np.arange(len(eps)), eps)   
+plt.xticks(np.arange(len(minpts)), minpts)
 
 plt.savefig(output_dir + "NMI_scores.png")
 
@@ -171,8 +175,8 @@ ax.set_xlabel("minpts")
 ax.set_ylabel("eps")
 ax.set_title("weighted F1 score")
 
-plt.xticks(np.arange(len(eps)), eps)   
-plt.yticks(np.arange(len(minpts)), minpts)
+plt.yticks(np.arange(len(eps)), eps)   
+plt.xticks(np.arange(len(minpts)), minpts)
 
 plt.savefig(output_dir + "F1_scores.png")
 
@@ -193,8 +197,8 @@ ax.set_xlabel("minpts")
 ax.set_ylabel("eps")
 ax.set_title("Outlier Fraction")
 
-plt.xticks(np.arange(len(eps)), eps)   
-plt.yticks(np.arange(len(minpts)), minpts)
+plt.yticks(np.arange(len(eps)), eps)   
+plt.xticks(np.arange(len(minpts)), minpts)
 
 plt.savefig(output_dir + "Outlierfractions.png")
 
@@ -214,8 +218,8 @@ ax.set_xlabel("minpts")
 ax.set_ylabel("eps")
 ax.set_title("Number of clusters found with at least 50+ cells")
 
-plt.xticks(np.arange(len(eps)), eps)   
-plt.yticks(np.arange(len(minpts)), minpts)
+plt.yticks(np.arange(len(eps)), eps)   
+plt.xticks(np.arange(len(minpts)), minpts)
 
 plt.savefig(output_dir + "num_clusts50plus.png")
 
@@ -223,23 +227,7 @@ plt.savefig(output_dir + "num_clusts50plus.png")
 
 
 
-
-
-
-
-
-
 print(datetime.now().strftime("%H:%M:%S>"), "Gridsearch terminated successfully")
-
-
-
-
-
-
-
-
-
-
 
 
 

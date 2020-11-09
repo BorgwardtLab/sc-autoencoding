@@ -71,7 +71,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # dbscan_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/dbscan/"
 
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
-kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
+# kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
