@@ -44,6 +44,21 @@ python ../9_toyscripts/plot_dca_loss.py --input_file "../0_runner_bashscripts/lo
 
 
 
+#%% prepare full data for secondary analysis
+mv "../inputs/autoencoder_data/DCA_output/no_split/mean.tsv" "../inputs/autoencoder_data/DCA_output/denoised_reconstruction/matrix.tsv" |& tee -a $logfile
+cp "../inputs/data/preprocessed_data_autoencoder/no_split/barcodes.tsv" "../inputs/autoencoder_data/DCA_output/no_split/barcodes.tsv" |& tee -a $logfile
+cp "../inputs/data/preprocessed_data_autoencoder/no_split/genes.tsv" "../inputs/autoencoder_data/DCA_output/no_split/genes.tsv" |& tee -a $logfile
+
+
+
+
+
+
+
+
+
+
+
 
 
 end=`date +%s`

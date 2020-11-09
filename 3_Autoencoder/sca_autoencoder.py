@@ -714,11 +714,13 @@ def sca_preprocess(adata, test_split = False, filter_ = True, size_factors = Tru
     
     adata.raw = adata.copy()
 
+
     if size_factors:
         sc.pp.normalize_per_cell(adata)
         adata.obs['size_factors'] = adata.obs.n_counts / np.median(adata.obs.n_counts)
     else:
         adata.obs['size_factors'] = 1.0
+        
  
     if logtrans:
         sc.pp.log1p(adata)
@@ -738,6 +740,8 @@ def read_input(input_dir, output_dir, split):
     genes = pd.read_csv(input_dir + "genes.tsv", delimiter = "\t", header = None)
     barcodes = pd.read_csv(input_dir + "barcodes.tsv", delimiter = "\t", header = None)
     
+    
+
     if split:
         test_index = np.loadtxt(fname = input_dir + "test_index.tsv", dtype = bool)
         train_index = np.logical_not(test_index)
@@ -803,6 +807,7 @@ def sca_main(input_dir, output_dir, outputplot_dir, loss_name, split):
                    logtrans = True,
                    normalize = True
                    )
+    
     
     if split:
         
