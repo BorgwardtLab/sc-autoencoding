@@ -73,7 +73,6 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nLSA/random_forest/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
 
@@ -789,20 +788,18 @@ if not randfor_dir == "skip":
 
 
 
-# %%
-
+# %% Plot
     avgs = []
     stde = []
 
     for i in range(accuracies.shape[1]):
         values = np.array(accuracies.iloc[:,i])
-
-
         avgs.append(np.mean(values))
         stde.append(np.std(values, ddof = 1))
                     
-     
-    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.2])
+    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.8])
+    
+    plt.subplot(2,1,1)
     plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
     plt.xticks(rotation = 45)
     plt.title("Random Forests" + titleext)
@@ -810,12 +807,29 @@ if not randfor_dir == "skip":
     plt.grid(which = "both", axis = "x")
     #plt.legend(loc = "lower right")
     plt.subplots_adjust(bottom=0.15)
+
+
+
+#  output_table
+    a = np.array(avgs)
+    b = np.array(stde)
+    tabledata = np.vstack((a,b))
+    tabledata = np.round(tabledata, decimals = 6)
     
+
+    plt.subplot(2,1,2)
+    plt.axis("off")
+    tabulo = plt.table(cellText=tabledata, rowLabels=["Average", "Stdev(P)"], colLabels=names, loc='center', fontsize = 7)    
+    tabulo.auto_set_font_size(False)
+    tabulo.set_fontsize(6)
+    
+        
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
     
-    
 
+    
+# %%
 
 else: 
     print("random_forest was skipped")

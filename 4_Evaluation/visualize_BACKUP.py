@@ -794,13 +794,12 @@ if not randfor_dir == "skip":
 
     for i in range(accuracies.shape[1]):
         values = np.array(accuracies.iloc[:,i])
-
-
         avgs.append(np.mean(values))
         stde.append(np.std(values, ddof = 1))
                     
-     
-    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.2])
+    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.8])
+    
+    plt.subplot(2,1,1)
     plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
     plt.xticks(rotation = 45)
     plt.title("Random Forests" + titleext)
@@ -808,41 +807,27 @@ if not randfor_dir == "skip":
     plt.grid(which = "both", axis = "x")
     #plt.legend(loc = "lower right")
     plt.subplots_adjust(bottom=0.15)
+
+
+
+#  output_table
+    a = np.array(avgs)
+    b = np.array(stde)
+    tabledata = np.vstack((a,b))
+    tabledata = np.round(tabledata, decimals = 6)
     
+
+    plt.subplot(2,1,2)
+    plt.axis("off")
+    tabulo = plt.table(cellText=tabledata, rowLabels=["Average", "Stdev(P)"], colLabels=names, loc='center', fontsize = 7)    
+    tabulo.auto_set_font_size(False)
+    tabulo.set_fontsize(6)
+    
+        
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
     
-    
-    
-    
-    
-    
-    
-    
-    
-# %% output_table
 
-# 2dlist:
-    
-    avgs2 = np.array(avgs)
-    avgs2 = avgs.reshape()
-
-    
-    the_table = plt.table(cellText=avgs,
-                          #rowLabels=["test"],
-                         # colLabels=names,
-#                          loc='bottom'
-                            )    
-        
-        
-        
-    
-    
-    
-    
-    
-    
-    
     
 # %%
 
