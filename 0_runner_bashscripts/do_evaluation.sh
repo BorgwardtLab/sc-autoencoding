@@ -18,6 +18,7 @@ directories=(
 "../inputs/autoencoder_data/DCA_output/"
 "../inputs/autoencoder_data/BCA_output/"
 "../inputs/autoencoder_data/SCA_output/"
+"../inputs/autoencoder_data/DCA_output/denoised_reconstruction/"
 )
 
 titles=(
@@ -30,7 +31,12 @@ titles=(
 "DCA"
 "BCA"
 "SCA"
+"denoised_data"
 )
+
+#how many repetition for clustering
+reps=50
+
 
 
 mkdir logs
@@ -60,8 +66,6 @@ for i in $range; do
 		continue      # Skip rest of this particular loop iteration.
 	fi
 	
-	
-	
 	input_dir=${directories[$i]}
 	logfile=logs/4_${tech}_${titles[$i]}.log
 
@@ -86,15 +90,56 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 
 
+(
+tech=svm
+output_dir=../outputs/$tech/
+
+for i in $range; do
+	(
+	### exclude some:
+	if [ ${titles[$i]} = "tSNE" ] || [ ${titles[$i]} = DCA ] 
+	then	
+		echo ${titles[$i]} was skipped
+		continue      # Skip rest of this particular loop iteration.
+	fi
+	
+	
+	
+	input_dir=${directories[$i]}
+	logfile=logs/4_${tech}_${titles[$i]}.log
+
+	printf "############################################################################\n################### " &>> $logfile
+	echo -n START: `date` &>> $logfile
+	start=`date +%s`
+	printf " ###################\n############################################################################\n\n" &>> $logfile
+
+	python ../4_Evaluation/sca_svm.py --title ${titles[$i]} --limit_dims 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
 
-# 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA )
-k_array=(9 	6 	8 	8 	7 	10 	8 	8 	8)
-k_array=(10 10 	10 	10 	10 	10 	10 	10 	10)
+	end=`date +%s`
+	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+	printf "\n################### " &>> $logfile
+	echo -n DONE: `date` &>> $logfile
+	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+	) &
+done
+wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands
+) &
+
+
+
+
+
+
+
+
+# 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA	denoi)
+k_array=(9 	6 	8 	8 	7 	10 	8 	8 	8 	8)
+k_array=(10 10 	10 	10 	10 	10 	10 	10 	10 	10)
 
 (
 tech=kmcluster
-output_dir=../outputs/$tech/
+output_dir=../outputs/results/$tech/
 
 for i in $range; do
 	(
@@ -106,7 +151,7 @@ for i in $range; do
 	start=`date +%s`
 	printf " ###################\n############################################################################\n\n" &>> $logfile
 
-	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k ${k_array[$i]} --limit_dims 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${titles[$i]} --k ${k_array[$i]} --num_reps $reps --n_init 10 --limit_dims 0 --verbosity 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 
 	end=`date +%s`
 	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
@@ -116,58 +161,115 @@ for i in $range; do
 	) &
 done
 wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
-) &
+) 
 
 
+
+
+# 			 PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA	denoi)
+hierarchi_k=(10 	10 	10 	10 	10 	10 	10 	10 	10 	10)
 
 (
-tech=dbscan
-output_dir=../outputs/$tech/
+tech=hierarchcluster
+output_dir=../outputs/results/$tech/
 
-# 		PCA		ICA		LSA		tSE		UMP		ori		DCA		BCA		SCA )
-minpts=(3 		3 		3 		3 		3 		3 		3 		3 		3)
-eps=(	30 		0.03 	28 		0.45 	0.07 	35 		4.6 	17 		2.1)
+for i in $range; do
+	(
+	input_dir=${directories[$i]}
+	logfile=logs/4_${tech}_${titles[$i]}.log
 
-# sanity check to see if we have the right number of parameters supplied.
-if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 
+	printf "############################################################################\n################### " &>> $logfile
+	echo -n START: `date` &>> $logfile
+	start=`date +%s`
+	printf " ###################\n############################################################################\n\n" &>> $logfile
 
-	for i in $range; do
-		(
+	python ../4_Evaluation/sca_hierarchcluster.py --k ${hierarchi_k[$i]} --threshold 0.0 --title ${titles[$i]} --num_reps $reps --limit_dims 0 --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+
+	end=`date +%s`
+	printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+	printf "\n################### " &>> $logfile
+	echo -n DONE: `date` &>> $logfile
+	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+	) &
+done
+wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
+) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# (
+# tech=dbscan
+# output_dir=../outputs/$tech/
+
+# # 		PCA		ICA		LSA		tSE		UMP		ori		DCA		BCA		SCA 		denoised)
+# minpts=(3 		3 		3 		3 		3 		3 		3 		3 		3			3)
+# eps=(	30 		0.03 	28 		0.45 	0.07 	35 		4.6 	17 		2.1			3)
+
+# # sanity check to see if we have the right number of parameters supplied.
+# if [ ${#minpts[@]} == ${#eps[@]} ] && [ ${#minpts[@]} == ${#titles[@]} ]; then 
+
+	# for i in $range; do
+		# (
 		
-		### exclude some:
-		if [ ${titles[$i]} = "original_data" ] 
-		then	
-			echo ${titles[$i]} was skipped
-			continue      # Skip rest of this particular loop iteration.
-		fi
+		# ### exclude some:
+		# if [ ${titles[$i]} = "original_data" ] 
+		# then	
+			# echo ${titles[$i]} was skipped
+			# continue      # Skip rest of this particular loop iteration.
+		# fi
 		
 		
-		input_dir=${directories[$i]}
-		logfile=logs/4_${tech}_${titles[$i]}.log
+		# input_dir=${directories[$i]}
+		# logfile=logs/4_${tech}_${titles[$i]}.log
 
-		printf "############################################################################\n################### " &>> $logfile
-		echo -n START: `date` &>> $logfile
-		start=`date +%s`
-		printf " ###################\n############################################################################\n\n" &>> $logfile
+		# printf "############################################################################\n################### " &>> $logfile
+		# echo -n START: `date` &>> $logfile
+		# start=`date +%s`
+		# printf " ###################\n############################################################################\n\n" &>> $logfile
 
-		python ../4_Evaluation/sca_dbscan.py  --title ${titles[$i]} --verbosity 3 --eps ${eps[$i]} --min_samples ${minpts[$i]} --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
+		# python ../4_Evaluation/sca_dbscan.py  --title ${titles[$i]} --verbosity 3 --eps ${eps[$i]} --min_samples ${minpts[$i]} --input_dir $input_dir --output_dir $output_dir |& tee -a $logfile
 		
-		end=`date +%s`
-		printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
-		printf "\n################### " &>> $logfile
-		echo -n DONE: `date` &>> $logfile
-		printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-		) &
-	done
-	wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
-else
-	echo `date` |& tee -a $errfile
-	echo "ERROR ERROR ERROR ERROR ERROR ERROR. ERROR ERROR ERROR ERROR" |& tee -a $errfile
-	echo `date`
-	echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" |& tee -a $errfile
-	echo "" &>> $errfile
-fi
-)
+		# end=`date +%s`
+		# printf "\n$tech took %d minutes\n" `echo "($end-$start)/60" | bc` &>> $logfile
+		# printf "\n################### " &>> $logfile
+		# echo -n DONE: `date` &>> $logfile
+		# printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+		# ) &
+	# done
+	# wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
+# else
+	# echo `date` |& tee -a $errfile
+	# echo "ERROR ERROR ERROR ERROR ERROR ERROR. ERROR ERROR ERROR ERROR" |& tee -a $errfile
+	# echo `date`
+	# echo "ERROR: Incorrect number of parameters supplied. DBScan could not run" |& tee -a $errfile
+	# echo "" &>> $errfile
+# fi
+# )
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

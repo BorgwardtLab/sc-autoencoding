@@ -18,6 +18,7 @@ parser.add_argument("--plottitle", default = "placeholder", type = str, help = "
 parser.add_argument("--dbscan_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
 parser.add_argument("--kmcluster_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
 parser.add_argument("--random_forest_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
+parser.add_argument("--svm_results", help="directory of the data - enter <skip> (without brackets) to skip.", default = "skip")
 parser.add_argument("--general_input", default = "skip", help="instead of entering all directories individually, respect the data structure and only give the overlying directory. Will overwrite all individual directories when entered")
 parser.add_argument("--unsorted", action='store_true', help="to avoid the internal ordering according to the custom order")
 parser.add_argument("--dbscan_loose", action = "store_true")
@@ -41,6 +42,7 @@ else:
 dbscan_dir = args.dbscan_results
 kmclust_dir = args.kmcluster_results
 randfor_dir = args.random_forest_results
+svm_dir = args.svm_results
 
 
 
@@ -49,6 +51,7 @@ if args.general_input != "skip":
     kmclust_dir = args.general_input + "kmcluster/"
     #classification_dir = args.general_input + "ova_classification/"
     randfor_dir = args.general_input + "random_forest/"
+    svm_dir = args.svm_results
 
 
 output_dir = args.output_dir # + args.title + "/"
@@ -73,8 +76,9 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
-randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/nPCA/random_forest/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
+
+svm_dir = "D:/Dropbox/Internship/gitrepo/outputs/results/svm/"
 
 
 # %%
@@ -642,20 +646,7 @@ if not kmclust_dir == "skip":
 
     os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_dir + "kmcluster_result" + fileext + ".png")
-    
-    
-# %%    
-    
-    
-    
-    
-    
-# %%
-    
-    
-    
-    
-    
+ 
     
 
 else: 
@@ -718,12 +709,23 @@ else:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # %%
 if not randfor_dir == "skip":
     print(datetime.now().strftime("%H:%M:%S>"), "Visualizing Random Forest...")
     #filelist = []
     names = []
-    accuracies = pd.DataFrame(index = ["Split_1", "Split_2", "Split_3"])
+    accuracies = None
     #print("randfor_dir = {:s}".format(randfor_dir + "dataframes/randomforest_*.tsv"))
     
     for filepath in sorted(glob.iglob(randfor_dir + "dataframes/randomforest_*.tsv")):
@@ -736,11 +738,14 @@ if not randfor_dir == "skip":
             name = search.group(1) # to get only the matched charactesr
             names.append(name)
 
-        accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+        df = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+        df = df.loc[:,["Accuracy"]] # double brackets to ensure return of a DF and not of a series
+        df = df.rename(columns={"Accuracy": name})
+
+        accuracies = pd.concat([accuracies, df], axis = 1)
     
     
-    
-    
+    # first sort alphabetically
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
@@ -781,11 +786,6 @@ if not randfor_dir == "skip":
     
     # os.makedirs(output_dir, exist_ok=True)
     # plt.savefig(output_dir + "random_forest_result" + fileext + ".png")
-
-
-
-
-
 
 
 # %% Plot
@@ -829,11 +829,149 @@ if not randfor_dir == "skip":
     
 
     
-# %%
-
 else: 
     print("random_forest was skipped")
      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# %%
+if not svm_dir == "skip":
+    print(datetime.now().strftime("%H:%M:%S>"), "Visualizing Support Vector Machine...")
+    #filelist = []
+    names = []
+    accuracies = None
+
+    for filepath in sorted(glob.iglob(svm_dir + "dataframes/svm_*.tsv")):
+        filepath = filepath.replace('\\' , "/") # for some reason, it changes the last slash to backslash
+        #print(filepath)
+        #filelist.append(filepath)
+        
+        search = re.search("dataframes/svm_(.*?).tsv", filepath)
+        if search:
+            name = search.group(1) # to get only the matched charactesr
+            names.append(name)
+
+        #accuracies[name] = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+        df = pd.read_csv(filepath, delimiter = "\t", header = 0, index_col = 0)
+        df = df.loc[:,["Accuracy"]] # double brackets to ensure return of a DF and not of a series
+        df = df.rename(columns={"Accuracy": name})
+        
+        accuracies = pd.concat([accuracies, df], axis = 1)
+    
+    
+    accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
+
+     ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
+    if args.unsorted == False:
+        ordered = pd.DataFrame()
+        newnames = []
+        for name in custom_order:
+            if name in names:
+                ordered[name] = accuracies.loc[:,name]
+                newnames.append(name)
+            else:
+                pass
+            
+        # make sure, that all names were present in the custom_order source variable
+        if accuracies.shape[1] != len(newnames):
+            for name in names:
+                if name in custom_order:
+                    pass
+                else:
+                    ordered[name] = accuracies.loc[:,name]
+                    newnames.append(name)
+                    print("please add {:s} to the custom order variable".format(name))
+        names = newnames
+        accuracies = ordered
+    
+    
+    
+
+
+# %% Plot
+    avgs = []
+    stde = []
+
+    for i in range(accuracies.shape[1]):
+        values = np.array(accuracies.iloc[:,i])
+        avgs.append(np.mean(values))
+        stde.append(np.std(values, ddof = 1))
+                    
+    plt.figure(figsize = [1*accuracies.shape[1], 6.4*1.8])
+    
+    plt.subplot(2,1,1)
+    plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
+    plt.xticks(rotation = 45)
+    plt.title("Support Vector Machine" + titleext)
+    plt.ylabel("Accuracies")
+    plt.grid(which = "both", axis = "x")
+    #plt.legend(loc = "lower right")
+    plt.subplots_adjust(bottom=0.15)
+
+
+
+#  output_table
+    a = np.array(avgs)
+    b = np.array(stde)
+    tabledata = np.vstack((a,b))
+    tabledata = np.round(tabledata, decimals = 6)
+    
+
+    plt.subplot(2,1,2)
+    plt.axis("off")
+    tabulo = plt.table(cellText=tabledata, rowLabels=["Average", "Stdev(P)"], colLabels=names, loc='center', fontsize = 7)    
+    tabulo.auto_set_font_size(False)
+    tabulo.set_fontsize(6)
+    
+        
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(output_dir + "svm_result" + fileext + ".png")
+    
+
+    
+# %%
+
+else: 
+    print("svm was skipped")
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

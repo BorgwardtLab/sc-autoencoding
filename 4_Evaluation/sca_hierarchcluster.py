@@ -13,35 +13,17 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "clustering data")  #required
 parser.add_argument("-k","--k", default = 10, help="the number of clusters to find", type = int)
+parser.add_argument("--threshold", default = None, type = float, help = "instead of k, you can also supply the distance_threshold. If both are supplied, distance threshold is preferred.")
 
 parser.add_argument("-t","--title", help="title that will be written into the output file", default = "title")
 parser.add_argument("--num_reps", type = int, default = 25, help="how many repetitions it should do")
 parser.add_argument("--limit_dims", default = 0, help="number of input dimensions to consider", type = int)
-parser.add_argument("--n_init", type = int, default = 10, help="how many internal repetitions the clustering should do")
-
-parser.add_argument("-v","--verbosity", help="level of verbosity", default = 0, choices = [0, 1, 2, 3], type = int)
-parser.add_argument("-e", "--elbow", help="helptext", action="store_true")
-parser.add_argument("--elbowrange", help="the elobow will try all k's from 1-elbowrange", type = int, default = 11)
 
 parser.add_argument("-i","--input_dir", help="input directory", default = "../inputs/baseline_data/scaPCA_output/")
-parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/kmcluster/")
-#parser.add_argument("-r", "--reset", help="if this is called, the previous results file will be overwritten, otherwise results are appended", action="store_true")
+parser.add_argument("-o","--output_dir", help="output directory", default = "../outputs/results/hierarchical/")
 args = parser.parse_args() #required
 
 
-
-
-# def sca_kmcluster(k = 5,
-#                   dimensions = 0,
-#                   input_dir = "../inputs/baselines/baseline_data/scaPCA_output/",
-#                   output_dir = "../outputs/baselines/kmcluster/scaPCA_output/",
-#                   verbosity = 0,
-#                   elbow = False,
-#                   elbowrange = 11,
-#                   title = "title_placeholder",
-#                   reset = False):
-
-    
 
 
 
@@ -52,31 +34,37 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
 import statistics
 from sklearn.metrics.cluster import normalized_mutual_info_score
+from sklearn.cluster import AgglomerativeClustering
+#from sklearn.cluster import Ward
+
+
+
+
 
 input_dir = args.input_dir + "no_split/"
 output_dir = args.output_dir
-outputplot_dir = output_dir + "plots/" #+ args.title + "/"
+outputplot_dir = output_dir + "plots/"
 data_dir = output_dir + "dataframes/"
 
 
-
 k = args.k
-verbosity = args.verbosity
-elbow = args.elbow
 title = args.title
-elbowrange = args.elbowrange
+
+
+# supply either 0.0 or not at all to use threshold. 
+if args.threshold is not None:
+    if args.threshold != 0.0:
+        k = None
+    else:
+        args.threshold = None
 
 
 
-
-
-
-
-print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_kmcluster.py")
+print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_spectralcluster.py")
 print(input_dir)
+
 
 
 try:
@@ -86,20 +74,7 @@ except:
          
 
 
-
-# I think this is still used in the textoutput.
-tech_start = input_dir.find("/sca")
-tech_end = input_dir.find("_output/")
-
-
-technique_name = input_dir[tech_start + 4 : tech_end]
-
-
-
-
-
-
-
+args.n_init = 2
 
 
 # %% start of the looping
@@ -108,17 +83,14 @@ technique_name = input_dir[tech_start + 4 : tech_end]
 
 superpanda = pd.DataFrame()
 
-
 for fold in range(1,args.num_reps+1):
     print(datetime.now().strftime("%H:%M:%S>"), "Starting Fold Nr {:d}...".format(fold))
     
     plt.close("all")
         
-        
-        
-        
+
     
-    # %% Read Input data
+    # Read Input data
     print(datetime.now().strftime("%H:%M:%S>"), "loading data...")
     data = np.loadtxt(open(input_dir + "matrix.tsv"), delimiter="\t")
     
@@ -134,37 +106,32 @@ for fold in range(1,args.num_reps+1):
     if args.limit_dims > 0:
         if args.limit_dims <= data.shape[1]:
             data = data[:,0:args.limit_dims]
-            print("restricting input dimensions")
+            print("restricting input dimensions to the first {:d}".format(args.limit_dims))
         else:
             print("cannot restrict dims. Limit dims = {:d}, input dimension = {:d}".format(args.limit_dims, data.shape[1]))
     
     
     
     
-    
-    
-    
     # %% Clustering    
     
-    km = KMeans(
-        n_clusters=k, init="random", # 'k-means++',
-        max_iter=300, 
-        tol=1e-04, 
-        verbose = verbosity,
-        n_init = args.n_init,
-        n_jobs = 4
-    ) # default values
+
+    hierarchical = AgglomerativeClustering(n_clusters = k,
+                                        affinity = "euclidean",
+                                        memory = None,
+                                        connectivity = None,
+                                        compute_full_tree = "auto",
+                                        linkage = "ward",
+                                        distance_threshold = args.threshold
+        )
     
+    hierarchical.fit(data)
     
-    
-    predicted_cluster = km.fit_predict(data)
-    
+    predicted_cluster = hierarchical.labels_
     
     
     
     # %% Plotting first simple plot
-    
-    
     
     if not os.path.exists(outputplot_dir):
         print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Plot Directory...")
@@ -176,44 +143,13 @@ for fold in range(1,args.num_reps+1):
     
     print(datetime.now().strftime("%H:%M:%S>"), "Plotting Clusters...")
     
+    
     import random
     
     import matplotlib.cm as cm 
     colors = cm.rainbow(np.linspace(0, 1, k))
     shapes = [".","o","v","^","<",">","8","s","p","P","*","h","H","X","D","d"]
     
-    
-    
-    
-    
-    # %% Elbow
-    
-    if elbow:
-        print(datetime.now().strftime("%H:%M:%S>"), "Calculating Elbow...")
-        
-        # calculate distortion for a range of number of cluster
-        distortions = []
-        for i in range(1, elbowrange):
-            km = KMeans(
-                n_clusters=k, init="random", #'k-means++',
-                max_iter=300, 
-                tol=1e-04,
-                n_jobs = 4,
-                verbose = verbosity,
-                n_init = args.n_init
-            ) # default values
-            km.fit(data)
-            distortions.append(km.inertia_)
-        
-        # plot
-        plt.figure()
-        plt.plot(range(1, 11), distortions, marker='o')
-        plt.xlabel('Number of clusters')
-        plt.ylabel('Distortion')
-        plt.title("k-search (on traindata)")
-        plt.show()
-        plt.savefig(outputplot_dir + title + "_Elbowplot.png")
-        
     
     
     
@@ -229,8 +165,7 @@ for fold in range(1,args.num_reps+1):
     multiassigned = np.zeros(k, dtype=bool)
     global_counts = Counter(truelabels)
     
-    
-    
+  
     COUNTS_PER_CLUSTER = "\n\nCounts per Cluster:"
     
     
@@ -238,9 +173,7 @@ for fold in range(1,args.num_reps+1):
     for cluster in range(k):
         indexes = np.where(predicted_cluster == cluster)[0] 
         
-        # only used for creating dataframe
         clustersizes.append(len(indexes))
-        #
         
         truelabels_in_cluster = truelabels[indexes]   
         counts = Counter(truelabels_in_cluster)
@@ -248,10 +181,6 @@ for fold in range(1,args.num_reps+1):
         most_common_str = ((counts.most_common(1))[0])[0]
         most_common_cnt = ((counts.most_common(1))[0])[1]
         
-    
-        ### remove this section if all runs well
-        #print("\ncounts for cluster nr {0:d}:".format(cluster))
-        #print(counts.most_common())
         
         COUNTS_PER_CLUSTER += "\ncounts for cluster nr {0:d}:\n".format(cluster)
         COUNTS_PER_CLUSTER += str(counts.most_common())
@@ -312,7 +241,6 @@ for fold in range(1,args.num_reps+1):
     f1score = 2*purity_per_cluster*recall_per_cluster/(purity_per_cluster + recall_per_cluster)
     
     
-    
     panda = pd.DataFrame(index = range(k))
     panda["Purity"] = purity_per_cluster
     panda["Size"] = clustersizes
@@ -346,7 +274,7 @@ for fold in range(1,args.num_reps+1):
         label= clusterlabels[cluster],
         )
             
-    plt.title(technique_name + " Clustering Prediction")
+    plt.title(title + " Clustering Prediction")
     plt.xlabel("Component 1")
     plt.ylabel("Component 2")
     plt.legend(scatterpoints=1)
@@ -423,7 +351,7 @@ for fold in range(1,args.num_reps+1):
     )
     
             
-    plt.title(technique_name)
+    plt.title(title)
     plt.xlabel("Component 1")
     plt.ylabel("Component 2")
     plt.legend(scatterpoints=1)
@@ -516,31 +444,5 @@ superpanda.to_csv(data_dir + "kmcluster_" + args.title + ".tsv", sep = "\t", ind
    
 
    
-
-   
-    
-   
-    
-   
-    
-   
-    
-   
-    
-   
-    
-   
-    
-        
-    # %%
-      
-    # if __name__ == "__main__":
-    #     sca_kmcluster(k = args.k, dimensions = args.dimensions, input_dir = args.input_dir, 
-    #                   output_dir = args.output_dir, 
-    #                   verbosity = args.verbosity, elbow = args.elbow, elbowrange = args.elbowrange, 
-    #                   title = args.title, reset = args.reset)
-    
-
-
 
 
