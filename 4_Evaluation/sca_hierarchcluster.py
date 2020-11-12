@@ -62,7 +62,7 @@ if args.threshold is not None:
 
 
 
-print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_spectralcluster.py")
+print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_hierarchicalcluster.py")
 print(input_dir)
 
 
@@ -250,9 +250,6 @@ for fold in range(1,args.num_reps+1):
     panda["Most common label"] = clusterlabel_original
     panda["Fold"] = fold
     
-    # # Machine Output
-    # os.makedirs(data_dir, exist_ok=True)
-    # panda.to_csv(data_dir + "kmcluster_" + args.title + ".tsv", sep = "\t", index = True, header = True)
 
     superpanda = pd.concat([superpanda, panda])
 
@@ -433,16 +430,15 @@ for fold in range(1,args.num_reps+1):
     global_purity = beenzcount/len(truelabels)            
     
     
-    print(datetime.now().strftime("%H:%M:%S>"), "sca_kmcluster.py terminated successfully")
     print("global purity is: {0:.4f}".format(global_purity))   
     
     
    
 # Machine Output
 os.makedirs(data_dir, exist_ok=True)
-superpanda.to_csv(data_dir + "kmcluster_" + args.title + ".tsv", sep = "\t", index = True, header = True)
+superpanda.to_csv(data_dir + "hierarchical_" + args.title + ".tsv", sep = "\t", index = True, header = True)
    
 
-   
+print(datetime.now().strftime("%H:%M:%S>"), "sca_hierarchcluster.py terminated successfully\n")
 
 

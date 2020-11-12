@@ -170,7 +170,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 hierarchi_k=(10 	10 	10 	10 	10 	10 	10 	10 	10 	10)
 
 (
-tech=hierarchcluster
+tech=hierarchical
 output_dir=../outputs/results/$tech/
 
 for i in $range; do
