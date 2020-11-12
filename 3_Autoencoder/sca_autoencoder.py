@@ -27,6 +27,43 @@ args = parser.parse_args()
 
 
 
+import pandas as pd
+import scanpy as sc # import AnnData
+#from sklearn.model_selection import train_test_split
+
+
+# THE EXTRA IMPORTS
+############################################################################################################################################################
+import keras
+from keras.regularizers import l1_l2
+  
+# THE EXTRA IMPORTS
+############################################################################################################################################################
+
+
+
+import os
+import sys
+import pickle
+from datetime import datetime
+from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
+from keras.models import Model
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson#, cosine_proximity
+# from keras.objectives import cosine_proximity
+import numpy as np
+import anndata
+import tensorflow as tf
+import keras.optimizers as opt
+
+
+from keras import backend as K
+MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
+DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
+        
+    
+
+
 # In the implementations, I try to keep the function signature
 # similar to those of Keras objective functions so that
 # later on we can use them in Keras smoothly:
@@ -1673,41 +1710,7 @@ def sca_main(input_dir, output_dir, outputplot_dir, loss_name, split):
 
 if __name__ == "__main__":
     
-    import pandas as pd
-    import scanpy as sc # import AnnData
-    #from sklearn.model_selection import train_test_split
-    
-    
-    # THE EXTRA IMPORTS
-    ############################################################################################################################################################
-    import keras
-    from keras.regularizers import l1_l2
-  
-    # THE EXTRA IMPORTS
-    ############################################################################################################################################################
-    
-    
-    
-    import os
-    import sys
-    import pickle
-    from datetime import datetime
-    from keras.layers import Input, Dense, Dropout, Activation, BatchNormalization, Lambda
-    from keras.models import Model
-    from keras.callbacks import EarlyStopping, ReduceLROnPlateau
-    from keras.objectives import mse, mae, mape, msle, squared_hinge, hinge, binary_crossentropy, categorical_crossentropy, sparse_categorical_crossentropy, kld, poisson#, cosine_proximity
-    # from keras.objectives import cosine_proximity
-    import numpy as np
-    import anndata
-    import tensorflow as tf
-    import keras.optimizers as opt
-    
 
-    from keras import backend as K
-    MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
-    DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
-        
-    
         
 
     
