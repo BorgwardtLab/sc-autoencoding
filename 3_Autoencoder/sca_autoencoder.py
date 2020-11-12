@@ -1677,6 +1677,17 @@ if __name__ == "__main__":
     import scanpy as sc # import AnnData
     #from sklearn.model_selection import train_test_split
     
+    
+    # THE EXTRA IMPORTS
+    ############################################################################################################################################################
+    import keras
+    from keras.regularizers import l1_l2
+  
+    # THE EXTRA IMPORTS
+    ############################################################################################################################################################
+    
+    
+    
     import os
     import sys
     import pickle
@@ -1698,14 +1709,7 @@ if __name__ == "__main__":
         
     
         
-    # THE EXTRA IMPORTS
-    ############################################################################################################################################################
-    import keras
-    from keras.regularizers import l1_l2
-  
-    # THE EXTRA IMPORTS
-    ############################################################################################################################################################
-    
+
     
     MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
     DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)

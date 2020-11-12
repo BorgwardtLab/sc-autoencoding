@@ -12,10 +12,6 @@ AEtypes=("normal" "poisson" "nb")
 
 
 
-start=`date +%s`
-printf "############################################################################\n################### " &>> $logfile
-echo -n START: `date` |& tee -a $logfile
-printf " ###################\n############################################################################\n\n" &>> $logfile
 
 
 preprocessed_ctdata="../inputs/data/preprocessed_data_autoencoder/"
@@ -26,22 +22,40 @@ outdir="../outputs/experiments/AEtypes/"
 
 (
 for AEtype in ${AEtypes[@]}; do
-
+(
 
 #remember to change filenames as well
 echo $AEtype
+logfile=logs/6_11AEtypes_$AEtype.log
+
+
+start=`date +%s`
+printf "############################################################################\n################### " &>> $logfile
+echo -n START: `date` |& tee -a $logfile
+printf " ###################\n############################################################################\n\n" &>> $logfile
+
+
 
 	(
-	python ../3_Autoencoder/sca_autoencoder.py --mode complete --AEtype $AEtype --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "${outdir}bca_data/${$AEtype}/" --outputplot_dir "${outdir}bca_data/${$AEtype}/"
+	python ../3_Autoencoder/sca_autoencoder.py --mode complete --AEtype $AEtype --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "${outdir}bca_data/${AEtype}/" --outputplot_dir "${outdir}bca_data/${AEtype}/" |& tee -a $logfile
 
 	(
-	python ../4_Evaluation/sca_kmcluster.py --title ${AEtype} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${$AEtype}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${AEtype} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
-	python ../4_Evaluation/sca_randforest.py --title ${AEtype} --n_trees 100 --input_dir "${outdir}bca_data/${$AEtype}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_randforest.py --title ${AEtype} --n_trees 100 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	)
 
 	wait
-	)
+	) 
+	
+	
+end=`date +%s`
+printf "\nSCA experiment $AEtype took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
+printf "\n################### " &>> $logfile
+echo -n DONE: `date` |& tee -a $logfile
+printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
+	
+) &
 done
 wait
 )
@@ -55,11 +69,6 @@ python ../4_Evaluation/visualize.py  --title "BCAopti"  --output_dir ${outdir} -
 
 
 
-end=`date +%s`
-printf "\nBCA experiment activation took %d minutes\n" `echo "($end-$start)/60" | bc` |& tee -a $logfile
-printf "\n################### " &>> $logfile
-echo -n DONE: `date` |& tee -a $logfile
-printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 
 
 
