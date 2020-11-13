@@ -19,7 +19,7 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
-parser.add_argument("--AEtype", default = "normal", choices=['normal','poisson','nb','shared','zinb','zinb-shared','zinb-elempi','nb-conddisp','nb-fork','nb-fork','zinb-conddisp','zinb-fork'])
+parser.add_argument("--AEtype", default = "poisson", choices=['normal','poisson','nb','shared','zinb','zinb-shared','zinb-elempi','nb-conddisp','nb-fork','nb-fork','zinb-conddisp','zinb-fork'])
 #parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
 # whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
 
@@ -133,7 +133,7 @@ class Autoencoder():
         self.input_dropout= input_dropout
         self.batchnorm = batchnorm
         
-        self.initializer = initializer
+        self.init = initializer
         self.regularizer = regularizer
         self.activation = activation
 ## end of inputparsing
@@ -156,6 +156,31 @@ class Autoencoder():
             assert len(self.hidden_dropout) == len(self.hidden_size)
         else:
             self.hidden_dropout = [self.hidden_dropout]*len(self.hidden_size)
+            
+            
+            
+            
+##########################################################################################################################################################
+# some exra stuff for compatibility
+        self.l2_coef = 0
+        self.l1_coef = 0
+        self.l2_enc_coef = 0
+        self.l1_enc_coef = 0
+        self.ridge = None
+        self.loss = None
+        self.file_path = None
+        self.decoder = None
+        self.debug = None
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
 
 
@@ -193,7 +218,7 @@ class Autoencoder():
 # Create Layers
             last_hidden = Dense(units = hid_size,
                         activation = None,
-                        kernel_initializer = self.initializer,
+                        kernel_initializer = self.init,
                         kernel_regularizer = self.regularizer,
                         name = layer_name)(last_hidden)
             #dense implements the operation output = activation(dot(input, kernel) + bias)
@@ -278,7 +303,7 @@ class Autoencoder():
 
 # Create the output layer (mean), as well as size/factors lambda       
         mean = Dense(self.output_size, activation = MeanAct,
-                     kernel_initializer=self.initializer,
+                     kernel_initializer=self.init,
                      kernel_regularizer=self.regularizer,
                      name='mean')(self.decoder_output)
         
@@ -1038,13 +1063,13 @@ class NBForkAutoencoder(NBAutoencoder):
 ######################################################################################################################################################################################################################################################################     
 
 def _nan2zero(x):
-    return tf.where(tf.is_nan(x), tf.zeros_like(x), x)
+    return tf.where(tf.math.is_nan(x), tf.zeros_like(x), x)
 
 def _nan2inf(x):
-    return tf.where(tf.is_nan(x), tf.zeros_like(x)+np.inf, x)
+    return tf.where(tf.math.is_nan(x), tf.zeros_like(x)+np.inf, x)
 
 def _nelem(x):
-    nelem = tf.reduce_sum(tf.cast(~tf.is_nan(x), tf.float32))
+    nelem = tf.reduce_sum(tf.cast(~tf.math.is_nan(x), tf.float32))
     return tf.cast(tf.where(tf.equal(nelem, 0.), 1., nelem), x.dtype)
 
 
@@ -1241,7 +1266,7 @@ class ElementwiseDense(Dense):
         return output
 
 
-nan2zeroLayer = Lambda(lambda x: tf.where(tf.is_nan(x), tf.zeros_like(x), x))
+nan2zeroLayer = Lambda(lambda x: tf.where(tf.math.is_nan(x), tf.zeros_like(x), x))
 ColwiseMultLayer = Lambda(lambda l: l[0]*tf.reshape(l[1], (-1,1)))
 
 

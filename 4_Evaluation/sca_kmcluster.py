@@ -74,7 +74,7 @@ elbowrange = args.elbowrange
 
 
 
-
+print("")
 print(datetime.now().strftime("%d. %b %Y, %H:%M:%S>"), "Starting sca_kmcluster.py")
 print(input_dir)
 
