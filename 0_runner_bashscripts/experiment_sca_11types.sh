@@ -40,10 +40,15 @@ printf " ###################\n##################################################
 	python ../3_Autoencoder/sca_autoencoder.py --mode complete --AEtype $AEtype --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "${outdir}bca_data/${AEtype}/" --outputplot_dir "${outdir}bca_data/${AEtype}/" |& tee -a $logfile
 
 	(
-	python ../4_Evaluation/sca_kmcluster.py --title ${AEtype} --k 8 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
+	python ../4_Evaluation/sca_kmcluster.py --title ${AEtype} --k 10 --limit_dims 0 --verbosity 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}cluster_result/" |& tee -a $logfile
 	) & (
 	python ../4_Evaluation/sca_randforest.py --title ${AEtype} --n_trees 100 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
+	) & (
+	python ../4_Evaluation/sca_hierarchcluster.py --k 10 --threshold 0.0 --title ${AEtype} --num_reps $reps --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}hierarchical/" |& tee -a $logfile
+	) & (
+	python ../4_Evaluation/sca_svm.py --title ${AEtype} --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}svm/" |& tee -a $logfile
 	)
+	
 
 	wait
 	) 
@@ -61,16 +66,14 @@ wait
 )
 
 
+echo `date` "I'm now done with all evaluations, and can start the visualization"
 
 
 (
 python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --kmcluster_results "${outdir}cluster_result/"
 python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/"
+python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --svm_results "${outdir}svm/"
+python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --hierarch_results "${outdir}hierarchical/"
 )
-
-
-
-
-
 
 
