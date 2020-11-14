@@ -23,7 +23,6 @@ outdir="../outputs/experiments/AEtypes/"
 (
 for AEtype in ${AEtypes[@]}; do
 (
-
 #remember to change filenames as well
 echo $AEtype
 logfile=logs/6_11AEtypes_$AEtype.log
@@ -48,7 +47,6 @@ printf " ###################\n##################################################
 	) & (
 	python ../4_Evaluation/sca_svm.py --title ${AEtype} --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}svm/" |& tee -a $logfile
 	)
-	
 
 	wait
 	) 
@@ -60,7 +58,7 @@ printf "\n################### " &>> $logfile
 echo -n DONE: `date` |& tee -a $logfile
 printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
 	
-) &
+) # &
 done
 wait
 )
