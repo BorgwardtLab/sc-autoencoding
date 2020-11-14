@@ -50,7 +50,7 @@ hierarch_dir = args.hierarch_results
 
 
 if args.general_input != "skip":
-    dbscan_dir = args.general_input + "dbscan/"
+    #dbscan_dir = args.general_input + "dbscan/"
     kmclust_dir = args.general_input + "kmcluster/"
     hierarch_dir = args.general_input + "hierarchcluster/"
     #classification_dir = args.general_input + "ova_classification/"

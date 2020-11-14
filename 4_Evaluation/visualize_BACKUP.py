@@ -80,11 +80,11 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
+# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/AEtypes/randomforest_result/"
 
 # svm_dir = "D:/Dropbox/Internship/gitrepo/outputs/results/svm/"
 
-hierarch_dir = "D:/Dropbox/Internship/gitrepo/outputs/results/hierarchical/"
+# hierarch_dir = "D:/Dropbox/Internship/gitrepo/outputs/results/hierarchical/"
 
 
 

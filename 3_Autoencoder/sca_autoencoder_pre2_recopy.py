@@ -13,6 +13,39 @@ Created on Sun Jul 19 17:22:21 2020
     #         'zinb-shared': ZINBSharedAutoencoder, 'zinb-fork': ZINBForkAutoencoder,
     #         'zinb-elempi': ZINBAutoencoderElemPi}    
 
+# # Define Loss for the training
+#         if self.loss_name == "poisson_loss":
+#             self.loss = poisson_loss
+            
+#         elif self.loss_name == "poisson":
+#             self.loss = poisson            
+            
+#         elif self.loss_name == "mse":
+#             self.loss = mse
+            
+#         elif self.loss_name == "mae":
+#             self.loss = mae
+            
+#         elif self.loss_name == "mape":
+#             self.loss = mape
+            
+#         elif self.loss_name == "msle":
+#             self.loss = msle
+
+#         elif self.loss_name == "squared_hinge":
+#             self.loss = squared_hinge
+
+#         elif self.loss_name == "hinge":
+#             self.loss = hinge
+
+#         elif self.loss_name == "binary_crossentropy":
+#             self.loss = binary_crossentropy
+
+#         elif self.loss_name == "categorical_crossentropy":
+#             self.loss = categorical_crossentropy
+
+#         elif self.loss_name == "kld":
+#             self.loss = kld
 
 
 
@@ -25,7 +58,7 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
-parser.add_argument("--AEtype", default = "zinb-fork", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
+parser.add_argument("--AEtype", default = "zinb-shared", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
 #parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
 # whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
 
@@ -172,7 +205,7 @@ class Autoencoder():
         self.l1_coef = 0
         self.l2_enc_coef = 0
         self.l1_enc_coef = 0
-        self.ridge = 0
+        self.ridge = None
         self.loss = None
         self.file_path = None
         self.decoder = None

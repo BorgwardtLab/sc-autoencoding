@@ -203,12 +203,6 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 
 
-
-
-
-
-
-
 # (
 # tech=dbscan
 # output_dir=../outputs/results/$tech/
@@ -290,7 +284,12 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
-python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/results/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title main --hierarch_results "../outputs/results/hierarchical/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+#python ../4_Evaluation/visualize.py  --title main --dbscan_results "../outputs/results//" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title main --kmcluster_results "../outputs/results/kmcluster/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title main --random_forest_results "../outputs/results/random_forest/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title main --svm_results "../outputs/results/svm/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
+
 
 
 end=`date +%s`
