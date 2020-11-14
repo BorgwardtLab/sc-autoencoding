@@ -53,7 +53,7 @@ fi
 
 (
 tech=random_forest
-output_dir=../outputs/$tech/
+output_dir=../outputs/results/$tech/
 ntrees=100
 
 for i in $range; do
@@ -92,7 +92,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 (
 tech=svm
-output_dir=../outputs/$tech/
+output_dir=../outputs/results/$tech/
 
 for i in $range; do
 	(
@@ -211,7 +211,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 # (
 # tech=dbscan
-# output_dir=../outputs/$tech/
+# output_dir=../outputs/results/$tech/
 
 # # 		PCA		ICA		LSA		tSE		UMP		ori		DCA		BCA		SCA 		denoised)
 # minpts=(3 		3 		3 		3 		3 		3 		3 		3 		3			3)
@@ -290,7 +290,7 @@ printf " ###################\n##################################################
 start=`date +%s`
 
 
-python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/" --output_dir "../outputs/visualized_results/" |& tee -a $logfile
+python ../4_Evaluation/visualize.py  --title main --general_input "../outputs/results/" --output_dir "../outputs/results/visualized_results/" |& tee -a $logfile
 
 
 end=`date +%s`
