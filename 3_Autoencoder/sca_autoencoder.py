@@ -25,7 +25,7 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
-parser.add_argument("--AEtype", default = "zinb-fork", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
+parser.add_argument("--AEtype", default = "nb", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
 #parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
 # whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
 
@@ -363,10 +363,10 @@ class Autoencoder():
 
 
 
-    def predict(self, adata, mode='denoise'):
+    def predict(self, adata, mode='denoise', return_info = False, copy = False, colnames = None):
        
         assert mode in ('denoise', 'latent', 'full'), 'Unknown mode'
-        adata = adata.copy()
+        # adata = adata.copy()
 
         if mode in ('denoise', 'full'):
             print(datetime.now().strftime("%H:%M:%S>"), 'Calculating reconstructions...')
@@ -441,7 +441,8 @@ class Autoencoder():
         print(datetime.now().strftime("%H:%M:%S>"), 'Saving output(s)...')
         os.makedirs(file_path, exist_ok=True)
         
-        
+        global globi
+        globi = train_adata
         
 
         
@@ -566,12 +567,12 @@ class NBConstantDispAutoencoder(Autoencoder):
         colnames = adata.var_names.values
         rownames = adata.obs_names.values
         res = super().predict(adata, mode, return_info, copy)
-        adata = res if copy else adata
+        adata = res
 
         if return_info:
             adata.var['X_dca_dispersion'] = self.extra_models['dispersion']()
 
-        return adata if copy else None
+        return adata
 
     def write(self, adata, file_path, mode='denoise', colnames=None):
         colnames = adata.var_names.values if colnames is None else colnames
@@ -614,12 +615,12 @@ class NBAutoencoder(Autoencoder):
         rownames = adata.obs_names.values
 
         res = super().predict(adata, mode, return_info, copy)
-        adata = res if copy else adata
+        adata = res
 
         if return_info:
             adata.obsm['X_dca_dispersion'] = self.extra_models['dispersion'].predict(adata.X)
 
-        return adata if copy else None
+        return adata
 
     def write(self, adata, file_path, mode='denoise', colnames=None):
         colnames = adata.var_names.values if colnames is None else colnames
@@ -688,15 +689,13 @@ class ZINBAutoencoder(Autoencoder):
 
     def predict(self, adata, mode='denoise', return_info=False, copy=False, colnames=None):
 
-        adata = adata.copy() if copy else adata
-
         if return_info:
             adata.obsm['X_dca_dispersion'] = self.extra_models['dispersion'].predict(adata.X)
             adata.obsm['X_dca_dropout']    = self.extra_models['pi'].predict(adata.X)
 
         # warning! this may overwrite adata.X
         super().predict(adata, mode, return_info, copy=False)
-        return adata if copy else None
+        return adata
 
     def write(self, adata, file_path, mode='denoise', colnames=None):
         colnames = adata.var_names.values if colnames is None else colnames
@@ -818,14 +817,13 @@ class ZINBConstantDispAutoencoder(Autoencoder):
     def predict(self, adata, mode='denoise', return_info=False, copy=False):
         colnames = adata.var_names.values
         rownames = adata.obs_names.values
-        adata = adata.copy() if copy else adata
 
         if return_info:
             adata.var['X_dca_dispersion'] = self.extra_models['dispersion']()
             adata.obsm['X_dca_dropout']    = self.extra_models['pi'].predict(adata.X)
 
         super().predict(adata, mode, return_info, copy=False)
-        return adata if copy else None
+        return adata
 
     def write(self, adata, file_path, mode='denoise', colnames=None):
         colnames = adata.var_names.values if colnames is None else colnames
