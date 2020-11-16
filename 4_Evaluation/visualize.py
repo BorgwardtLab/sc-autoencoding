@@ -110,6 +110,12 @@ if not dbscan_dir == "skip":
             
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+    
+    
     
     # %%
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
@@ -419,7 +425,12 @@ if not kmclust_dir == "skip":
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
     
-
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+    
+    
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = []
@@ -748,7 +759,11 @@ if not hierarch_dir == "skip":
             
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
-    
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
@@ -1052,6 +1067,11 @@ if not randfor_dir == "skip":
 
         accuracies = pd.concat([accuracies, df], axis = 1)
     
+    if accuracies is None:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+        
     
     # first sort alphabetically
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
@@ -1191,7 +1211,12 @@ if not svm_dir == "skip":
         
         accuracies = pd.concat([accuracies, df], axis = 1)
     
-    
+    if accuracies is None:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+
+        
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.

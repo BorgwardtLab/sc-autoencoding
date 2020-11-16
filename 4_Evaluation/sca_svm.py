@@ -60,7 +60,7 @@ outputplot_dir = source_outputplot_dir
 
 # %% handle splits
 
-print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_svm.py with n_Trees = {numcom:d}".format(numcom = -99))    
+print(datetime.now().strftime("%H:%M:%S>"), "Starting sca_svm.py")    
 
 # determine number of splits
 num_splits = 0

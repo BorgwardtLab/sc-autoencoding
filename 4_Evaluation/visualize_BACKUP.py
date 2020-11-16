@@ -50,7 +50,7 @@ hierarch_dir = args.hierarch_results
 
 
 if args.general_input != "skip":
-    dbscan_dir = args.general_input + "dbscan/"
+    #dbscan_dir = args.general_input + "dbscan/"
     kmclust_dir = args.general_input + "kmcluster/"
     hierarch_dir = args.general_input + "hierarchcluster/"
     #classification_dir = args.general_input + "ova_classification/"
@@ -80,7 +80,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
 
-# randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/AEtypes/randomforest_result/"
+randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
 
 # svm_dir = "D:/Dropbox/Internship/gitrepo/outputs/results/svm/"
 
@@ -109,6 +109,12 @@ if not dbscan_dir == "skip":
             print("some error with the input files of kmcluster visualizer")
             
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
+    
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+    
     
     
     # %%
@@ -419,7 +425,12 @@ if not kmclust_dir == "skip":
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
     
-
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+    
+    
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
         ordered = []
@@ -748,7 +759,11 @@ if not hierarch_dir == "skip":
             
     ##### sorting code for custom sort order. (maybe I should deactivate sorting?)    
     
-    
+    if len(dataframes) == 0:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.
     if args.unsorted == False:
@@ -1052,6 +1067,11 @@ if not randfor_dir == "skip":
 
         accuracies = pd.concat([accuracies, df], axis = 1)
     
+    if accuracies is None:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+        
     
     # first sort alphabetically
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
@@ -1191,7 +1211,12 @@ if not svm_dir == "skip":
         
         accuracies = pd.concat([accuracies, df], axis = 1)
     
-    
+    if accuracies is None:
+        print("no datasets were found. Please recheck your input directory")
+        import sys
+        sys.exit()
+
+        
     accuracies = accuracies.reindex(sorted(accuracies.columns, key = str), axis=1)
 
      ##### sort the accuracies. I'm sorry, but it has to b. It's much nicer, and I don't know a better way to sort than this.

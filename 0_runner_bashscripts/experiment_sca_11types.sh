@@ -7,6 +7,7 @@ conda env list	# it should be visible in the log-textfile. I'm not saving it to 
 
 
 
+
 AEtypes=("normal" "poisson" "nb" "nb-conddisp" "nb-shared" "nb-conddisp" "nb-fork" "zinb-shared" "zinb-elempi" "zinb-conddisp" "zinb-fork")
 # AEtypes=("normal" "poisson" "nb")
 

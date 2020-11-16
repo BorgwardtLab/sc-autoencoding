@@ -39,22 +39,35 @@ conda env list	|& tee -a $logfile
 
 
 # Fastest, but not dynamic so pay attention that all splits are taken care of
-(
-output1=$(python ../3_Autoencoder/sca_autoencoder.py --mode nosplit --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
-) & (
-output2=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 1 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
-) & (
-output3=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 2 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
-) & (
-output4=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 3 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
-)
+# (
+# output1=$(python ../3_Autoencoder/sca_autoencoder.py --mode nosplit --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
+# ) & (
+# output2=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 1 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
+# ) & (
+# output3=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 2 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
+# ) & (
+# output4=$(python ../3_Autoencoder/sca_autoencoder.py --mode split --splitnumber 3 --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/")
+# )
 
-wait
+# wait
 
-printf "%s" "$output1" |& tee -a $logfile 
-printf "%s" "$output2" |& tee -a $logfile 
-printf "%s" "$output3" |& tee -a $logfile 
-printf "%s" "$output4" |& tee -a $logfile 
+# printf "%s" "$output1" |& tee -a $logfile 
+# printf "%s" "$output2" |& tee -a $logfile 
+# printf "%s" "$output3" |& tee -a $logfile 
+# printf "%s" "$output4" |& tee -a $logfile 
+
+# the output1= way unfortunately doens't work for completely weird reasons sometimes?
+# anyway, we have time now.
+# so let's run it fulltime.
+
+
+python ../3_Autoencoder/sca_autoencoder.py --mode complete --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" |& tee -a $logfile
+
+
+
+
+
+
 
 echo "SCA is done" |& tee -a $logfile
 echo "(accept this as replacement for the actual stdout)" #to avoid cluttering the logtxt from analyse_all.sh
