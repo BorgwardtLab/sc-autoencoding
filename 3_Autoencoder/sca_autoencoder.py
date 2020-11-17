@@ -23,13 +23,21 @@ parser.add_argument("-i","--input_dir", help="input directory", default = "../in
 parser.add_argument("-o","--output_dir", help="output directory", default = "../inputs/autoencoder_data/SCA_output/")
 parser.add_argument("-p","--outputplot_dir", help="plot directory", default = "../outputs/autoencoder_data/SCA/")
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
-parser.add_argument("--mode", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'], default = "complete")
+parser.add_argument("--mode", default = "complete", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'])
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
 parser.add_argument("--AEtype", default = "nb-shared", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
 #parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
 # whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
 
 args = parser.parse_args()
+
+
+
+
+
+
+# args.input_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/data/preprocessed_data_autoencoder/"
+
 
 
 
@@ -68,6 +76,20 @@ MeanAct = lambda x: tf.clip_by_value(K.exp(x), 1e-5, 1e6)
 DispAct = lambda x: tf.clip_by_value(tf.nn.softplus(x), 1e-4, 1e4)
         
     
+    
+    
+    
+    
+# EXPERIMENTAL SOLUTION TO THE PROBLEM THAT THE CODE DOESN'T WORK ON SERVER, BUT WORKS ON LOCAL MACHINE
+#tf.config.experimental_run_functions_eagerly(True)
+tf.compat.v1.disable_eager_execution()
+# THIS ONE DOES IT. SO FUCK IT. 
+
+
+
+
+
+
 
 
 # In the implementations, I try to keep the function signature
