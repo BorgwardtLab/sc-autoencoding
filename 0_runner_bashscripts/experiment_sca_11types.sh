@@ -44,7 +44,7 @@ printf " ###################\n##################################################
 	) & (
 	python ../4_Evaluation/sca_randforest.py --title ${AEtype} --n_trees 100 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}randomforest_result/" |& tee -a $logfile
 	) & (
-	python ../4_Evaluation/sca_hierarchcluster.py --k 10 --threshold 0.0 --title ${AEtype} --num_reps $reps --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}hierarchical/" |& tee -a $logfile
+	python ../4_Evaluation/sca_hierarchcluster.py --k 10 --threshold 0.0 --title ${AEtype} --num_reps 50 --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}hierarchical/" |& tee -a $logfile
 	) & (
 	python ../4_Evaluation/sca_svm.py --title ${AEtype} --limit_dims 0 --input_dir "${outdir}bca_data/${AEtype}/" --output_dir "${outdir}svm/" |& tee -a $logfile
 	)
