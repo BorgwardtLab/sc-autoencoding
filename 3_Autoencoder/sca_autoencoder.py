@@ -351,13 +351,14 @@ class Autoencoder():
                 pickle.dump(self, f)        
   
     
-    def save_model(self, save_dir):
-        if not os.path.exists(save_dir):
-            print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
-            os.makedirs(save_dir)
+    def save_model(self, save_dir, *args, **kwargs):
+        # if not os.path.exists(save_dir):
+        #     print(datetime.now().strftime("%H:%M:%S>"), "Creating Output Directory...")
+        #     os.makedirs(save_dir)
             
-        print(datetime.now().strftime("%H:%M:%S>"), "saving model as hdf5")
-        self.model.save(save_dir + "model.hdf5")     
+        # print(datetime.now().strftime("%H:%M:%S>"), "saving model as hdf5")
+        # self.model.save(save_dir + "model.hdf5")     
+        print("model was not saved, because I don't want to.")
     
     
 

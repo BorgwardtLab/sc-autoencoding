@@ -61,7 +61,7 @@ conda env list	|& tee -a $logfile
 # so let's run it fulltime.
 
 
-python ../3_Autoencoder/sca_autoencoder.py --mode complete --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" |& tee -a $logfile
+python ../3_Autoencoder/sca_autoencoder.py --mode complete --AEtype  --loss poisson_loss --input_dir "../inputs/data/preprocessed_data_autoencoder/" --output_dir "../inputs/autoencoder_data/SCA_output/" --outputplot_dir "../outputs/autoencoder_data/SCA/" |& tee -a $logfile
 
 
 
