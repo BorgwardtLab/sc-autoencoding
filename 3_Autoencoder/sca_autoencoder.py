@@ -1338,7 +1338,7 @@ def train(adata, network,
           batch_size=32, 
           clip_grad=5.,                 # todo find out effect on optimizer
           validation_split=0.1,     # the fraction of data, that is validation data (on which the loss and model metrics are calculated)
-          verbose=False,
+          verbose=True,
           verbosity = 2,    # added by me later, to hide progres bar
           ):
     
@@ -1383,10 +1383,10 @@ def train(adata, network,
     callbacks = []
 
     if reduce_lr:
-        lr_cb = ReduceLROnPlateau(monitor='val_loss', patience=reduce_lr, verbose=verbose)      #patientce = how many must plateau
+        lr_cb = ReduceLROnPlateau(monitor='val_loss', patience=reduce_lr, verbose=1)      #patientce = how many must plateau
         callbacks.append(lr_cb)
     if early_stop:
-        es_cb = EarlyStopping(monitor='val_loss', patience=early_stop, verbose=verbose)
+        es_cb = EarlyStopping(monitor='val_loss', patience=early_stop, verbose=1)
         callbacks.append(es_cb)
     if verbose:
         model.summary()

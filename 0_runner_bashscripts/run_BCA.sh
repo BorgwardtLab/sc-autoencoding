@@ -13,7 +13,7 @@ printf " ###################\n##################################################
 ######## BCA
 source ~/anaconda3/etc/profile.d/conda.sh # to source the conda command. Check directory if it doesn't work.
 conda activate tf
-printf "[run_BCA.sh ] " |& tee -a $logfile 
+printf "[run_BCA.sh ]" |& tee -a $logfile 
 conda env list	|& tee -a $logfile 
 
 
