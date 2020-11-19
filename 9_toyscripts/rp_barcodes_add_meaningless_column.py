@@ -30,13 +30,11 @@ barcodes = pd.read_csv(args.file,
                     )  
 
 
+
 barcodes["extracolumn"] = "unknown"
 
 
-barcodes.to_csv(args.file, sep = "\t", index = False, header = False)
+barcodes.to_csv(args.outfile, sep = "\t", index = False, header = False)
 
 
-
-
-
-
+print("added an irrelevant column to the barcodes")
