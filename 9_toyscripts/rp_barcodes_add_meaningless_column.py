@@ -20,21 +20,7 @@ args = parser.parse_args()
 
 
 
-
-
-
-
-
-
-
 import pandas as pd
-
-
-
-
-
-
-
 
 
 barcodes = pd.read_csv(args.file, 
