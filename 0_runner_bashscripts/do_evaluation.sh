@@ -38,6 +38,10 @@ titles=(
 reps=50
 
 
+general_output=../outputs/results/
+
+
+
 
 mkdir logs
 errfile="../ERROR_ERROR_ERROR_ERROR_ERROR_ERROR_ERROR.error"
@@ -53,7 +57,7 @@ fi
 
 (
 tech=random_forest
-output_dir=../outputs/results/$tech/
+output_dir=${general_output}${tech}/
 ntrees=100
 
 for i in $range; do
@@ -92,7 +96,7 @@ wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in
 
 (
 tech=svm
-output_dir=../outputs/results/$tech/
+output_dir=${general_output}${tech}/
 
 for i in $range; do
 	(
@@ -139,7 +143,7 @@ k_array=(10 10 	10 	10 	10 	10 	10 	10 	10 	10)
 
 (
 tech=kmcluster
-output_dir=../outputs/results/$tech/
+output_dir=${general_output}${tech}/
 
 for i in $range; do
 	(
@@ -171,7 +175,7 @@ hierarchi_k=(10 	10 	10 	10 	10 	10 	10 	10 	10 	10)
 
 (
 tech=hierarchical
-output_dir=../outputs/results/$tech/
+output_dir=${general_output}${tech}/
 
 for i in $range; do
 	(
