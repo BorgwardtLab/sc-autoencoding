@@ -9,7 +9,7 @@ python ../9_toyscripts/rp_barcodes_add_meaningless_column.py --file "../outputs/
 
 python ../1_Processing/sca_countdata_preprocessor.py --n_splits 0 --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 1000 --test_fraction 0.25 --input_dir "../outputs/experiments/replication_zheng/original/filtered_matrices_mex/hg19/" --output_dir "../outputs/experiments/replication_zheng/preprocessed/" --verbosity 0 |& tee -a $logfile
 
-python ../3_Autoencoder/sca_autoencoder_2neck.py --mode complete --loss poisson_loss --AEtype "zinb-conddisp" --input_dir "../outputs/experiments/replication_zheng/preprocessed/" --output_dir "../outputs/experiments/replication_zheng/AE_output/" --outputplot_dir "../outputs/experiments/replication_zheng/AE_output/" |& tee -a $logfile
+python ../3_Autoencoder/sca_autoencoder_2neck.py --mode nosplit --loss poisson_loss --AEtype "zinb-conddisp" --input_dir "../outputs/experiments/replication_zheng/preprocessed/" --output_dir "../outputs/experiments/replication_zheng/AE_output/" --outputplot_dir "../outputs/experiments/replication_zheng/AE_output/" |& tee -a $logfile
 
 
 
@@ -25,7 +25,7 @@ titles=(
 #how many repetition for clustering
 reps=1
 
-general_output=../outputs/experiments/replication_zheng/
+general_output=../outputs/experiments/replication_zheng/results/
 
 
 mkdir logs
@@ -42,6 +42,9 @@ fi
 
 
 
+
+
+n_reps=1
 
 
 # 		PCA	ICA	LSA	tSE	UMP	ori	DCA	BCA	SCA	denoi)
@@ -98,23 +101,10 @@ for i in $range; do
 	printf "\n################### " &>> $logfile
 	echo -n DONE: `date` &>> $logfile
 	printf " ####################\n############################################################################\n\n\n\n\n\n" &>> $logfile
-	) &
+	)
 done
 wait # we ABSOLUTELY need a wait within the brackets, and a "&" outside of it in order to ensure the last echo to wait for all commands before ending the script
 ) 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -155,17 +145,6 @@ printf " ####################\n#################################################
 
 wait
 echo "All Done - " `date`
-
-
-
-
-
-
-
-
-
-
-
 
 
 
