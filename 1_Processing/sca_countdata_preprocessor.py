@@ -237,9 +237,6 @@ panda_trp.to_csv(complete_dir + "matrix_transposed.tsv", sep = "\t", index = Tru
 
 
 
-
-
-
 # %% Train Test Split
 
 for j in range(args.n_splits):

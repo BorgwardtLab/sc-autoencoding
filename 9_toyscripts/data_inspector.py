@@ -88,6 +88,17 @@ bin_genes = data.getnnz(axis = 0) # stores the number of cells in which the gene
 bin_cells = data.getnnz(axis = 1) # stores the number of genes detected in each cell
 
 
+# oh boy lets run this loop
+rowsums = np.sum(data, axis = 0)
+colsums = np.sum(data, axis = 0)
+
+
+
+
+
+
+
+
 
 
 
@@ -132,6 +143,48 @@ plt.savefig(outputplot_dir + "/cellplot.png")
 # plt.legend()
 # plt.show()
 # plt.savefig(outputplot_dir + "/cellplot.png")
+
+plt.figure()
+plt.title("Histogram: How many total transcripts read of a gene")
+plt.hist(rowsums, log = True, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of cells cells a gene is expressed by")
+plt.show()
+plt.savefig(outputplot_dir + "/tot_genesplot.png")
+plt.figure()
+
+
+plt.figure()
+plt.title("Histogram: How many total transcripts read per cell")
+plt.hist(colsums, log = True, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of genes detected per cell")
+plt.show()
+plt.savefig(outputplot_dir + "/tot_cellplot.png")
+
+
+
+
+
+
+
+plt.figure()
+plt.title("Histogram: How many total transcripts read of a gene")
+plt.hist(rowsums, log = False, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of cells cells a gene is expressed by")
+plt.show()
+plt.savefig(outputplot_dir + "/tot_genesplot.png")
+plt.figure()
+
+
+plt.figure()
+plt.title("Histogram: How many total transcripts read per cell")
+plt.hist(colsums, log = False, bins = 100)
+plt.ylabel("log(Frequency)")
+plt.xlabel("Number of genes detected per cell")
+plt.show()
+plt.savefig(outputplot_dir + "/tot_cellplot.png")
 
 
 
