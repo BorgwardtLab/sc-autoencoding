@@ -1,3 +1,28 @@
+
+    # AE_types = {'': Autoencoder, '': PoissonAutoencoder,
+    #         '': NBConstantDispAutoencoder, 'nb-conddisp': NBAutoencoder,
+    #         'nb-shared': NBSharedAutoencoder, 'nb-fork': NBForkAutoencoder,
+    #         'zinb': ZINBConstantDispAutoencoder, 'zinb-conddisp': ZINBAutoencoder,
+    #         'zinb-shared': ZINBSharedAutoencoder, 'zinb-fork': ZINBForkAutoencoder,
+    #         'zinb-elempi': ZINBAutoencoderElemPi}    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 start=`date +%s`
 
 mkdir logs

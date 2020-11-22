@@ -9,7 +9,18 @@ python ../9_toyscripts/rp_barcodes_add_meaningless_column.py --file "../outputs/
 
 python ../1_Processing/sca_countdata_preprocessor.py --n_splits 0 --mingenes 200 --mincells 1 --maxfeatures 1500 --maxmito 5 --features 1000 --test_fraction 0.25 --input_dir "../outputs/experiments/replication_zheng/original/filtered_matrices_mex/hg19/" --output_dir "../outputs/experiments/replication_zheng/preprocessed/" --verbosity 0 |& tee -a $logfile
 
-python ../3_Autoencoder/sca_autoencoder_2neck.py --mode nosplit --loss poisson_loss --AEtype "zinb-conddisp" --input_dir "../outputs/experiments/replication_zheng/preprocessed/" --output_dir "../outputs/experiments/replication_zheng/AE_output/" --outputplot_dir "../outputs/experiments/replication_zheng/AE_output/" |& tee -a $logfile
+python ../3_Autoencoder/sca_autoencoder_2neck.py --mode nosplit --loss poisson_loss --AEtype zinb --input_dir "../outputs/experiments/replication_zheng/preprocessed/" --output_dir "../outputs/experiments/replication_zheng/AE_output/" --outputplot_dir "../outputs/experiments/replication_zheng/AE_output/" |& tee -a $logfile
+
+
+#'zinb-conddisp': ZINBAutoencoder,
+
+    # AE_types = {'': Autoencoder, '': PoissonAutoencoder,
+    #         '': NBConstantDispAutoencoder, 'nb-conddisp': NBAutoencoder,
+    #         'nb-shared': NBSharedAutoencoder, 'nb-fork': NBForkAutoencoder,
+    #         'zinb': ZINBConstantDispAutoencoder, 
+    #         'zinb-shared': ZINBSharedAutoencoder, 'zinb-fork': ZINBForkAutoencoder,
+    #         'zinb-elempi': ZINBAutoencoderElemPi}    
+
 
 
 
@@ -37,10 +48,6 @@ range=$(eval echo "{0..$[${#directories[@]}-1]}")
 else
 exit
 fi
-
-
-
-
 
 
 
