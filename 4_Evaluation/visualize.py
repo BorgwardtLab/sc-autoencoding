@@ -176,7 +176,7 @@ if not dbscan_dir == "skip":
     nmi_scores = []
     
     # pieplot
-    sizes_pie = []
+    sizes_pie = [] 
     names_pie = []
     
     # num_cluster bar plot
@@ -908,7 +908,7 @@ if not hierarch_dir == "skip":
 
     fig, axs = plt.subplots(nrows = n_rows, ncols = 1, figsize = [1.2*len(dataframes) + 2, 4.0 * n_rows], sharex=True)
     fig.subplots_adjust(hspace=0.5) 
-    fig.suptitle("km-Clustering result of {:d} clusterings".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
+    fig.suptitle("Hierarchical-Clustering result of {:d} clusterings".format(len(dataframes)) + titleext, size = "xx-large", weight = "black")
     
     # boxplots
     sns.set_style("whitegrid")

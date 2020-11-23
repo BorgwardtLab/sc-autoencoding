@@ -74,11 +74,11 @@ python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} -
 
 
 
-(
+
 # python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --kmcluster_results "${outdir}cluster_result/"
 # python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --random_forest_results "${outdir}randomforest_result/"
 # python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --svm_results "${outdir}svm/"
 # python ../4_Evaluation/visualize.py  --title "AEtypes"  --output_dir ${outdir} --hierarch_results "${outdir}hierarchical/"
-)
+
 
 echo "11ae type experiment is now officially d-o-n-e. 
