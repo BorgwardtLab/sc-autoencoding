@@ -95,8 +95,8 @@ colsums = np.sum(data, axis = 0)
 
 
 
-
-
+np.savetxt("rowsums.csv", rowsums, delimiter =",")
+np.savetxt("colsums.csv", colsums, delimiter =",")
 
 
 
@@ -153,8 +153,7 @@ plt.hist(rowsums, log = True, bins = 100)
 plt.ylabel("log(Frequency)")
 plt.xlabel("Number of cells cells a gene is expressed by")
 plt.show()
-plt.savefig(outputplot_dir + "/tot_genesplot.png")
-plt.figure()
+plt.savefig(outputplot_dir + "/tot_genesplot_log.png")
 print("the number of total transcripts is the rowsums, and it has the lenght of {:d}".format(len(rowsums)))
 
 
@@ -166,7 +165,7 @@ plt.hist(colsums, log = True, bins = 100)
 plt.ylabel("log(Frequency)")
 plt.xlabel("Number of genes detected per cell")
 plt.show()
-plt.savefig(outputplot_dir + "/tot_cellplot.png")
+plt.savefig(outputplot_dir + "/tot_cellplot_log.png")
 print("the number of total transcripts read per cell is the colsums, and it has the lenght of {:d}".format(len(colsums)))
 
 
@@ -181,7 +180,7 @@ plt.ylabel("log(Frequency)")
 plt.xlabel("Number of cells cells a gene is expressed by")
 plt.show()
 plt.savefig(outputplot_dir + "/tot_genesplot.png")
-plt.figure()
+
 
 
 plt.figure()
