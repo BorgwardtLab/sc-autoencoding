@@ -37,7 +37,7 @@ outputplot_dir = args.outputplot_dir
 
 
 
-input_path = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/data/raw_input_combined/filtered_matrices_mex/hg19/"
+#input_path = "M:/Projects/simon_streib_internship/sc-autoencoding/inputs/data/raw_input_combined/filtered_matrices_mex/hg19/"
 
 
 # %% Read Input data
