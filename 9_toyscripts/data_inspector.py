@@ -110,6 +110,9 @@ plt.ylabel("log(Frequency)")
 plt.xlabel("Number of cells cells a gene is expressed by")
 plt.show()
 plt.savefig(outputplot_dir + "/genesplot.png")
+print("Histogram: How many cells express each gene?, and it has the lenght of {:d}".format(len(bin_genes)))
+
+
 
 
 plt.figure()
@@ -119,7 +122,7 @@ plt.ylabel("log(Frequency)")
 plt.xlabel("Number of genes detected per cell")
 plt.show()
 plt.savefig(outputplot_dir + "/cellplot.png")
-
+print("Histogram: How many genes  were detected per cell, and it has the lenght of {:d}".format(len(bin_cells)))
 
 
 
@@ -152,6 +155,9 @@ plt.xlabel("Number of cells cells a gene is expressed by")
 plt.show()
 plt.savefig(outputplot_dir + "/tot_genesplot.png")
 plt.figure()
+print("the number of total transcripts is the rowsums, and it has the lenght of {:d}".format(len(rowsums)))
+
+
 
 
 plt.figure()
@@ -161,7 +167,7 @@ plt.ylabel("log(Frequency)")
 plt.xlabel("Number of genes detected per cell")
 plt.show()
 plt.savefig(outputplot_dir + "/tot_cellplot.png")
-
+print("the number of total transcripts read per cell is the colsums, and it has the lenght of {:d}".format(len(colsums)))
 
 
 
