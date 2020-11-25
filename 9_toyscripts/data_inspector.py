@@ -90,14 +90,17 @@ bin_cells = data.getnnz(axis = 1) # stores the number of genes detected in each 
 
 # oh boy lets run this loop
 rowsums = np.sum(data, axis = 0)
-colsums = np.sum(data, axis = 0)
+colsums = np.sum(data, axis = 1)
 
 
+np.savetxt("rowsums.csv", rowsums, delimiter ="\t")
+np.savetxt("colsums.csv", colsums, delimiter ="\t")
+
+# %%
 
 
-np.savetxt("rowsums.csv", rowsums, delimiter =",")
-np.savetxt("colsums.csv", colsums, delimiter =",")
-
+# rowsums = np.loadtxt(open("matrix.tsv"), delimiter="\t")
+# colsums = np.loadtxt(open("matrix.tsv"), delimiter="\t")
 
 
 
