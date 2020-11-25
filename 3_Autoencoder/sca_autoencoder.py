@@ -25,7 +25,7 @@ parser.add_argument("-p","--outputplot_dir", help="plot directory", default = ".
 parser.add_argument("--loss", default = "mse", type = str, choices = ["poisson_loss", "poisson", "mse","mae","mape","msle","squared_hinge","hinge","binary_crossentropy","categorical_crossentropy","kld","cosine_proximity"])
 parser.add_argument("--mode", default = "complete", help="chose k-split, unsplit or both", choices=['complete','split','nosplit'])
 parser.add_argument("--splitnumber", type = int, help="in order to run all splits at the same time, they can be run individually. If mode == split, enter a number here to only do that split. Please ensure that the split exists. ")
-parser.add_argument("--AEtype", default = "nb-conddisp", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
+parser.add_argument("--AEtype", default = "nb-conddisp", choices=['normal','poisson','nb','nb-shared','nb-conddisp','nb-fork','zinb','zinb-shared','zinb-elempi','zinb-conddisp','zinb-fork'])
 #parser.add_argument("--verbose", type = int, default = 2, help="0: quiet, 1:progress bar, 2:1 line per epoch") 
 # whatever, verbosity is always 2 now. (I do this, because of the other "verbose" variable floating around - let's keep it simple. )
 
