@@ -96,6 +96,7 @@ for df in dataframes:
 
 
 minpts = np.unique(minpts, return_counts = False)
+minpts = np.array(minpts, dtype = int)
 eps = np.unique(eps, return_counts=False)
 
 nmis = pd.DataFrame(index = eps, columns = minpts, dtype = float)
