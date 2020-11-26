@@ -346,7 +346,7 @@ for fold in range(1,args.num_reps+1):
         label= clusterlabels[cluster],
         )
             
-    plt.title(technique_name + " Clustering Prediction")
+    plt.title(title + " Clustering Prediction")
     plt.xlabel("Component 1")
     plt.ylabel("Component 2")
     plt.legend(scatterpoints=1)
@@ -423,7 +423,7 @@ for fold in range(1,args.num_reps+1):
     )
     
             
-    plt.title(technique_name)
+    plt.title(title)
     plt.xlabel("Component 1")
     plt.ylabel("Component 2")
     plt.legend(scatterpoints=1)
