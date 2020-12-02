@@ -33,10 +33,6 @@ import re
 
 
 
-args.input_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/"
-args.output_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/technique_evaluation/dbscan_gridsearch_bash/"
-
-
 input_dir = args.input_dir + "dataframes/"
 output_dir = args.output_dir
 
