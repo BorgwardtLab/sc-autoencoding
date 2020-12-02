@@ -139,7 +139,14 @@ for df in dataframes:
 
 
 # %%
-fig, ax = plt.subplots(1,1)
+
+
+width=12.8
+height=9.6
+
+
+
+fig, ax = plt.subplots(1,1, figsize = (width, height))
 
 plt.title("NMI score per combination\n(axis NOT evenly spaced)")
 img = ax.imshow(nmis, interpolation = "bilinear", origin = "lower", cmap = "RdYlGn")
@@ -162,7 +169,7 @@ plt.savefig(output_dir + "NMI_scores.png")
 
 
 
-fig, ax = plt.subplots(1,1)
+fig, ax = plt.subplots(1,1, figsize = (width, height))
 
 plt.title("Outlier Fractions per combination\n(axis NOT evenly spaced)")
 img = ax.imshow(f1scores, interpolation = "bilinear", origin = "lower", cmap = "RdYlGn")
@@ -184,7 +191,7 @@ plt.savefig(output_dir + "F1_scores.png")
 
 
 
-fig, ax = plt.subplots(1,1)
+fig, ax = plt.subplots(1,1, figsize = (width, height))
 
 plt.title("Outlier Fractions per combination\n(axis NOT evenly spaced)")
 img = ax.imshow(outlier_fractions, interpolation = "bilinear", origin = "lower", cmap = "RdYlGn_r")
@@ -205,7 +212,7 @@ plt.savefig(output_dir + "Outlierfractions.png")
 
 
 
-fig, ax = plt.subplots(1,1)
+fig, ax = plt.subplots(1,1, figsize = (width, height))
 
 plt.title("Outlier Fractions per combination\n(axis NOT evenly spaced)")
 img = ax.imshow(numclust50, interpolation = "bilinear", origin = "lower", cmap = "ocean")
