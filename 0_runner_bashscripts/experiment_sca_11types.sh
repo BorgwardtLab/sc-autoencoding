@@ -12,10 +12,11 @@ conda env list	# it should be visible in the log-textfile. I'm not saving it to 
 # AEtypes=("normal" "poisson" "nb" "nb-conddisp" "nb-shared" "nb-fork" "zinb" "zinb-conddisp" "zinb-shared" "zinb-fork" "zinb-elempi")
 
 
-# worked ones: nb normal poisson zinbconddisp zinbfork
+# worked ones: 
+#nb normal poisson zinbconddisp zinb-elempi zinbfork zinb
 
 
-AEtypes=("nb-conddisp" "nb-shared" "nb-fork" "zinb-shared" "zinb-elempi" "zinb")
+AEtypes=("nb-conddisp" "nb-shared" "nb-fork" "zinb-shared")
 
 
 
