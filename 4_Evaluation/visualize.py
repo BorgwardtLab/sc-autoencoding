@@ -30,6 +30,7 @@ parser.add_argument("-o","--output_dir", help="output directory", default = "D:/
 args = parser.parse_args()
 
 
+
 if args.title == "placeholder":
     fileext = ""
 else:
@@ -515,7 +516,7 @@ if not kmclust_dir == "skip":
         # lienplots
         nmis_per_fold = []
         f1weight_per_fold = []
-        for fold in range(1,nfolds):
+        for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
             dffold = df[is_myfold]
 
@@ -547,7 +548,7 @@ if not kmclust_dir == "skip":
         sum_uniques = 0
         sum_lows = 0
         
-        for fold in range(1,nfolds):
+        for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
             dffold = df[is_myfold]
             
@@ -557,7 +558,7 @@ if not kmclust_dir == "skip":
             unique = np.unique(celltypes, return_counts=False)
             sum_uniques += len(unique)
         
-            sizes_2 = np.array(dataframes[i].loc[:,"Size"])
+            sizes_2 = np.array(dffold.loc[:,"Size"])
             sum_lows += sum(sizes_2 < 50)         
     
         num_ct.append(sum_uniques/nfolds)
@@ -849,7 +850,7 @@ if not hierarch_dir == "skip":
         # lienplots
         nmis_per_fold = []
         f1weight_per_fold = []
-        for fold in range(1,nfolds):
+        for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
             dffold = df[is_myfold]
 
@@ -881,7 +882,7 @@ if not hierarch_dir == "skip":
         sum_uniques = 0
         sum_lows = 0
         
-        for fold in range(1,nfolds):
+        for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
             dffold = df[is_myfold]
             
@@ -891,7 +892,7 @@ if not hierarch_dir == "skip":
             unique = np.unique(celltypes, return_counts=False)
             sum_uniques += len(unique)
         
-            sizes_2 = np.array(dataframes[i].loc[:,"Size"])
+            sizes_2 = np.array(dffold.loc[:,"Size"])
             sum_lows += sum(sizes_2 < 50)         
     
         num_ct.append(sum_uniques/nfolds)
