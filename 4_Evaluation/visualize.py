@@ -56,7 +56,7 @@ if args.general_input != "skip":
     hierarch_dir = args.general_input + "hierarchcluster/"
     #classification_dir = args.general_input + "ova_classification/"
     randfor_dir = args.general_input + "random_forest/"
-    svm_dir = args.svm_results
+    svm_dir = args.general_input + "svm/"
 
 
 output_dir = args.output_dir # + args.title + "/"
@@ -80,6 +80,7 @@ custom_order = ["PCA", "LSA", "ICA", "tSNE", "UMAP", "DCA", "SCA", "BCA", "origi
 
 # kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/optimization/tsne_nimput/tsne_kmclresult/"
 # kmclust_dir = "D:/Dropbox/Internship/gitrepo/outputs/kmcluster/"
+# kmclust_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/results/kmcluster/"
 
 # randfor_dir = "M:/Projects/simon_streib_internship/sc-autoencoding/outputs/experiments/losses/randomforest_result/"
 
@@ -544,9 +545,9 @@ if not kmclust_dir == "skip":
            
     
         # barplot numct
-        sum_k = 0
-        sum_uniques = 0
-        sum_lows = 0
+        sum_k = 0           # ct total
+        sum_uniques = 0     # ct (unique ones, but only if > 50)
+        sum_lows = 0        # ct low (low ones)
         
         for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
@@ -554,12 +555,15 @@ if not kmclust_dir == "skip":
             
             sum_k += len(dffold)
             
-            celltypes = np.array(dffold.loc[:,"Most common label"])
+            is_respectable = dffold["Size"] > 50
+            respectable_fold = dffold[is_respectable]
+        
+            celltypes = np.array(respectable_fold.loc[:,"Most common label"])
             unique = np.unique(celltypes, return_counts=False)
             sum_uniques += len(unique)
-        
-            sizes_2 = np.array(dffold.loc[:,"Size"])
-            sum_lows += sum(sizes_2 < 50)         
+
+            nonclusters = dffold[~is_respectable]
+            sum_lows += len(nonclusters)
     
         num_ct.append(sum_uniques/nfolds)
         num_ct_low.append(sum_lows/nfolds)
@@ -606,27 +610,26 @@ if not kmclust_dir == "skip":
 
 
 
-    # baprlot num_unique CT
-    #axs[2].set_yscale("log")
 
-    diff = np.array(num_ct)-np.array(num_ct_low)
-    # avoid negatives in diffs
-    zeros = len(diff)*[0]
-    diff = np.maximum(diff, zeros)
+    # # old way
+    # diff = np.array(num_ct)-np.array(num_ct_low)
+    # # avoid negatives in diffs
+    # zeros = len(diff)*[0]
+    # diff = np.maximum(diff, zeros)
     
     axs[2].bar(x = names_fold, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
-    axs[2].bar(x = names_fold, height = diff, width = 0.45)                                      # the non-low ones
-    axs[2].bar(x = names_fold, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
+    axs[2].bar(x = names_fold, height = num_ct, width = 0.45)                                      # the non-low ones
+    axs[2].bar(x = names_fold, height = num_ct_low, bottom = num_ct, width = 0.45, color = "red")  # the low ones
     
     
     #handl, leggy = axs[2].get_legend_handles_labels()
-    axs[2].legend(labels = ["k","unique clusters (>50)","unique clusters (<50)"])
+    axs[2].legend(labels = ["k","unique clusters (>50 cells)","clusters < 50 cells"])
     
     
     
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Unique cluster labels (red = cluster < 50 cells)")
-    axs[2].set_ylabel("Number of unique cluster labels")
+    axs[2].set_title("Unique cluster labels")
+    axs[2].set_ylabel("Number of cluster")
     axs[2].tick_params(labelbottom = True)
 
 
@@ -878,9 +881,9 @@ if not hierarch_dir == "skip":
            
     
         # barplot numct
-        sum_k = 0
-        sum_uniques = 0
-        sum_lows = 0
+        sum_k = 0           # ct total
+        sum_uniques = 0     # ct (unique ones, but only if > 50)
+        sum_lows = 0        # ct low (low ones)
         
         for fold in range(1,nfolds + 1):
             is_myfold = df["Fold"]==fold
@@ -888,12 +891,15 @@ if not hierarch_dir == "skip":
             
             sum_k += len(dffold)
             
-            celltypes = np.array(dffold.loc[:,"Most common label"])
+            is_respectable = dffold["Size"] > 50
+            respectable_fold = dffold[is_respectable]
+        
+            celltypes = np.array(respectable_fold.loc[:,"Most common label"])
             unique = np.unique(celltypes, return_counts=False)
             sum_uniques += len(unique)
-        
-            sizes_2 = np.array(dffold.loc[:,"Size"])
-            sum_lows += sum(sizes_2 < 50)         
+
+            nonclusters = dffold[~is_respectable]
+            sum_lows += len(nonclusters)
     
         num_ct.append(sum_uniques/nfolds)
         num_ct_low.append(sum_lows/nfolds)
@@ -941,29 +947,27 @@ if not hierarch_dir == "skip":
 
 
 
-    # baprlot num_unique CT
-    #axs[2].set_yscale("log")
 
-    diff = np.array(num_ct)-np.array(num_ct_low)
-    # avoid negatives in diffs
-    zeros = len(diff)*[0]
-    diff = np.maximum(diff, zeros)
+    # # old way
+    # diff = np.array(num_ct)-np.array(num_ct_low)
+    # # avoid negatives in diffs
+    # zeros = len(diff)*[0]
+    # diff = np.maximum(diff, zeros)
     
     axs[2].bar(x = names_fold, height = num_ct_total, width = 0.2, color = "black", alpha = 0.1) # k
-    axs[2].bar(x = names_fold, height = diff, width = 0.45)                                      # the non-low ones
-    axs[2].bar(x = names_fold, height = num_ct_low, bottom = diff, width = 0.45, color = "red")  # the low ones
+    axs[2].bar(x = names_fold, height = num_ct, width = 0.45)                                      # the non-low ones
+    axs[2].bar(x = names_fold, height = num_ct_low, bottom = num_ct, width = 0.45, color = "red")  # the low ones
     
     
     #handl, leggy = axs[2].get_legend_handles_labels()
-    axs[2].legend(labels = ["k","unique clusters (>50)","unique clusters (<50)"])
+    axs[2].legend(labels = ["k","unique clusters (>50 cells)","clusters < 50 cells"])
     
     
     
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Unique cluster labels (red = cluster < 50 cells)")
-    axs[2].set_ylabel("Number of unique cluster labels (normalized for nfolds)")
+    axs[2].set_title("Unique cluster labels")
+    axs[2].set_ylabel("Number of cluster")
     axs[2].tick_params(labelbottom = True)
-
 
 
 
