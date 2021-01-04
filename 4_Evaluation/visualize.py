@@ -262,18 +262,18 @@ if not dbscan_dir == "skip":
     axs[0].set_ylabel("Purity & Recall")
     axs[0].set_xlabel("")
     axs[0].legend(handles = handles[0:2], labels = ["Purity", "Recall"], loc = "lower right")
-    axs[0].set_title("Purity and Recall Boxplots")
+    #axs[0].set_title("Purity and Recall Boxplots")
     axs[0].tick_params(labelbottom = True)
     
     
     # lineplot
     axs[1].plot(names, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
-    axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
-    axs[1].set_title("Average F1 Score")
+    axs[1].set_ylabel("Average Score over repetitions")
+    #axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
         axs[1].plot(names, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
-        axs[1].legend(labels = ["F1-score","NMI"])
+        axs[1].legend(labels = ["F1-score (normalized for cluster sizes)","NMI"])
     except:
         print("no NMI info available")
         pass
@@ -288,10 +288,10 @@ if not dbscan_dir == "skip":
     
     
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Number of clusters (red = cluster < 50 cells)")
+    #axs[2].set_title("Number of clusters (red = cluster < 50 cells)")
     
     axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_ylabel("number of clusters")
+    axs[2].set_ylabel("Average number of cluster over repetitions")
     axs[2].tick_params(labelbottom = True)
 
     # outulier fraction:
@@ -589,7 +589,7 @@ if not kmclust_dir == "skip":
     axs[0].set_ylabel("Purity & Recall")
     axs[0].set_xlabel("")
     axs[0].legend(handles = handles[0:2], labels = ["Purity", "Recall"], loc = "lower right")
-    axs[0].set_title("Purity and Recall Boxplots")
+    #axs[0].set_title("Purity and Recall Boxplots")
     axs[0].tick_params(labelbottom = True)
     
     
@@ -597,13 +597,13 @@ if not kmclust_dir == "skip":
     # lineplot
     axs[1].plot(names_fold, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
     axs[1].errorbar(x = names_fold, y = f1weight, yerr = f1weight_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
-    axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
-    axs[1].set_title("Average F1 Score")
+    axs[1].set_ylabel("Average Score over repetitions")
+    #axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
         axs[1].plot(names_fold, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
         axs[1].errorbar(x = names_fold, y = nmi_scores, yerr = nmi_scores_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
-        axs[1].legend(labels = ["F1-score","NMI"])
+        axs[1].legend(labels = ["F1-score (normalized for cluster sizes)","NMI"])
     except:
         print("no NMI info available")
         pass
@@ -628,8 +628,8 @@ if not kmclust_dir == "skip":
     
     
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Unique cluster labels")
-    axs[2].set_ylabel("Number of cluster")
+    #axs[2].set_title("Unique cluster labels")
+    axs[2].set_ylabel("Average number of cluster over repetitions")
     axs[2].tick_params(labelbottom = True)
 
 
@@ -926,7 +926,7 @@ if not hierarch_dir == "skip":
     axs[0].set_ylabel("Purity & Recall")
     axs[0].set_xlabel("")
     axs[0].legend(handles = handles[0:2], labels = ["Purity", "Recall"], loc = "lower right")
-    axs[0].set_title("Purity and Recall Boxplots")
+    #axs[0].set_title("Purity and Recall Boxplots")
     axs[0].tick_params(labelbottom = True)
     
     
@@ -934,13 +934,13 @@ if not hierarch_dir == "skip":
     # lineplot
     axs[1].plot(names_fold, f1weight, color = "b", linestyle ="-", marker = "o", markersize = 4)
     axs[1].errorbar(x = names_fold, y = f1weight, yerr = f1weight_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
-    axs[1].set_ylabel("Average F1-Score (normalized for clustersizes)")
-    axs[1].set_title("Average F1 Score")
+    axs[1].set_ylabel("Average Score over repetitions")
+    #axs[1].set_title("Average F1 Score")
     axs[1].tick_params(labelbottom = True)
     try:
         axs[1].plot(names_fold, nmi_scores, color = "r", linestyle ="-", marker = "D", markersize = 4)
         axs[1].errorbar(x = names_fold, y = nmi_scores, yerr = nmi_scores_stdv, capsize = 10, elinewidth = 0.5, capthick = 1)
-        axs[1].legend(labels = ["F1-score","NMI"])
+        axs[1].legend(labels = ["F1-score (normalized for cluster sizes)","NMI"])
     except:
         print("no NMI info available")
         pass
@@ -965,8 +965,8 @@ if not hierarch_dir == "skip":
     
     
     #axs[2].axhline(10, alpha = 0.5, c = "red")
-    axs[2].set_title("Unique cluster labels")
-    axs[2].set_ylabel("Number of cluster")
+    #axs[2].set_title("Unique cluster labels")
+    axs[2].set_ylabel("Average number of cluster over repetitions")
     axs[2].tick_params(labelbottom = True)
 
 
@@ -1135,7 +1135,7 @@ if not randfor_dir == "skip":
     plt.subplot(2,1,1)
     plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
     plt.xticks(rotation = 45)
-    plt.title("Random Forests" + titleext)
+    #plt.title("Random Forests" + titleext)
     plt.ylabel("Accuracies")
     plt.grid(which = "both", axis = "x")
     #plt.legend(loc = "lower right")
@@ -1265,7 +1265,7 @@ if not svm_dir == "skip":
     plt.subplot(2,1,1)
     plt.bar(x = names, height = avgs, yerr = stde, alpha = 0.5, color = "red")
     plt.xticks(rotation = 45)
-    plt.title("Support Vector Machine" + titleext)
+    #plt.title("Support Vector Machine" + titleext)
     plt.ylabel("Accuracies")
     plt.grid(which = "both", axis = "x")
     #plt.legend(loc = "lower right")
