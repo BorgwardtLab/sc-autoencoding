@@ -7,7 +7,9 @@ The complete pipeline can be run by cloning the repository, downloading input da
 
 Requirements of installed python packages has been supplied. Plese note, that the pipeline running Zheng's Denoising Count Autoncoder (DCA) has to be run in a different environment. It is recommended to set up environments identically to the original setup: The main conda environment, called "tf" and using the packages of "requirements_tf.txt", and the Zheng environment called "dicia2" using the packages listed in "requirements_dicia2.txt". Also note, that in order to activate conda environments from scripts, the conda.sh needs to be sourced. By default, the conda.sh is expected to be located under ~/anaconda3/etc/profile.d/conda.sh.
 If any changes are made to this, then the environment handling of the .sh scripts in \cloned_dirctory\0_runner_bashscripts needs to be adjusted at the lines looking like this:
+
 source ~/anaconda3/etc/profile.d/conda.sh   # source your own conda.sh 
+
 conda activate dicia2                       # edit names to your own environments
 
 
