@@ -25,4 +25,8 @@ Input Data:
 Was downloaded from https://support.10xgenomics.com/single-cell-gene-expression/datasets (Cellranger 1.1.0)
 Downloaded were 10 datasets from Zheng. et. al, containing Data to 10 different celltypes. The data should be put to cloned_dirctory\inputs\data\raw_input\cd4_t_helper_filtered_gene_bc_matrices.tar.gz", with the internal structure of .tar.gz files corresponding to the rules of 10x Genomics Example Datasets. Any number of .tar.gz files can be deposited in the directory as needed. Note however, that the data of each file will be regarded as one "celltype", with the name taken from the filename. If the filenames have different structures, then edits might be necessary in cloned_dirctory\1_Processing\sca_datamerger.py" to ensure proper labelling of the celltype.
 
+
+
+
+
 More information about the results and structure of the project can be found in the uploaded file "Report_RP1".
