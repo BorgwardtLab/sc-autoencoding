@@ -1,0 +1,62 @@
+absl-py==0.9.0
+anndata==0.7.3
+astor==0.7.1
+certifi==2020.6.20
+cloudpickle==1.4.1
+cycler==0.10.0
+DCA==0.2.3
+decorator==4.4.2
+future==0.18.2
+gast==0.3.3
+get-version==2.1
+google-pasta==0.2.0
+grpcio @ file:///home/conda/feedstock_root/build_artifacts/grpcio_1592839925828/work
+h5py==2.10.0
+hyperopt==0.2.4
+importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1591451751445/work
+joblib==0.15.1
+Keras==2.3.1
+Keras-Applications==1.0.8
+Keras-Preprocessing==1.1.0
+kiwisolver==1.2.0
+kopt==0.1.0
+legacy-api-wrap==1.2
+llvmlite==0.33.0
+Mako==1.1.0
+Markdown @ file:///home/conda/feedstock_root/build_artifacts/markdown_1589366472132/work
+MarkupSafe==1.1.1
+matplotlib==3.2.2
+natsort==7.0.1
+networkx==2.4
+numba==0.50.1
+numexpr==2.7.1
+numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1591485215893/work
+packaging==20.4
+pandas==1.0.5
+patsy==0.5.1
+protobuf==3.12.3
+pygpu==0.7.6
+pyparsing==2.4.7
+python-dateutil==2.8.1
+pytz==2020.1
+PyYAML==5.3.1
+scanpy==1.5.1
+scikit-learn==0.20.3
+scipy==1.4.1
+seaborn==0.10.1
+setuptools-scm==4.1.2
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
+statsmodels==0.11.1
+tables==3.6.1
+tbb==2020.0.133
+tensorboard==1.14.0
+tensorflow==1.14.0
+tensorflow-estimator==1.14.0
+termcolor==1.1.0
+Theano @ file:///home/conda/feedstock_root/build_artifacts/theano_1592974416144/work
+threadpoolctl @ file:///tmp/tmp9twdgx9k/threadpoolctl-2.1.0-py3-none-any.whl
+tqdm==4.46.1
+umap-learn==0.4.4
+Werkzeug==1.0.1
+wrapt==1.12.1
+zipp==3.1.0
