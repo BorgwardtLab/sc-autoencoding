@@ -5,12 +5,20 @@ The goal was to use an autoencoder to reduce the dimensionality or sincle-cell t
 
 The complete pipeline can be run by cloning the repository, downloading input data as explained below, and then run script "0_runner_bashscripts\analyse_all.sh" which will call all other scripts for preprocessing, dimensionality reduction and evaluation. Note, that a very long runtime (~days on a 100-core processor) will be expected for the whole project. Depending on the amount of available computing power, the amount of parallel computations can be edited within the .sh files inside \cloned_dirctory\0_runner_bashscripts by allowing loops to run in parallel using "&". 
 
+
+####################################################################################
+
+
+
 Requirements of installed python packages has been supplied. Plese note, that the pipeline running Zheng's Denoising Count Autoncoder (DCA) has to be run in a different environment. It is recommended to set up environments identically to the original setup: The main conda environment, called "tf" and using the packages of "requirements_tf.txt", and the Zheng environment called "dicia2" using the packages listed in "requirements_dicia2.txt". Also note, that in order to activate conda environments from scripts, the conda.sh needs to be sourced. By default, the conda.sh is expected to be located under ~/anaconda3/etc/profile.d/conda.sh.
-If any changes are made to this, then the environment handling of the .sh scripts in \cloned_dirctory\0_runner_bashscripts needs to be adjusted at the lines looking like this:
+If any changes are made to this, then the environment handling of the .sh scripts in \cloned_dirctory\0_runner_bashscripts needs to be adjusted at the two lines looking like this:
 
 source ~/anaconda3/etc/profile.d/conda.sh   # source your own conda.sh 
 
 conda activate dicia2                       # edit names to your own environments
+
+####################################################################################
+
 
 
 Input Data:
