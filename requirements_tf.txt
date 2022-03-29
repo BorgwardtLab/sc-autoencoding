@@ -51,7 +51,7 @@ numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
 packaging==20.4
 pandas==1.1.0
 pandocfilters==1.4.2
-paramiko==2.7.1
+paramiko==2.10.1
 parso==0.7.0
 pathtools==0.1.2
 pexpect==4.8.0
