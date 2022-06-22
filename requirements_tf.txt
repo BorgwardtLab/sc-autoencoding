@@ -46,7 +46,7 @@ mccabe==0.6.1
 mistune==0.8.4
 nbconvert==5.6.1
 nbformat==5.0.7
-numpy==1.19.1
+numpy==1.22.0
 numpydoc @ file:///tmp/build/80754af9/numpydoc_1594166760263/work
 packaging==20.4
 pandas==1.1.0
