@@ -22,7 +22,7 @@ kiwisolver==1.2.0
 kopt==0.1.0
 legacy-api-wrap==1.2
 llvmlite==0.33.0
-Mako==1.1.0
+Mako==1.2.2
 Markdown @ file:///home/conda/feedstock_root/build_artifacts/markdown_1589366472132/work
 MarkupSafe==1.1.1
 matplotlib==3.2.2
