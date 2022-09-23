@@ -34,7 +34,7 @@ numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1591485215893/wo
 packaging==20.4
 pandas==1.0.5
 patsy==0.5.1
-protobuf==3.12.3
+protobuf==3.18.3
 pygpu==0.7.6
 pyparsing==2.4.7
 python-dateutil==2.8.1
