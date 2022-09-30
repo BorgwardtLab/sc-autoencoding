@@ -14,7 +14,7 @@ grpcio @ file:///home/conda/feedstock_root/build_artifacts/grpcio_1592839925828/
 h5py==2.10.0
 hyperopt==0.2.4
 importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1591451751445/work
-joblib==0.15.1
+joblib==1.2.0
 Keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
